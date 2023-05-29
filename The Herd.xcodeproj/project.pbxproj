@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		AA13439E2A2559D600E92BB2 /* The_HerdApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA13439D2A2559D600E92BB2 /* The_HerdApp.swift */; };
-		AA1343A02A2559D600E92BB2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA13439F2A2559D600E92BB2 /* ContentView.swift */; };
 		AA1343A22A2559D700E92BB2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA1343A12A2559D700E92BB2 /* Assets.xcassets */; };
 		AA1343A52A2559D700E92BB2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA1343A42A2559D700E92BB2 /* Preview Assets.xcassets */; };
 		AA1343A72A2559D700E92BB2 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343A62A2559D700E92BB2 /* Persistence.swift */; };
@@ -16,6 +15,29 @@
 		AA1343B42A2559D700E92BB2 /* The_HerdTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343B32A2559D700E92BB2 /* The_HerdTests.swift */; };
 		AA1343BE2A2559D700E92BB2 /* The_HerdUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343BD2A2559D700E92BB2 /* The_HerdUITests.swift */; };
 		AA1343C02A2559D700E92BB2 /* The_HerdUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343BF2A2559D700E92BB2 /* The_HerdUITestsLaunchTests.swift */; };
+		AA1343CD2A255A2900E92BB2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AA1343CC2A255A2900E92BB2 /* GoogleService-Info.plist */; };
+		AA1343CE2A255A2900E92BB2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AA1343CC2A255A2900E92BB2 /* GoogleService-Info.plist */; };
+		AA1343CF2A255A2900E92BB2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AA1343CC2A255A2900E92BB2 /* GoogleService-Info.plist */; };
+		AA1343D22A255A9300E92BB2 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = AA1343D12A255A9300E92BB2 /* FirebaseAuth */; };
+		AA1343D42A255A9300E92BB2 /* FirebaseAuthCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = AA1343D32A255A9300E92BB2 /* FirebaseAuthCombine-Community */; };
+		AA1343D62A255A9300E92BB2 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = AA1343D52A255A9300E92BB2 /* FirebaseFirestore */; };
+		AA1343D82A255A9300E92BB2 /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = AA1343D72A255A9300E92BB2 /* FirebaseFirestoreCombine-Community */; };
+		AA1343DA2A255A9300E92BB2 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = AA1343D92A255A9300E92BB2 /* FirebaseFirestoreSwift */; };
+		AA1343DC2A255B2800E92BB2 /* Vote.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343DB2A255B2800E92BB2 /* Vote.swift */; };
+		AA1343DD2A255B2800E92BB2 /* Vote.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343DB2A255B2800E92BB2 /* Vote.swift */; };
+		AA1343DE2A255B2800E92BB2 /* Vote.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343DB2A255B2800E92BB2 /* Vote.swift */; };
+		AA1343E12A255B8C00E92BB2 /* Transportable.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343E02A255B8C00E92BB2 /* Transportable.swift */; };
+		AA1343E22A255B8C00E92BB2 /* Transportable.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343E02A255B8C00E92BB2 /* Transportable.swift */; };
+		AA1343E32A255B8C00E92BB2 /* Transportable.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343E02A255B8C00E92BB2 /* Transportable.swift */; };
+		AA1343E52A255BB900E92BB2 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343E42A255BB900E92BB2 /* Operation.swift */; };
+		AA1343E62A255BB900E92BB2 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343E42A255BB900E92BB2 /* Operation.swift */; };
+		AA1343E72A255BB900E92BB2 /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343E42A255BB900E92BB2 /* Operation.swift */; };
+		AA1343EA2A255C3600E92BB2 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343E92A255C3600E92BB2 /* User.swift */; };
+		AA1343EB2A255C3600E92BB2 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343E92A255C3600E92BB2 /* User.swift */; };
+		AA1343EC2A255C3600E92BB2 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343E92A255C3600E92BB2 /* User.swift */; };
+		AA1343EE2A255C9D00E92BB2 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343ED2A255C9D00E92BB2 /* Post.swift */; };
+		AA1343EF2A255C9D00E92BB2 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343ED2A255C9D00E92BB2 /* Post.swift */; };
+		AA1343F02A255C9D00E92BB2 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343ED2A255C9D00E92BB2 /* Post.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +60,6 @@
 /* Begin PBXFileReference section */
 		AA13439A2A2559D600E92BB2 /* The Herd.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Herd.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA13439D2A2559D600E92BB2 /* The_HerdApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = The_HerdApp.swift; sourceTree = "<group>"; };
-		AA13439F2A2559D600E92BB2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA1343A12A2559D700E92BB2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA1343A42A2559D700E92BB2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AA1343A62A2559D700E92BB2 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
@@ -48,6 +69,12 @@
 		AA1343B92A2559D700E92BB2 /* The HerdUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "The HerdUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA1343BD2A2559D700E92BB2 /* The_HerdUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = The_HerdUITests.swift; sourceTree = "<group>"; };
 		AA1343BF2A2559D700E92BB2 /* The_HerdUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = The_HerdUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		AA1343CC2A255A2900E92BB2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		AA1343DB2A255B2800E92BB2 /* Vote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vote.swift; sourceTree = "<group>"; };
+		AA1343E02A255B8C00E92BB2 /* Transportable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transportable.swift; sourceTree = "<group>"; };
+		AA1343E42A255BB900E92BB2 /* Operation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Operation.swift; sourceTree = "<group>"; };
+		AA1343E92A255C3600E92BB2 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		AA1343ED2A255C9D00E92BB2 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +82,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA1343DA2A255A9300E92BB2 /* FirebaseFirestoreSwift in Frameworks */,
+				AA1343D22A255A9300E92BB2 /* FirebaseAuth in Frameworks */,
+				AA1343D82A255A9300E92BB2 /* FirebaseFirestoreCombine-Community in Frameworks */,
+				AA1343D42A255A9300E92BB2 /* FirebaseAuthCombine-Community in Frameworks */,
+				AA1343D62A255A9300E92BB2 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,8 +130,10 @@
 		AA13439C2A2559D600E92BB2 /* The Herd */ = {
 			isa = PBXGroup;
 			children = (
+				AA1343CC2A255A2900E92BB2 /* GoogleService-Info.plist */,
 				AA13439D2A2559D600E92BB2 /* The_HerdApp.swift */,
-				AA13439F2A2559D600E92BB2 /* ContentView.swift */,
+				AA1343E82A255C2900E92BB2 /* Helper Files */,
+				AA1343DF2A255B2B00E92BB2 /* Models */,
 				AA1343A12A2559D700E92BB2 /* Assets.xcassets */,
 				AA1343A62A2559D700E92BB2 /* Persistence.swift */,
 				AA1343A82A2559D700E92BB2 /* The_Herd.xcdatamodeld */,
@@ -133,6 +167,25 @@
 			path = "The HerdUITests";
 			sourceTree = "<group>";
 		};
+		AA1343DF2A255B2B00E92BB2 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AA1343E92A255C3600E92BB2 /* User.swift */,
+				AA1343DB2A255B2800E92BB2 /* Vote.swift */,
+				AA1343ED2A255C9D00E92BB2 /* Post.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		AA1343E82A255C2900E92BB2 /* Helper Files */ = {
+			isa = PBXGroup;
+			children = (
+				AA1343E02A255B8C00E92BB2 /* Transportable.swift */,
+				AA1343E42A255BB900E92BB2 /* Operation.swift */,
+			);
+			path = "Helper Files";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -149,6 +202,13 @@
 			dependencies = (
 			);
 			name = "The Herd";
+			packageProductDependencies = (
+				AA1343D12A255A9300E92BB2 /* FirebaseAuth */,
+				AA1343D32A255A9300E92BB2 /* FirebaseAuthCombine-Community */,
+				AA1343D52A255A9300E92BB2 /* FirebaseFirestore */,
+				AA1343D72A255A9300E92BB2 /* FirebaseFirestoreCombine-Community */,
+				AA1343D92A255A9300E92BB2 /* FirebaseFirestoreSwift */,
+			);
 			productName = "The Herd";
 			productReference = AA13439A2A2559D600E92BB2 /* The Herd.app */;
 			productType = "com.apple.product-type.application";
@@ -221,6 +281,9 @@
 				Base,
 			);
 			mainGroup = AA1343912A2559D600E92BB2;
+			packageReferences = (
+				AA1343D02A255A9300E92BB2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = AA13439B2A2559D600E92BB2 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -238,6 +301,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA1343A52A2559D700E92BB2 /* Preview Assets.xcassets in Resources */,
+				AA1343CD2A255A2900E92BB2 /* GoogleService-Info.plist in Resources */,
 				AA1343A22A2559D700E92BB2 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -246,6 +310,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA1343CE2A255A2900E92BB2 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,6 +318,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA1343CF2A255A2900E92BB2 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,9 +330,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA1343AA2A2559D700E92BB2 /* The_Herd.xcdatamodeld in Sources */,
+				AA1343E12A255B8C00E92BB2 /* Transportable.swift in Sources */,
 				AA1343A72A2559D700E92BB2 /* Persistence.swift in Sources */,
-				AA1343A02A2559D600E92BB2 /* ContentView.swift in Sources */,
+				AA1343EE2A255C9D00E92BB2 /* Post.swift in Sources */,
 				AA13439E2A2559D600E92BB2 /* The_HerdApp.swift in Sources */,
+				AA1343DC2A255B2800E92BB2 /* Vote.swift in Sources */,
+				AA1343E52A255BB900E92BB2 /* Operation.swift in Sources */,
+				AA1343EA2A255C3600E92BB2 /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,7 +344,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA1343E22A255B8C00E92BB2 /* Transportable.swift in Sources */,
 				AA1343B42A2559D700E92BB2 /* The_HerdTests.swift in Sources */,
+				AA1343DD2A255B2800E92BB2 /* Vote.swift in Sources */,
+				AA1343EF2A255C9D00E92BB2 /* Post.swift in Sources */,
+				AA1343EB2A255C3600E92BB2 /* User.swift in Sources */,
+				AA1343E62A255BB900E92BB2 /* Operation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,7 +358,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA1343C02A2559D700E92BB2 /* The_HerdUITestsLaunchTests.swift in Sources */,
+				AA1343DE2A255B2800E92BB2 /* Vote.swift in Sources */,
+				AA1343EC2A255C3600E92BB2 /* User.swift in Sources */,
 				AA1343BE2A2559D700E92BB2 /* The_HerdUITests.swift in Sources */,
+				AA1343E72A255BB900E92BB2 /* Operation.swift in Sources */,
+				AA1343F02A255C9D00E92BB2 /* Post.swift in Sources */,
+				AA1343E32A255B8C00E92BB2 /* Transportable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -591,6 +671,45 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AA1343D02A255A9300E92BB2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AA1343D12A255A9300E92BB2 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA1343D02A255A9300E92BB2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		AA1343D32A255A9300E92BB2 /* FirebaseAuthCombine-Community */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA1343D02A255A9300E92BB2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseAuthCombine-Community";
+		};
+		AA1343D52A255A9300E92BB2 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA1343D02A255A9300E92BB2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		AA1343D72A255A9300E92BB2 /* FirebaseFirestoreCombine-Community */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA1343D02A255A9300E92BB2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseFirestoreCombine-Community";
+		};
+		AA1343D92A255A9300E92BB2 /* FirebaseFirestoreSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA1343D02A255A9300E92BB2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestoreSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		AA1343A82A2559D700E92BB2 /* The_Herd.xcdatamodeld */ = {
