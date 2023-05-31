@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct User: Transportable {
-    var UUID: String
+    var UUID = Foundation.UUID.getTripleID()
     var phoneNumber: String
     var emoji: String
     var color: Color
