@@ -48,7 +48,7 @@ struct The_HerdApp: App {
                             } else {
                                 
                                 // Print the result!
-                                print((result!.data as! [String : Any])["message"]!)
+                                print((result!.data as! [String : Any])["posts"]! as! [String])
                             }
                         }
                     }
