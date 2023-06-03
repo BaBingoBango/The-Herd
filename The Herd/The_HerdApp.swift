@@ -40,7 +40,7 @@ struct The_HerdApp: App {
                     // Check downloading posts!
                     if true {
                         // Call the cloud function!
-                        Functions.functions().httpsCallable("getLatestPosts").call(["latitude" : "32.50802", "longitude" : "73.40223", "startIndex" : "0"]) { result, error in
+                        Functions.functions().httpsCallable("getLatestPosts").call(["latitude" : "10", "longitude" : "10", "startIndex" : "5"]) { result, error in
                             
                             // Check for errors!
                             if let error = error {
@@ -52,7 +52,7 @@ struct The_HerdApp: App {
                                 
                                 // Convert to Post objects!
                                 var postObjects: [Post] = []
-                                for eachPostString in (result!.data as! [String : Any])["rawPosts"] as! [String] {
+                                for eachPostString in (result!.data as! [String : Any])["acceptedPosts"] as! [String] {
                                     let dict = try! JSONSerialization.jsonObject(with: eachPostString.data(using: .utf8)!, options: []) as! [String: Any]
                                     postObjects.append(Post.dedictify(dict))
                                     
