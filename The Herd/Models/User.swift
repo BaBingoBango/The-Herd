@@ -37,4 +37,6 @@ struct User: Transportable {
             return Color(cgColor: .init(red: colorComponents[0], green: colorComponents[1], blue: colorComponents[2], alpha: colorComponents[3]))
         }())
     }
+    
+    static var sample = User(phoneNumber: "313-605-9030", emoji: "🐟", color: .blue)
 }

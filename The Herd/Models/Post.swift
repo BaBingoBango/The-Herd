@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
+import CoreLocation
 
 struct Post: Transportable {
     var UUID = Foundation.UUID.getTripleID()
@@ -14,9 +15,62 @@ struct Post: Transportable {
     var text: String
     /// User UUID : User Vote
     var votes: [String : Vote]
+    var comments: [Comment]
     var timePosted: Date
     var latitude: Double
     var longitude: Double
+    
+    var score: Int {
+        var score = 0
+        for eachVote in votes.values {
+            if eachVote.isUpvote {
+                score += 1
+            } else {
+                score -= 1
+            }
+        }
+        return score
+    }
+    
+    var distanceFromNow: String {
+        let secondsFromNow = timePosted.distance(to: Date())
+        
+        if secondsFromNow < 1 {
+            return "just now"
+            
+        } else if secondsFromNow < 60 {
+            return "\(Int(secondsFromNow.rounded())) sec"
+            
+        } else if secondsFromNow < 60 * 60 {
+            return "\(Int(secondsFromNow.rounded() / 60)) min"
+            
+        } else if secondsFromNow < 60 * 60 * 24 {
+            return "\(Int(secondsFromNow.rounded() / (60 * 60))) hr"
+        
+        } else if secondsFromNow < 60 * 60 * 24 * 7 {
+            return "\(Int(secondsFromNow.rounded() / (60 * 60 * 24))) dy"
+        
+        } else {
+            return "\(Int(secondsFromNow.rounded() / (60 * 60 * 24 * 7))) wk"
+        }
+    }
+    
+    func calculateDistanceFromLocation(latitude: Double, longitude: Double) -> String {
+        let postLocation = CLLocation(latitude: self.latitude, longitude: self.longitude)
+        let requestedLocation = CLLocation(latitude: latitude, longitude: longitude)
+        
+        let milesAway = Measurement(value: postLocation.distance(from: requestedLocation), unit: UnitLength.meters).converted(to: .miles).value
+        return "\(Int(milesAway.rounded())) mi"
+    }
+    
+    static func countComments(_ commentsToCount: [Comment]) -> Int {
+        var count = 0
+        for eachComment in commentsToCount {
+            count += 1
+            count += Post.countComments(eachComment.comments)
+        }
+        return count
+    }
     
     func dictify() -> [String : Any] {
         return [
@@ -24,6 +78,7 @@ struct Post: Transportable {
             "author" : author.dictify(),
             "text" : text,
             "votes" : votes.mapValues({ $0.dictify() }),
+            "comments" : comments.map({ $0.dictify() }),
             "timePosted" : Timestamp(date: timePosted),
             "latitude" : latitude,
             "longitude" : longitude
@@ -35,9 +90,19 @@ struct Post: Transportable {
                     author: User.dedictify(dictionary["author"] as! [String : Any]),
                     text: dictionary["text"] as! String,
                     votes: (dictionary["votes"] as! [String : Any]).mapValues({ Vote.dedictify($0 as! [String : Any]) }),
-                    timePosted: decodeDate(dictionary["timePosted"]!),
+                    comments: (dictionary["comments"] as! [[String : Any]]).map { Comment.dedictify($0) },
+                    timePosted: Date.decodeDate(dictionary["timePosted"]!),
                     latitude: dictionary["latitude"] as! Double,
                     longitude: dictionary["longitude"] as! Double
         )
     }
+    
+    static var sample = Post(author: .sample,
+                             text: Taylor.lyrics.randomElement()!,
+                             votes: Vote.samples,
+                             comments: [.init(author: .sample, text: "amazing post", votes: Vote.samples, comments: Comment.samples, timePosted: Date()),
+                                        .init(author: .sample, text: "w content 🥶", votes: [:], comments: Comment.samples, timePosted: Date())],
+                             timePosted: Date(timeIntervalSinceNow: -6759),
+                             latitude: 42.50807,
+                             longitude: 83.40217)
 }
