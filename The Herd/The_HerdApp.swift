@@ -40,7 +40,7 @@ struct The_HerdApp: App {
                     // Check downloading posts!
                     if true {
                         // Call the cloud function!
-                        Functions.functions().httpsCallable("testFunction").call(["latitude" : "32.50802", "longitude" : "73.40223"]) { result, error in
+                        Functions.functions().httpsCallable("getLatestPosts").call(["latitude" : "32.50802", "longitude" : "73.40223", "startIndex" : "0"]) { result, error in
                             
                             // Check for errors!
                             if let error = error {
@@ -48,8 +48,32 @@ struct The_HerdApp: App {
                             } else {
                                 
                                 // Print the result!
-                                print((result!.data as! [String : Any])["posts"]! as! [String])
+//                                print((result!.data))
+                                
+                                // Convert to Post objects!
+                                var postObjects: [Post] = []
+                                for eachPostString in (result!.data as! [String : Any])["rawPosts"] as! [String] {
+                                    let dict = try! JSONSerialization.jsonObject(with: eachPostString.data(using: .utf8)!, options: []) as! [String: Any]
+                                    postObjects.append(Post.dedictify(dict))
+                                    
+                                    print(Post.dedictify(dict).text)
+                                }
                             }
+                        }
+                    }
+                    
+                    // Upload more fake data!
+                    if false {
+                        for eachIndex in 1...100 {
+                            let newPost = Post(author: .init(UUID: "USER-ID-2", phoneNumber: "313-605-9030", emoji: "📡", color: .cyan), text: "32-73 Post \(eachIndex)/100", votes: [
+                                "VOTE-ID" : .init(UUID: "VOTE-ID", userUUID: "USER-ID-2", isUpvote: true, timePosted: Date())
+                            ], timePosted: Date(), latitude: 32.50802, longitude: 73.40223)
+                            
+                            newPost.transportToServer(path: Firestore.firestore().collection("posts"),
+                                                      documentID: newPost.UUID,
+                                                      operation: nil,
+                                                      onError: { error in fatalError("post upload error! - \(error.localizedDescription)")},
+                                                      onSuccess: { print("post \(eachIndex) uploaded successfully!") })
                         }
                     }
                 }

@@ -35,7 +35,7 @@ struct Post: Transportable {
                     author: User.dedictify(dictionary["author"] as! [String : Any]),
                     text: dictionary["text"] as! String,
                     votes: (dictionary["votes"] as! [String : Any]).mapValues({ Vote.dedictify($0 as! [String : Any]) }),
-                    timePosted: { (dictionary["timePosted"] as! Timestamp).dateValue() }(),
+                    timePosted: decodeDate(dictionary["timePosted"]!),
                     latitude: dictionary["latitude"] as! Double,
                     longitude: dictionary["longitude"] as! Double
         )

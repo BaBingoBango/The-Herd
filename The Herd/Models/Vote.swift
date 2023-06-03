@@ -27,6 +27,14 @@ struct Vote: Transportable {
         return Vote(UUID: dictionary["UUID"] as! String,
                     userUUID: dictionary["userUUID"] as! String,
                     isUpvote: dictionary["isUpvote"] as! Bool,
-                    timePosted: { (dictionary["timePosted"] as! Timestamp).dateValue() }())
+                    timePosted: decodeDate(dictionary["timePosted"]!))
     }
+}
+
+func decodeDate(_ firebaseDate: Any) -> Date {
+    return (firebaseDate as? Timestamp)?.dateValue() ?? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSSSSSZ"
+        return formatter.date(from: firebaseDate as! String)!
+    }()
 }
