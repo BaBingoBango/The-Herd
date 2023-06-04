@@ -51,6 +51,7 @@
 		AA7C8E472A26F2B000F10CD7 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E462A26F2B000F10CD7 /* FirebaseFirestoreSwift */; };
 		AA7C8E492A26F2B000F10CD7 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E482A26F2B000F10CD7 /* FirebaseFunctions */; };
 		AA7C8E4B2A26F2B000F10CD7 /* FirebaseFunctionsCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E4A2A26F2B000F10CD7 /* FirebaseFunctionsCombine-Community */; };
+		AACC89312A2CF68800B2E673 /* PostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACC89302A2CF68800B2E673 /* PostDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,6 +96,7 @@
 		AA1343ED2A255C9D00E92BB2 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		AA1343F12A258B4F00E92BB2 /* IDServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDServices.swift; sourceTree = "<group>"; };
 		AA1343F52A258CA500E92BB2 /* Taylor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Taylor.swift; sourceTree = "<group>"; };
+		AACC89302A2CF68800B2E673 /* PostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,6 +136,7 @@
 			children = (
 				AA04EDEE2A2BCBA90062F66A /* PostBrowserView.swift */,
 				AA04EDF32A2BD1B00062F66A /* PostOptionView.swift */,
+				AACC89302A2CF68800B2E673 /* PostDetailView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -371,6 +374,7 @@
 				AA1343F62A258CA500E92BB2 /* Taylor.swift in Sources */,
 				AA1343F22A258B4F00E92BB2 /* IDServices.swift in Sources */,
 				AA1343AA2A2559D700E92BB2 /* The_Herd.xcdatamodeld in Sources */,
+				AACC89312A2CF68800B2E673 /* PostDetailView.swift in Sources */,
 				AA04EDF42A2BD1B00062F66A /* PostOptionView.swift in Sources */,
 				AA04EDF22A2BCC050062F66A /* RectangleWrapper.swift in Sources */,
 				AA04EDED2A2BCB140062F66A /* DateServices.swift in Sources */,

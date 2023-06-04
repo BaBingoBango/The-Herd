@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 /// An app view written in SwiftUI!
 struct PostOptionView: View {
     
     // MARK: View Variables
-    var post = Post.sample
+    @State var post = Post.sample
     
     // MARK: View Body
     var body: some View {
@@ -46,22 +47,43 @@ struct PostOptionView: View {
                 
                 Spacer()
                 
-                Image(systemName: "arrow.up")
+                Button(action: {
+                    changeVote(newValue: post.votes[User.sample.UUID]?.value == 1 ? 0 : 1)
+                }) {
+                    Image(systemName: "arrow.up")
+                        .foregroundColor(post.votes[User.sample.UUID]?.value == 1 ? .green : .primary)
+                }
                 
                 Text("\(post.score)")
                 
-                Image(systemName: "arrow.down")
+                Button(action: {
+                    changeVote(newValue: post.votes[User.sample.UUID]?.value == -1 ? 0 : -1)
+                }) {
+                    Image(systemName: "arrow.down")
+                        .foregroundColor(post.votes[User.sample.UUID]?.value == -1 ? .red : .primary)
+                }
             }
         }
         .padding([.leading, .bottom, .trailing])
         .modifier(RectangleWrapper(color: .gray, opacity: 0.1))
         .padding(.top, 20)
-
-
     }
     
     // MARK: View Functions
-    // Functions go here! :)
+    func changeVote(newValue: Int) {
+        let originalPost = post
+        let newVote = Vote(voter: User.sample, value: newValue, timePosted: Date())
+        post.votes[User.sample.UUID] = newVote
+        updatePostOnServer(originalPost: originalPost)
+    }
+    
+    func updatePostOnServer(originalPost: Post) {
+        post.transportToServer(path: postsCollection,
+                               documentID: post.UUID,
+                               operation: nil,
+                               onError: { error in post = originalPost; fatalError(error.localizedDescription) },
+                               onSuccess: nil)
+    }
 }
 
 // MARK: View Preview

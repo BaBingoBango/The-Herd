@@ -23,11 +23,7 @@ struct Post: Transportable {
     var score: Int {
         var score = 0
         for eachVote in votes.values {
-            if eachVote.isUpvote {
-                score += 1
-            } else {
-                score -= 1
-            }
+            score += eachVote.value
         }
         return score
     }
@@ -70,6 +66,26 @@ struct Post: Transportable {
             count += Post.countComments(eachComment.comments)
         }
         return count
+    }
+    
+    static func uploadSampleData() {
+        var successes = 0
+        for eachLyric in Taylor.lyrics {
+            let newPost = Post(author: .sample, text: eachLyric + " (50, 50)", votes: Vote.samples, comments: Comment.samples, timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50)
+            newPost.transportToServer(path: Firestore.firestore().collection("posts"),
+                                      documentID: newPost.UUID,
+                                      operation: nil,
+                                      onError: { error in fatalError(error.localizedDescription) },
+                                      onSuccess: { successes += 1; print("⭐️ uploaded post no. \(successes)! ⭐️") })
+        }
+    }
+    
+    static func getSamples() -> [Post] {
+        var posts: [Post] = []
+        for eachLyric in Taylor.lyrics {
+            posts.append(.init(author: .sample, text: eachLyric, votes: Vote.samples, comments: Comment.samples, timePosted: Date(), latitude: 50, longitude: 50))
+        }
+        return posts
     }
     
     func dictify() -> [String : Any] {

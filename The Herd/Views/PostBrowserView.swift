@@ -6,16 +6,19 @@
 //
 
 import SwiftUI
+import FirebaseFunctions
 
 /// An app view written in SwiftUI!
 struct PostBrowserView: View {
     
     // MARK: View Variables
+    @State var posts: [Post] = []
+    @State var postUpdate = Operation()
     @State var isShowingNewPostView = false
     
     // MARK: View Body
     var body: some View {
-//        NavigationView {
+        NavigationView {
             ScrollView {
                 VStack {
                     Button(action: {
@@ -31,13 +34,53 @@ struct PostBrowserView: View {
                         Text("new post view goes here!")
                     }
                     
-                    ForEach(Taylor.lyrics, id: \.self) { eachLyric in
-                        PostOptionView(post: .init(author: .sample, text: eachLyric, votes: [:], comments: [], timePosted: Date(), latitude: 0, longitude: 0))
+                    switch postUpdate.status {
+                    case .failure:
+                        Text("error: \(postUpdate.errorMessage)")
+                        
+                    case .success:
+                        if posts.isEmpty {
+                            Text("no posts!")
+                        }
+                        
+                        ForEach(posts, id: \.UUID) { eachPost in
+                            PostOptionView(post: eachPost)
+                        }
+                        
+                    default:
+                        ProgressView()
                     }
                 }
                 .padding([.leading, .bottom, .trailing])
             }
-//        }
+            
+            // MARK: Navigation Settings
+            .navigationTitle("Posts")
+        }
+        .onAppear {
+            // MARK: View Launch Code
+            // Load the posts array with 50 posts from the cloud function!
+            postUpdate.status = .inProgress
+            Functions.functions().httpsCallable("getLatestPosts").call(["latitude" : "50", "longitude" : "50", "startIndex" : "0"]) { result, error in
+                
+                // Check for errors!
+                if let error = error {
+                    postUpdate.setError(message: error.localizedDescription)
+                } else {
+                    
+                    // Convert the results to Post objects!
+                    var postObjects: [Post] = []
+                    for eachPostString in (result!.data as! [String : Any])["acceptedPosts"] as! [String] {
+                        let postDictionary = try! JSONSerialization.jsonObject(with: eachPostString.data(using: .utf8)!, options: []) as! [String: Any]
+                        postObjects.append(Post.dedictify(postDictionary))
+                    }
+                    
+                    // Update the view state with the new posts!
+                    posts = postObjects
+                    postUpdate.status = .success
+                }
+            }
+        }
     }
     
     // MARK: View Functions

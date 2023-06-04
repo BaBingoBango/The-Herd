@@ -20,10 +20,10 @@ struct User: Transportable {
             "phoneNumber" : phoneNumber,
             "emoji" : emoji,
             "color" : [
-                Double(color.cgColor?.components![0] ?? 1),
-                Double(color.cgColor?.components![1] ?? 0),
-                Double(color.cgColor?.components![2] ?? 0),
-                Double(color.cgColor?.components![3] ?? 1)
+                Double(UIColor(color).cgColor.components![0]),
+                Double(UIColor(color).cgColor.components![1]),
+                Double(UIColor(color).cgColor.components![2]),
+                Double(UIColor(color).cgColor.components![3])
             ]
         ]
     }
@@ -38,5 +38,5 @@ struct User: Transportable {
         }())
     }
     
-    static var sample = User(phoneNumber: "313-605-9030", emoji: "🐟", color: .blue)
+    static var sample = User(UUID: "sample user", phoneNumber: "313-605-9030", emoji: "🐟", color: .blue)
 }

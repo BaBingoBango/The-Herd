@@ -10,6 +10,10 @@ import FirebaseCore
 import FirebaseFirestore
 import FirebaseFunctions
 
+// MARK: Firestore Paths
+/// The Firestore path to the `posts` collection.
+var postsCollection = Firestore.firestore().collection("posts")
+
 @main
 struct The_HerdApp: App {
     
