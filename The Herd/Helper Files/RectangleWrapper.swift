@@ -16,24 +16,42 @@ import SwiftUI
 public struct RectangleWrapper: ViewModifier {
     
     var fixedHeight: Int?
-    var color: Color?
-    var opacity = 0.1
+    var color: Color = .primary
+    var useGradient = false
+    var opacity = 1.0
+    var cornerRadius = 15.0
     
     /// Produces the modified view given the original content.
     public func body(content: Content) -> some View {
         ZStack {
-            if fixedHeight == nil {
-                Rectangle()
-                    .foregroundColor(color == nil ? .primary : color!)
-                    .opacity(opacity)
-                    .cornerRadius(15)
+            if !useGradient {
+                if fixedHeight == nil {
+                    Rectangle()
+                        .foregroundColor(color)
+                        .opacity(opacity)
+                        .cornerRadius(cornerRadius)
+                } else {
+                    Rectangle()
+                        .foregroundColor(color)
+                        .frame(height: CGFloat(fixedHeight!))
+                        .opacity(opacity)
+                        .cornerRadius(cornerRadius)
+                }
             } else {
-                Rectangle()
-                    .foregroundColor(color == nil ? .primary : color!)
-                    .frame(height: CGFloat(fixedHeight!))
-                    .opacity(opacity)
-                    .cornerRadius(15)
+                if fixedHeight == nil {
+                    Rectangle()
+                        .fill(color.gradient)
+                        .opacity(opacity)
+                        .cornerRadius(cornerRadius)
+                } else {
+                    Rectangle()
+                        .fill(color.gradient)
+                        .frame(height: CGFloat(fixedHeight!))
+                        .opacity(opacity)
+                        .cornerRadius(cornerRadius)
+                }
             }
+            
             content
         }
     }

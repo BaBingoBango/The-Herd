@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct User: Transportable {
+struct User: Transportable, Codable {
     var UUID = Foundation.UUID.getTripleID()
     var phoneNumber: String
     var emoji: String
@@ -39,4 +39,8 @@ struct User: Transportable {
     }
     
     static var sample = User(UUID: "sample user", phoneNumber: "313-605-9030", emoji: "🐟", color: .blue)
+    
+    static var possibleEmojis: [String] = [
+        "🐟"
+    ]
 }

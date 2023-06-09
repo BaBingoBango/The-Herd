@@ -44,6 +44,8 @@
 		AA1343F62A258CA500E92BB2 /* Taylor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343F52A258CA500E92BB2 /* Taylor.swift */; };
 		AA1343F72A258CA500E92BB2 /* Taylor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343F52A258CA500E92BB2 /* Taylor.swift */; };
 		AA1343F82A258CA500E92BB2 /* Taylor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343F52A258CA500E92BB2 /* Taylor.swift */; };
+		AA17636F2A32EA2F00365439 /* ColorServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA17636E2A32EA2F00365439 /* ColorServices.swift */; };
+		AA1763712A33A23D00365439 /* Emoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1763702A33A23D00365439 /* Emoji.swift */; };
 		AA7C8E3F2A26F2B000F10CD7 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E3E2A26F2B000F10CD7 /* FirebaseAuth */; };
 		AA7C8E412A26F2B000F10CD7 /* FirebaseAuthCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E402A26F2B000F10CD7 /* FirebaseAuthCombine-Community */; };
 		AA7C8E432A26F2B000F10CD7 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E422A26F2B000F10CD7 /* FirebaseFirestore */; };
@@ -96,6 +98,8 @@
 		AA1343ED2A255C9D00E92BB2 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		AA1343F12A258B4F00E92BB2 /* IDServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDServices.swift; sourceTree = "<group>"; };
 		AA1343F52A258CA500E92BB2 /* Taylor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Taylor.swift; sourceTree = "<group>"; };
+		AA17636E2A32EA2F00365439 /* ColorServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorServices.swift; sourceTree = "<group>"; };
+		AA1763702A33A23D00365439 /* Emoji.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emoji.swift; sourceTree = "<group>"; };
 		AACC89302A2CF68800B2E673 /* PostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -216,6 +220,8 @@
 		AA1343E82A255C2900E92BB2 /* Helper Files */ = {
 			isa = PBXGroup;
 			children = (
+				AA1763702A33A23D00365439 /* Emoji.swift */,
+				AA17636E2A32EA2F00365439 /* ColorServices.swift */,
 				AA04EDF12A2BCC050062F66A /* RectangleWrapper.swift */,
 				AA1343E02A255B8C00E92BB2 /* Transportable.swift */,
 				AA1343E42A255BB900E92BB2 /* Operation.swift */,
@@ -375,6 +381,7 @@
 				AA1343F22A258B4F00E92BB2 /* IDServices.swift in Sources */,
 				AA1343AA2A2559D700E92BB2 /* The_Herd.xcdatamodeld in Sources */,
 				AACC89312A2CF68800B2E673 /* PostDetailView.swift in Sources */,
+				AA17636F2A32EA2F00365439 /* ColorServices.swift in Sources */,
 				AA04EDF42A2BD1B00062F66A /* PostOptionView.swift in Sources */,
 				AA04EDF22A2BCC050062F66A /* RectangleWrapper.swift in Sources */,
 				AA04EDED2A2BCB140062F66A /* DateServices.swift in Sources */,
@@ -382,6 +389,7 @@
 				AA1343A72A2559D700E92BB2 /* Persistence.swift in Sources */,
 				AA1343EE2A255C9D00E92BB2 /* Post.swift in Sources */,
 				AA13439E2A2559D600E92BB2 /* The_HerdApp.swift in Sources */,
+				AA1763712A33A23D00365439 /* Emoji.swift in Sources */,
 				AA1343DC2A255B2800E92BB2 /* Vote.swift in Sources */,
 				AA1343E52A255BB900E92BB2 /* Operation.swift in Sources */,
 				AA04EDEB2A2BC9180062F66A /* Comment.swift in Sources */,

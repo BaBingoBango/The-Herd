@@ -83,7 +83,7 @@ struct Post: Transportable {
     static func getSamples() -> [Post] {
         var posts: [Post] = []
         for eachLyric in Taylor.lyrics {
-            posts.append(.init(author: .sample, text: eachLyric, votes: Vote.samples, comments: Comment.samples, timePosted: Date(), latitude: 50, longitude: 50))
+            posts.append(.init(author: .sample, text: eachLyric, votes: Vote.samples, comments: Comment.samples, timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50))
         }
         return posts
     }
