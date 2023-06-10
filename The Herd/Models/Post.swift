@@ -68,10 +68,18 @@ struct Post: Transportable {
         return count
     }
     
+    static func hasUserCommented(_ commentsToCheck: [Comment], userUUID: String) -> Bool {
+        for eachComment in commentsToCheck {
+            if eachComment.author.UUID == userUUID { return true }
+            return Post.hasUserCommented(eachComment.comments, userUUID: userUUID)
+        }
+        return false
+    }
+    
     static func uploadSampleData() {
         var successes = 0
         for eachLyric in Taylor.lyrics {
-            let newPost = Post(author: .sample, text: eachLyric + " (50, 50)", votes: Vote.samples, comments: Comment.samples, timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50)
+            let newPost = Post(author: .getSample(), text: eachLyric + " (50, 50)", votes: Vote.samples, comments: Comment.samples, timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50)
             newPost.transportToServer(path: Firestore.firestore().collection("posts"),
                                       documentID: newPost.UUID,
                                       operation: nil,
@@ -83,7 +91,7 @@ struct Post: Transportable {
     static func getSamples() -> [Post] {
         var posts: [Post] = []
         for eachLyric in Taylor.lyrics {
-            posts.append(.init(author: .sample, text: eachLyric, votes: Vote.samples, comments: Comment.samples, timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50))
+            posts.append(.init(author: .getSample(), text: eachLyric, votes: Vote.samples, comments: Comment.samples, timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50))
         }
         return posts
     }
@@ -113,11 +121,11 @@ struct Post: Transportable {
         )
     }
     
-    static var sample = Post(author: .sample,
+    static var sample = Post(author: .getSample(),
                              text: Taylor.lyrics.randomElement()!,
                              votes: Vote.samples,
-                             comments: [.init(author: .sample, text: "amazing post", votes: Vote.samples, comments: Comment.samples, timePosted: Date()),
-                                        .init(author: .sample, text: "w content 🥶", votes: [:], comments: Comment.samples, timePosted: Date())],
+                             comments: [.init(author: .getSample(), text: "amazing post", votes: Vote.samples, comments: Comment.samples, timePosted: Date()),
+                                        .init(author: .getSample(), text: "w content 🥶", votes: [:], comments: Comment.samples, timePosted: Date())],
                              timePosted: Date(timeIntervalSinceNow: -6759),
                              latitude: 42.50807,
                              longitude: 83.40217)

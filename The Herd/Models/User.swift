@@ -38,9 +38,26 @@ struct User: Transportable, Codable {
         }())
     }
     
-    static var sample = User(UUID: "sample user", phoneNumber: "313-605-9030", emoji: "🐟", color: .blue)
+    static func getSample() -> User {
+        return .init(UUID: "sample user",
+                     phoneNumber: "313-605-9030",
+                     emoji: Emoji.allEmojis.randomElement()!,
+                     color: User.iconColors.randomElement()!)
+    }
     
-    static var possibleEmojis: [String] = [
-        "🐟"
+    static var iconColors: [Color] = [
+        .blue,
+        .brown,
+        .cyan,
+        .gray,
+        .green,
+        .indigo,
+        .mint,
+        .orange,
+        .pink,
+        .purple,
+        .red,
+        .teal,
+        .yellow
     ]
 }

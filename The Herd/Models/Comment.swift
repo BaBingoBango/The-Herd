@@ -18,9 +18,9 @@ struct Comment: Transportable {
     var timePosted: Date
     
     static let samples: [Comment] = [
-        .init(author: .sample, text: Taylor.lyrics.randomElement()!, votes: Vote.samples, comments: [], timePosted: Date()),
-        .init(author: .sample, text: Taylor.lyrics.randomElement()!, votes: Vote.samples, comments: [
-            .init(author: .sample, text: Taylor.lyrics.randomElement()!, votes: Vote.samples, comments: [], timePosted: Date())
+        .init(author: .getSample(), text: Taylor.lyrics.randomElement()!, votes: Vote.samples, comments: [], timePosted: Date()),
+        .init(author: .getSample(), text: Taylor.lyrics.randomElement()!, votes: Vote.samples, comments: [
+            .init(author: .getSample(), text: Taylor.lyrics.randomElement()!, votes: Vote.samples, comments: [], timePosted: Date())
         ], timePosted: Date())
     ]
     

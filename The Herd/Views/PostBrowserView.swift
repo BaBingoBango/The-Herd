@@ -21,19 +21,6 @@ struct PostBrowserView: View {
         NavigationView {
             ScrollView {
                 VStack {
-                    Button(action: {
-                        isShowingNewPostView = true
-                    }) {
-                        Label("New Post", systemImage: "plus")
-                            .foregroundColor(.white)
-                            .fontWeight(.heavy)
-                            .padding()
-                            .modifier(RectangleWrapper(color: .accentColor, opacity: 1))
-                    }
-                    .sheet(isPresented: $isShowingNewPostView) {
-                        Text("new post view goes here!")
-                    }
-                    
                     switch postUpdate.status {
                     case .failure:
                         Text("error: \(postUpdate.errorMessage)")
@@ -56,6 +43,21 @@ struct PostBrowserView: View {
             
             // MARK: Navigation Settings
             .navigationTitle("Posts")
+            .toolbar(content: {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        isShowingNewPostView = true
+                    }) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 25))
+                            .fontWeight(.bold)
+                            .foregroundColor(.accentColor)
+                    }
+                    .sheet(isPresented: $isShowingNewPostView) {
+                        EmptyView()
+                    }
+                }
+            })
         }
         .onAppear {
             // MARK: View Launch Code

@@ -15,10 +15,10 @@ struct Vote: Transportable {
     var timePosted: Date
     
     static let samples: [String : Vote] = [
-        Foundation.UUID.getTripleID() : .init(voter: .sample, value: 1, timePosted: Date()),
-        Foundation.UUID.getTripleID() : .init(voter: .sample, value: 1, timePosted: Date()),
-        Foundation.UUID.getTripleID() : .init(voter: .sample, value: -1, timePosted: Date()),
-        Foundation.UUID.getTripleID() : .init(voter: .sample, value: 0, timePosted: Date())
+        Foundation.UUID.getTripleID() : .init(voter: .getSample(), value: 1, timePosted: Date()),
+        Foundation.UUID.getTripleID() : .init(voter: .getSample(), value: 1, timePosted: Date()),
+        Foundation.UUID.getTripleID() : .init(voter: .getSample(), value: -1, timePosted: Date()),
+        Foundation.UUID.getTripleID() : .init(voter: .getSample(), value: 0, timePosted: Date())
     ]
     
     func dictify() -> [String : Any] {

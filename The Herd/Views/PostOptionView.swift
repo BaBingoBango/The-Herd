@@ -13,6 +13,12 @@ struct PostOptionView: View {
     
     // MARK: View Variables
     @State var post = Post.sample
+    var voteValue: Int {
+        post.votes[User.getSample().UUID]?.value ?? 0
+    }
+    var hasUserCommented: Bool {
+        Post.hasUserCommented(post.comments, userUUID: User.getSample().UUID)
+    }
     
     // MARK: View Body
     var body: some View {
@@ -54,58 +60,54 @@ struct PostOptionView: View {
                 .padding(.horizontal)
             
             HStack {
-                Label("\(Post.countComments(post.comments))", systemImage: "bubble.left")
-                    .font(.system(size: 22.5))
+                Label("\(Post.countComments(post.comments))", systemImage: hasUserCommented ? "bubble.left.fill" : "bubble.left")
+                    .font(.system(size: 20))
                     .fontWeight(.semibold)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(hasUserCommented ? post.author.color : .secondary)
                 
                 Spacer()
                 
                 Button(action: {
-                    changeVote(newValue: post.votes[User.sample.UUID]?.value == 1 ? 0 : 1)
+                    changeVote(newValue: voteValue == 1 ? 0 : 1)
                 }) {
-                    Image(systemName: "hand.thumbsup")
-                        .font(.system(size: 22.5))
+                    Image(systemName: voteValue == 1 ? "hand.thumbsup.fill" : "hand.thumbsup")
+                        .font(.system(size: 20))
                         .fontWeight(.semibold)
-                        .foregroundColor(post.votes[User.sample.UUID]?.value == 1 ? .green : .secondary)
+                        .foregroundColor(voteValue == 1 ? .green : .secondary)
                 }
                 
                 Text("\(post.score)")
-                    .font(.system(size: 22.5))
+                    .font(.system(size: 20))
                     .fontWeight(.semibold)
                     .foregroundColor({
-                        if let voteValue = post.votes[User.sample.UUID]?.value {
-                            switch voteValue {
-                            case 1: return .green
-                            case -1: return .red
-                            default: return .secondary
-                            }
-                        } else {
-                            return .secondary
+                        switch voteValue {
+                        case 1: return .green
+                        case -1: return .red
+                        default: return .secondary
                         }
                     }())
                 
                 Button(action: {
-                    changeVote(newValue: post.votes[User.sample.UUID]?.value == -1 ? 0 : -1)
+                    changeVote(newValue: voteValue == -1 ? 0 : -1)
                 }) {
-                    Image(systemName: "hand.thumbsdown")
-                        .font(.system(size: 22.5))
+                    Image(systemName: voteValue == -1 ? "hand.thumbsdown.fill" : "hand.thumbsdown")
+                        .font(.system(size: 20))
                         .fontWeight(.semibold)
-                        .foregroundColor(post.votes[User.sample.UUID]?.value == -1 ? .red : .secondary)
+                        .foregroundColor(voteValue == -1 ? .red : .secondary)
                 }
             }
             .padding(.horizontal)
         }
         .padding(.bottom)
-        .modifier(RectangleWrapper(color: post.author.color, useGradient: true, opacity: 0.05, cornerRadius: 20))
+        .modifier(RectangleWrapper(color: post.author.color, useGradient: true, opacity: 0.04, cornerRadius: 20))
         .padding(.top, 20)
     }
     
     // MARK: View Functions
     func changeVote(newValue: Int) {
         let originalPost = post
-        let newVote = Vote(voter: User.sample, value: newValue, timePosted: Date())
-        post.votes[User.sample.UUID] = newVote
+        let newVote = Vote(voter: User.getSample(), value: newValue, timePosted: Date())
+        post.votes[User.getSample().UUID] = newVote
         updatePostOnServer(originalPost: originalPost)
     }
     
