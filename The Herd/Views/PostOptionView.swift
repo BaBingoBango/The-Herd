@@ -13,6 +13,8 @@ struct PostOptionView: View {
     
     // MARK: View Variables
     @State var post = Post.sample
+    var showTopBar = true
+    var cornerRadius = 20.0
     var voteValue: Int {
         post.votes[User.getSample().UUID]?.value ?? 0
     }
@@ -23,40 +25,44 @@ struct PostOptionView: View {
     // MARK: View Body
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                ZStack {
-                    Image(systemName: "circle.fill")
-                        .font(.system(size: 37.5))
-                        .foregroundColor(post.author.color)
+            if showTopBar {
+                HStack {
+                    ZStack {
+                        Image(systemName: "circle.fill")
+                            .font(.system(size: 37.5))
+                            .foregroundColor(post.author.color)
 
-                    Text(post.author.emoji)
+                        Text(post.author.emoji)
+                            .font(.system(size: 25))
+                    }
+                    .offset(y: -12.5)
+                    
+                    Text("\(post.distanceFromNow) ago · \(post.calculateDistanceFromLocation(latitude: 42.50807, longitude: 83.40217)) away")
+                        .font(.system(size: 17.5))
+                        .fontWeight(.heavy)
+                        .foregroundColor(.secondary)
+                        .offset(y: -4.5)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "ellipsis")
                         .font(.system(size: 25))
+                        .foregroundColor(.secondary)
+                        .offset(y: -5)
                 }
-                .offset(y: -12.5)
+                .padding(.horizontal)
                 
-                Text("\(post.distanceFromNow) ago · \(post.calculateDistanceFromLocation(latitude: 42.50807, longitude: 83.40217)) away")
-                    .font(.system(size: 17.5))
-                    .fontWeight(.heavy)
-                    .foregroundColor(.secondary)
-                    .offset(y: -4.5)
-                
-                Spacer()
-                
-                Image(systemName: "ellipsis")
-                    .font(.system(size: 25))
-                    .foregroundColor(.secondary)
-                    .offset(y: -5)
+                Divider()
+                    .offset(y: -8)
             }
-            .padding(.horizontal)
-            
-            Divider()
-                .offset(y: -8)
             
             Text(post.text)
                 .font(.system(size: 30, design: .default))
                 .fontWeight(.medium)
+                .foregroundColor(.primary)
+                .multilineTextAlignment(.leading)
                 .padding(.bottom, 15)
-                .padding(.top, 5)
+                .padding(.top, showTopBar ? 5 : 20)
                 .padding(.horizontal)
             
             HStack {
@@ -99,8 +105,8 @@ struct PostOptionView: View {
             .padding(.horizontal)
         }
         .padding(.bottom)
-        .modifier(RectangleWrapper(color: post.author.color, useGradient: true, opacity: 0.04, cornerRadius: 20))
-        .padding(.top, 20)
+        .modifier(RectangleWrapper(color: post.author.color, useGradient: true, opacity: 0.04, cornerRadius: cornerRadius))
+        .padding(.top, showTopBar ? 20 : 0)
     }
     
     // MARK: View Functions

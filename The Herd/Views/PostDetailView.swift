@@ -15,7 +15,40 @@ struct PostDetailView: View {
     
     // MARK: View Body
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ScrollView {
+            VStack {
+                PostOptionView(post: post, showTopBar: false, cornerRadius: 0)
+                
+                
+            }
+            
+            // MARK: Navigation Settings
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar(content: {
+                ToolbarItem(placement: .principal) {
+                    VStack {
+                        Text(post.author.emoji)
+                            .font(.system(size: 25))
+                            .padding(.top, 10)
+                        
+                        Text("\(post.distanceFromNow) ago · \(post.calculateDistanceFromLocation(latitude: 42.50807, longitude: 83.40217)) away")
+                            .font(.system(size: 15))
+                            .fontWeight(.heavy)
+                            .padding(.bottom, 17.5)
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Image(systemName: "ellipsis.circle")
+                        .font(.system(size: 20))
+                        .fontWeight(.bold)
+                        .foregroundColor(.accentColor)
+                }
+            })
+            .toolbarBackground(post.author.color, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+        }
     }
     
     // MARK: View Functions
@@ -25,7 +58,9 @@ struct PostDetailView: View {
 // MARK: View Preview
 struct PostDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        PostDetailView()
+        NavigationView {
+            PostDetailView()
+        }
     }
 }
 

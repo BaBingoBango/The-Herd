@@ -31,7 +31,9 @@ struct PostBrowserView: View {
                         }
                         
                         ForEach(posts, id: \.UUID) { eachPost in
-                            PostOptionView(post: eachPost)
+                            NavigationLink(destination: PostDetailView(post: eachPost)) {
+                                PostOptionView(post: eachPost)
+                            }
                         }
                         
                     default:
@@ -42,7 +44,7 @@ struct PostBrowserView: View {
             }
             
             // MARK: Navigation Settings
-            .navigationTitle("Posts")
+            .navigationTitle("Nearby")
             .toolbar(content: {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
