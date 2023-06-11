@@ -16,11 +16,10 @@ struct PostDetailView: View {
     // MARK: View Body
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading) {
+            VStack {
                 PostOptionView(post: post, showTopBar: false, cornerRadius: 0)
                 
-                CommentsView(comments: post.comments, post: post)
-                    .padding(.horizontal)
+                CommentsView(comments: post.comments)
             }
             
             // MARK: Navigation Settings
@@ -69,88 +68,42 @@ struct PostDetailView_Previews: PreviewProvider {
 struct CommentsView: View {
     
     var comments: [Comment]
-    @State var post: Post
+    var barColor: Color = .clear
     
     var body: some View {
         ForEach(comments, id: \.UUID) { eachComment in
-            HStack {
-                ZStack {
-                    Image(systemName: "circle.fill")
-                        .font(.system(size: 37.5))
-                        .foregroundColor(eachComment.author.color)
-                    
-                    Text(eachComment.author.emoji)
-                        .font(.system(size: 25))
-                }
+            HStack(alignment: .top) {
+                Rectangle()
+                    .foregroundColor(barColor)
+                    .frame(width: 1)
                 
-                Text(eachComment.distanceFromNow)
-                    .font(.system(size: 17.5))
-                    .fontWeight(.heavy)
-                    .foregroundColor(.secondary)
-            }
-            
-            Text(eachComment.text)
-                .font(.system(size: 22.5, design: .default))
-                .fontWeight(.medium)
-                .padding(.leading, 7.5)
-                .padding(.bottom)
-            
-            HStack {
-                Label("\(Post.countComments(eachComment.comments))", systemImage: Post.hasUserCommented(eachComment.comments, userUUID: User.getSample().UUID) ? "bubble.left.fill" : "bubble.left")
-                    .font(.system(size: 20))
-                    .fontWeight(.semibold)
-                    .foregroundColor(Post.hasUserCommented(eachComment.comments, userUUID: User.getSample().UUID) ? eachComment.author.color : .secondary)
-                
-                Spacer()
-                
-                Button(action: {
-                    changeVote(newValue: eachComment.votes[User.getSample().UUID]?.value == 1 ? 0 : 1, commentIndex: 0)
-                }) {
-                    Image(systemName: eachComment.votes[User.getSample().UUID]?.value ?? 0 == 1 ? "hand.thumbsup.fill" : "hand.thumbsup")
-                        .font(.system(size: 20))
-                        .fontWeight(.semibold)
-                        .foregroundColor(eachComment.votes[User.getSample().UUID]?.value == 1 ? .green : .secondary)
-                }
-                
-                Text("\(eachComment.score)")
-                    .font(.system(size: 20))
-                    .fontWeight(.semibold)
-                    .foregroundColor({
-                        switch eachComment.votes[User.getSample().UUID]?.value ?? 0 {
-                        case 1: return .green
-                        case -1: return .red
-                        default: return .secondary
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack {
+                        ZStack {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 37.5))
+                                .foregroundColor(eachComment.author.color)
+                            
+                            Text(eachComment.author.emoji)
+                                .font(.system(size: 25))
                         }
-                    }())
-                
-                Button(action: {
-                    changeVote(newValue: eachComment.votes[User.getSample().UUID]?.value ?? 0 == -1 ? 0 : -1, commentIndex: 0)
-                }) {
-                    Image(systemName: voteValue == -1 ? "hand.thumbsdown.fill" : "hand.thumbsdown")
-                        .font(.system(size: 20))
-                        .fontWeight(.semibold)
-                        .foregroundColor(voteValue == -1 ? .red : .secondary)
+                        
+                        Text(eachComment.distanceFromNow)
+                            .font(.system(size: 17.5))
+                            .fontWeight(.heavy)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Text(eachComment.text)
+                        .font(.system(size: 22.5, design: .default))
+                        .fontWeight(.medium)
+                        .padding(.leading, 7.5)
+                        .padding(.bottom)
+                    
+                    CommentsView(comments: eachComment.comments, barColor: eachComment.author.color)
+                        .padding(.leading)
                 }
             }
-            .padding(.horizontal)
-            
-            CommentsView(comments: eachComment.comments)
-                .padding(.leading)
         }
-    }
-    
-    func changeVote(newValue: Int, commentIndex: Int) {
-        let originalPost = post
-        let newVote = Vote(voter: User.getSample(), value: newValue, timePosted: Date())
-        post.comments[commentIndex].votes[User.getSample().UUID] = newVote
-        updatePostOnServer(originalPost: originalPost)
-    }
-    
-    func updatePostOnServer(originalPost: Post) {
-        post.transportToServer(path: postsCollection,
-                               documentID: post.UUID,
-                               operation: nil,
-                               onError: { error in post = originalPost; fatalError(error.localizedDescription) },
-                               onSuccess: nil)
     }
 }
