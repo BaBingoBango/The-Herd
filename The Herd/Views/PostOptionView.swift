@@ -14,7 +14,10 @@ struct PostOptionView: View {
     // MARK: View Variables
     @State var post = Post.sample
     var showTopBar = true
+    var showText = true
+    var seperateControls = true
     var cornerRadius = 20.0
+    var bottomBarSize: CGFloat = 20
     var voteValue: Int {
         post.votes[User.getSample().UUID]?.value ?? 0
     }
@@ -56,34 +59,39 @@ struct PostOptionView: View {
                     .offset(y: -8)
             }
             
-            Text(post.text)
-                .font(.system(size: 30, design: .default))
-                .fontWeight(.medium)
-                .foregroundColor(.primary)
-                .multilineTextAlignment(.leading)
-                .padding(.bottom, 15)
-                .padding(.top, showTopBar ? 5 : 20)
-                .padding(.horizontal)
+            if showText {
+                Text(post.text)
+                    .font(.system(size: 30, design: .default))
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.leading)
+                    .padding(.bottom, 15)
+                    .padding(.top, showTopBar ? 5 : 20)
+                    .padding(.horizontal)
+            }
             
             HStack {
                 Label("\(Post.countComments(post.comments))", systemImage: hasUserCommented ? "bubble.left.fill" : "bubble.left")
-                    .font(.system(size: 20))
+                    .font(.system(size: bottomBarSize))
                     .fontWeight(.semibold)
                     .foregroundColor(hasUserCommented ? post.author.color : .secondary)
+                    .padding(.trailing, seperateControls ? 0 : 15)
                 
-                Spacer()
+                if seperateControls {
+                    Spacer()
+                }
                 
                 Button(action: {
                     changeVote(newValue: voteValue == 1 ? 0 : 1)
                 }) {
                     Image(systemName: voteValue == 1 ? "hand.thumbsup.fill" : "hand.thumbsup")
-                        .font(.system(size: 20))
+                        .font(.system(size: bottomBarSize))
                         .fontWeight(.semibold)
                         .foregroundColor(voteValue == 1 ? .green : .secondary)
                 }
                 
                 Text("\(post.score)")
-                    .font(.system(size: 20))
+                    .font(.system(size: bottomBarSize))
                     .fontWeight(.semibold)
                     .foregroundColor({
                         switch voteValue {
@@ -97,15 +105,15 @@ struct PostOptionView: View {
                     changeVote(newValue: voteValue == -1 ? 0 : -1)
                 }) {
                     Image(systemName: voteValue == -1 ? "hand.thumbsdown.fill" : "hand.thumbsdown")
-                        .font(.system(size: 20))
+                        .font(.system(size: bottomBarSize))
                         .fontWeight(.semibold)
                         .foregroundColor(voteValue == -1 ? .red : .secondary)
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, seperateControls ? 15 : 5)
         }
         .padding(.bottom)
-        .modifier(RectangleWrapper(color: post.author.color, useGradient: true, opacity: 0.04, cornerRadius: cornerRadius))
+        .modifier(RectangleWrapper(color: post.author.color, useGradient: true, opacity: 0.04, cornerRadius: cornerRadius, hideRectangle: !showText))
         .padding(.top, showTopBar ? 20 : 0)
     }
     

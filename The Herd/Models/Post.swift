@@ -15,7 +15,7 @@ struct Post: Transportable {
     var text: String
     /// User UUID : User Vote
     var votes: [String : Vote]
-    var comments: [Comment]
+    var comments: [Post]
     var timePosted: Date
     var latitude: Double
     var longitude: Double
@@ -59,7 +59,7 @@ struct Post: Transportable {
         return "\(Int(milesAway.rounded())) mi"
     }
     
-    static func countComments(_ commentsToCount: [Comment]) -> Int {
+    static func countComments(_ commentsToCount: [Post]) -> Int {
         var count = 0
         for eachComment in commentsToCount {
             count += 1
@@ -68,7 +68,7 @@ struct Post: Transportable {
         return count
     }
     
-    static func hasUserCommented(_ commentsToCheck: [Comment], userUUID: String) -> Bool {
+    static func hasUserCommented(_ commentsToCheck: [Post], userUUID: String) -> Bool {
         for eachComment in commentsToCheck {
             if eachComment.author.UUID == userUUID { return true }
             return Post.hasUserCommented(eachComment.comments, userUUID: userUUID)
@@ -79,7 +79,7 @@ struct Post: Transportable {
     static func uploadSampleData() {
         var successes = 0
         for eachLyric in Taylor.lyrics {
-            let newPost = Post(author: .getSample(), text: eachLyric + " (50, 50)", votes: Vote.samples, comments: Comment.samples, timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50)
+            let newPost = Post(author: .getSample(), text: eachLyric + " (50, 50)", votes: Vote.samples, comments: [Post.sample], timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50)
             newPost.transportToServer(path: Firestore.firestore().collection("posts"),
                                       documentID: newPost.UUID,
                                       operation: nil,
@@ -91,7 +91,7 @@ struct Post: Transportable {
     static func getSamples() -> [Post] {
         var posts: [Post] = []
         for eachLyric in Taylor.lyrics {
-            posts.append(.init(author: .getSample(), text: eachLyric, votes: Vote.samples, comments: Comment.samples, timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50))
+            posts.append(.init(author: .getSample(), text: eachLyric, votes: Vote.samples, comments: [Post.sample], timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50))
         }
         return posts
     }
@@ -114,7 +114,7 @@ struct Post: Transportable {
                     author: User.dedictify(dictionary["author"] as! [String : Any]),
                     text: dictionary["text"] as! String,
                     votes: (dictionary["votes"] as! [String : Any]).mapValues({ Vote.dedictify($0 as! [String : Any]) }),
-                    comments: (dictionary["comments"] as! [[String : Any]]).map { Comment.dedictify($0) },
+                    comments: (dictionary["comments"] as! [[String : Any]]).map { Post.dedictify($0) },
                     timePosted: Date.decodeDate(dictionary["timePosted"]!),
                     latitude: dictionary["latitude"] as! Double,
                     longitude: dictionary["longitude"] as! Double
@@ -124,8 +124,10 @@ struct Post: Transportable {
     static var sample = Post(author: .getSample(),
                              text: Taylor.lyrics.randomElement()!,
                              votes: Vote.samples,
-                             comments: [.init(author: .getSample(), text: "amazing post", votes: Vote.samples, comments: Comment.samples, timePosted: Date()),
-                                        .init(author: .getSample(), text: "w content 🥶", votes: [:], comments: Comment.samples, timePosted: Date())],
+                             comments: [.init(author: .getSample(), text: "amazing post", votes: Vote.samples, comments: [
+                                .init(author: .getSample(), text: "This is a longer comment. I wonder how lots of these comments will appear in the app?", votes: [:], comments: [], timePosted: Date(), latitude: 0, longitude: 0)
+                             ], timePosted: Date(), latitude: 0, longitude: 0),
+                                        .init(author: .getSample(), text: "w content 🥶", votes: [:], comments: [], timePosted: Date(), latitude: 0, longitude: 0)],
                              timePosted: Date(timeIntervalSinceNow: -6759),
                              latitude: 42.50807,
                              longitude: 83.40217)

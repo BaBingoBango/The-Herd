@@ -16,10 +16,11 @@ struct PostDetailView: View {
     // MARK: View Body
     var body: some View {
         ScrollView {
-            VStack {
+            VStack(alignment: .leading) {
                 PostOptionView(post: post, showTopBar: false, cornerRadius: 0)
                 
-                CommentsView(comments: post.comments)
+                CommentsView(comments: post.comments, post: post)
+                    .padding(.horizontal)
             }
             
             // MARK: Navigation Settings
@@ -67,42 +68,39 @@ struct PostDetailView_Previews: PreviewProvider {
 // MARK: Support Views
 struct CommentsView: View {
     
-    var comments: [Comment]
+    var comments: [Post]
+    var post: Post
     var barColor: Color = .clear
     
     var body: some View {
         ForEach(comments, id: \.UUID) { eachComment in
-            HStack(alignment: .top) {
-                Rectangle()
-                    .foregroundColor(barColor)
-                    .frame(width: 1)
-                
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack {
-                        ZStack {
-                            Image(systemName: "circle.fill")
-                                .font(.system(size: 37.5))
-                                .foregroundColor(eachComment.author.color)
-                            
-                            Text(eachComment.author.emoji)
-                                .font(.system(size: 25))
-                        }
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    ZStack {
+                        Image(systemName: "circle.fill")
+                            .font(.system(size: 37.5))
+                            .foregroundColor(eachComment.author.color)
                         
-                        Text(eachComment.distanceFromNow)
-                            .font(.system(size: 17.5))
-                            .fontWeight(.heavy)
-                            .foregroundColor(.secondary)
+                        Text(eachComment.author.emoji)
+                            .font(.system(size: 25))
                     }
                     
-                    Text(eachComment.text)
-                        .font(.system(size: 22.5, design: .default))
-                        .fontWeight(.medium)
-                        .padding(.leading, 7.5)
-                        .padding(.bottom)
-                    
-                    CommentsView(comments: eachComment.comments, barColor: eachComment.author.color)
-                        .padding(.leading)
+                    Text(eachComment.distanceFromNow)
+                        .font(.system(size: 17.5))
+                        .fontWeight(.heavy)
+                        .foregroundColor(.secondary)
                 }
+                
+                Text(eachComment.text)
+                    .font(.system(size: 22.5, design: .default))
+                    .fontWeight(.medium)
+                    .padding(.leading, 7.5)
+                    .padding(.bottom)
+                
+                PostOptionView(post: eachComment, showTopBar: false, showText: false, seperateControls: false, cornerRadius: 0, bottomBarSize: 17.5)
+                
+                CommentsView(comments: eachComment.comments, post: post, barColor: eachComment.author.color)
+                    .padding(.leading)
             }
         }
     }

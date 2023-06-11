@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AA04EDEB2A2BC9180062F66A /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04EDEA2A2BC9180062F66A /* Comment.swift */; };
 		AA04EDED2A2BCB140062F66A /* DateServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04EDEC2A2BCB140062F66A /* DateServices.swift */; };
 		AA04EDEF2A2BCBA90062F66A /* PostBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04EDEE2A2BCBA90062F66A /* PostBrowserView.swift */; };
 		AA04EDF22A2BCC050062F66A /* RectangleWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04EDF12A2BCC050062F66A /* RectangleWrapper.swift */; };
@@ -54,6 +53,9 @@
 		AA7C8E492A26F2B000F10CD7 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E482A26F2B000F10CD7 /* FirebaseFunctions */; };
 		AA7C8E4B2A26F2B000F10CD7 /* FirebaseFunctionsCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E4A2A26F2B000F10CD7 /* FirebaseFunctionsCombine-Community */; };
 		AACC89312A2CF68800B2E673 /* PostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACC89302A2CF68800B2E673 /* PostDetailView.swift */; };
+		AAF038E52A3670A000FCF14A /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF038E42A3670A000FCF14A /* SignInView.swift */; };
+		AAF038EA2A36798000FCF14A /* PhoneSignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF038E92A36798000FCF14A /* PhoneSignInView.swift */; };
+		AAF038ED2A3679F200FCF14A /* iPhoneNumberField in Frameworks */ = {isa = PBXBuildFile; productRef = AAF038EC2A3679F200FCF14A /* iPhoneNumberField */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,7 +76,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		AA04EDEA2A2BC9180062F66A /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		AA04EDEC2A2BCB140062F66A /* DateServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateServices.swift; sourceTree = "<group>"; };
 		AA04EDEE2A2BCBA90062F66A /* PostBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostBrowserView.swift; sourceTree = "<group>"; };
 		AA04EDF12A2BCC050062F66A /* RectangleWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RectangleWrapper.swift; sourceTree = "<group>"; };
@@ -101,6 +102,11 @@
 		AA17636E2A32EA2F00365439 /* ColorServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorServices.swift; sourceTree = "<group>"; };
 		AA1763702A33A23D00365439 /* Emoji.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emoji.swift; sourceTree = "<group>"; };
 		AACC89302A2CF68800B2E673 /* PostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailView.swift; sourceTree = "<group>"; };
+		AAF038E32A3665A800FCF14A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		AAF038E42A3670A000FCF14A /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
+		AAF038E72A36781B00FCF14A /* The Herd.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "The Herd.entitlements"; sourceTree = "<group>"; };
+		AAF038E82A36791500FCF14A /* The-Herd-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "The-Herd-Info.plist"; sourceTree = SOURCE_ROOT; };
+		AAF038E92A36798000FCF14A /* PhoneSignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneSignInView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +115,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA7C8E4B2A26F2B000F10CD7 /* FirebaseFunctionsCombine-Community in Frameworks */,
+				AAF038ED2A3679F200FCF14A /* iPhoneNumberField in Frameworks */,
 				AA7C8E472A26F2B000F10CD7 /* FirebaseFirestoreSwift in Frameworks */,
 				AA7C8E3F2A26F2B000F10CD7 /* FirebaseAuth in Frameworks */,
 				AA7C8E452A26F2B000F10CD7 /* FirebaseFirestoreCombine-Community in Frameworks */,
@@ -138,6 +145,8 @@
 		AA04EDF02A2BCBAF0062F66A /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				AAF038E42A3670A000FCF14A /* SignInView.swift */,
+				AAF038E92A36798000FCF14A /* PhoneSignInView.swift */,
 				AA04EDEE2A2BCBA90062F66A /* PostBrowserView.swift */,
 				AA04EDF32A2BD1B00062F66A /* PostOptionView.swift */,
 				AACC89302A2CF68800B2E673 /* PostDetailView.swift */,
@@ -148,10 +157,12 @@
 		AA1343912A2559D600E92BB2 = {
 			isa = PBXGroup;
 			children = (
+				AAF038E32A3665A800FCF14A /* README.md */,
 				AA13439C2A2559D600E92BB2 /* The Herd */,
 				AA1343B22A2559D700E92BB2 /* The HerdTests */,
 				AA1343BC2A2559D700E92BB2 /* The HerdUITests */,
 				AA13439B2A2559D600E92BB2 /* Products */,
+				AAF038E62A36774400FCF14A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -168,6 +179,8 @@
 		AA13439C2A2559D600E92BB2 /* The Herd */ = {
 			isa = PBXGroup;
 			children = (
+				AAF038E82A36791500FCF14A /* The-Herd-Info.plist */,
+				AAF038E72A36781B00FCF14A /* The Herd.entitlements */,
 				AA1343CC2A255A2900E92BB2 /* GoogleService-Info.plist */,
 				AA13439D2A2559D600E92BB2 /* The_HerdApp.swift */,
 				AA1343DF2A255B2B00E92BB2 /* Models */,
@@ -212,7 +225,6 @@
 				AA1343E92A255C3600E92BB2 /* User.swift */,
 				AA1343ED2A255C9D00E92BB2 /* Post.swift */,
 				AA1343DB2A255B2800E92BB2 /* Vote.swift */,
-				AA04EDEA2A2BC9180062F66A /* Comment.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -230,6 +242,13 @@
 				AA1343F52A258CA500E92BB2 /* Taylor.swift */,
 			);
 			path = "Helper Files";
+			sourceTree = "<group>";
+		};
+		AAF038E62A36774400FCF14A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -256,6 +275,7 @@
 				AA7C8E462A26F2B000F10CD7 /* FirebaseFirestoreSwift */,
 				AA7C8E482A26F2B000F10CD7 /* FirebaseFunctions */,
 				AA7C8E4A2A26F2B000F10CD7 /* FirebaseFunctionsCombine-Community */,
+				AAF038EC2A3679F200FCF14A /* iPhoneNumberField */,
 			);
 			productName = "The Herd";
 			productReference = AA13439A2A2559D600E92BB2 /* The Herd.app */;
@@ -331,6 +351,7 @@
 			mainGroup = AA1343912A2559D600E92BB2;
 			packageReferences = (
 				AA7C8E3D2A26F2B000F10CD7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				AAF038EB2A3679F200FCF14A /* XCRemoteSwiftPackageReference "iPhoneNumberField" */,
 			);
 			productRefGroup = AA13439B2A2559D600E92BB2 /* Products */;
 			projectDirPath = "";
@@ -377,6 +398,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAF038E52A3670A000FCF14A /* SignInView.swift in Sources */,
 				AA1343F62A258CA500E92BB2 /* Taylor.swift in Sources */,
 				AA1343F22A258B4F00E92BB2 /* IDServices.swift in Sources */,
 				AA1343AA2A2559D700E92BB2 /* The_Herd.xcdatamodeld in Sources */,
@@ -392,9 +414,9 @@
 				AA1763712A33A23D00365439 /* Emoji.swift in Sources */,
 				AA1343DC2A255B2800E92BB2 /* Vote.swift in Sources */,
 				AA1343E52A255BB900E92BB2 /* Operation.swift in Sources */,
-				AA04EDEB2A2BC9180062F66A /* Comment.swift in Sources */,
 				AA1343EA2A255C3600E92BB2 /* User.swift in Sources */,
 				AA04EDEF2A2BCBA90062F66A /* PostBrowserView.swift in Sources */,
+				AAF038EA2A36798000FCF14A /* PhoneSignInView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -564,12 +586,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "The Herd/The Herd.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"The Herd/Preview Content\"";
 				DEVELOPMENT_TEAM = GUDZ7ALN9J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "The-Herd-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -593,12 +617,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "The Herd/The Herd.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"The Herd/Preview Content\"";
 				DEVELOPMENT_TEAM = GUDZ7ALN9J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "The-Herd-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -743,6 +769,14 @@
 				minimumVersion = 10.0.0;
 			};
 		};
+		AAF038EB2A3679F200FCF14A /* XCRemoteSwiftPackageReference "iPhoneNumberField" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MojtabaHs/iPhoneNumberField.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.10.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -780,6 +814,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AA7C8E3D2A26F2B000F10CD7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseFunctionsCombine-Community";
+		};
+		AAF038EC2A3679F200FCF14A /* iPhoneNumberField */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAF038EB2A3679F200FCF14A /* XCRemoteSwiftPackageReference "iPhoneNumberField" */;
+			productName = iPhoneNumberField;
 		};
 /* End XCSwiftPackageProductDependency section */
 

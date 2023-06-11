@@ -20,35 +20,38 @@ public struct RectangleWrapper: ViewModifier {
     var useGradient = false
     var opacity = 1.0
     var cornerRadius = 15.0
+    var hideRectangle = false
     
     /// Produces the modified view given the original content.
     public func body(content: Content) -> some View {
         ZStack {
-            if !useGradient {
-                if fixedHeight == nil {
-                    Rectangle()
-                        .foregroundColor(color)
-                        .opacity(opacity)
-                        .cornerRadius(cornerRadius)
+            if !hideRectangle {
+                if !useGradient {
+                    if fixedHeight == nil {
+                        Rectangle()
+                            .foregroundColor(color)
+                            .opacity(opacity)
+                            .cornerRadius(cornerRadius)
+                    } else {
+                        Rectangle()
+                            .foregroundColor(color)
+                            .frame(height: CGFloat(fixedHeight!))
+                            .opacity(opacity)
+                            .cornerRadius(cornerRadius)
+                    }
                 } else {
-                    Rectangle()
-                        .foregroundColor(color)
-                        .frame(height: CGFloat(fixedHeight!))
-                        .opacity(opacity)
-                        .cornerRadius(cornerRadius)
-                }
-            } else {
-                if fixedHeight == nil {
-                    Rectangle()
-                        .fill(color.gradient)
-                        .opacity(opacity)
-                        .cornerRadius(cornerRadius)
-                } else {
-                    Rectangle()
-                        .fill(color.gradient)
-                        .frame(height: CGFloat(fixedHeight!))
-                        .opacity(opacity)
-                        .cornerRadius(cornerRadius)
+                    if fixedHeight == nil {
+                        Rectangle()
+                            .fill(color.gradient)
+                            .opacity(opacity)
+                            .cornerRadius(cornerRadius)
+                    } else {
+                        Rectangle()
+                            .fill(color.gradient)
+                            .frame(height: CGFloat(fixedHeight!))
+                            .opacity(opacity)
+                            .cornerRadius(cornerRadius)
+                    }
                 }
             }
             
