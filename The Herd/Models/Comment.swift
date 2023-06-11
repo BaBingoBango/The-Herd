@@ -17,6 +17,29 @@ struct Comment: Transportable {
     var comments: [Comment]
     var timePosted: Date
     
+    var distanceFromNow: String {
+        let secondsFromNow = timePosted.distance(to: Date())
+        
+        if secondsFromNow < 1 {
+            return "just now"
+            
+        } else if secondsFromNow < 60 {
+            return "\(Int(secondsFromNow.rounded())) sec"
+            
+        } else if secondsFromNow < 60 * 60 {
+            return "\(Int(secondsFromNow.rounded() / 60)) min"
+            
+        } else if secondsFromNow < 60 * 60 * 24 {
+            return "\(Int(secondsFromNow.rounded() / (60 * 60))) hr"
+        
+        } else if secondsFromNow < 60 * 60 * 24 * 7 {
+            return "\(Int(secondsFromNow.rounded() / (60 * 60 * 24))) dy"
+        
+        } else {
+            return "\(Int(secondsFromNow.rounded() / (60 * 60 * 24 * 7))) wk"
+        }
+    }
+    
     static let samples: [Comment] = [
         .init(author: .getSample(), text: Taylor.lyrics.randomElement()!, votes: Vote.samples, comments: [], timePosted: Date()),
         .init(author: .getSample(), text: Taylor.lyrics.randomElement()!, votes: Vote.samples, comments: [
