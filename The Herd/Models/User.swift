@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import FirebaseAuth
 
 struct User: Transportable, Codable {
     var UUID = Foundation.UUID.getTripleID()
@@ -36,6 +37,15 @@ struct User: Transportable, Codable {
             let colorComponents = dictionary["color"] as! [Double]
             return Color(cgColor: .init(red: colorComponents[0], green: colorComponents[1], blue: colorComponents[2], alpha: colorComponents[3]))
         }())
+    }
+    
+    func getCurrentUser() -> User {
+        // TODO: Attempt to transport /users/{UID} from the server!
+        // If it doesn't exist, create it!
+        // Then return the User object!
+        // We should be able to check against error code 1 for the existence! Yay! :)
+        // Also, change this to async!
+        // Also also, maybe get this right on sign-in so we don't have to do it every time? Idk
     }
     
     static func getSample() -> User {

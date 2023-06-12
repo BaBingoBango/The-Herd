@@ -8,9 +8,12 @@
 import SwiftUI
 import FirebaseCore
 import FirebaseFirestore
-import FirebaseFunctions
+import FirebaseAuth
+import GoogleSignIn
 
 // MARK: Firestore Paths
+/// The Firestore path to the `users` collection.
+var usersCollection = Firestore.firestore().collection("users")
 /// The Firestore path to the `posts` collection.
 var postsCollection = Firestore.firestore().collection("posts")
 
@@ -22,7 +25,7 @@ struct The_HerdApp: App {
 
     var body: some Scene {
         WindowGroup {
-            PostBrowserView()
+            DispatchView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
@@ -38,5 +41,19 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
         // We did it!
         return true
+    }
+    
+    // MARK: URL Handler
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        
+        // Send URLs to Google Sign-In!
+        return GIDSignIn.sharedInstance.handle(url)
+    }
+    
+    // MARK: Remote Notification Handler
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        
+        // Send notifications to Firebase Auth!
+        Auth.auth().canHandleNotification(userInfo)
     }
 }
