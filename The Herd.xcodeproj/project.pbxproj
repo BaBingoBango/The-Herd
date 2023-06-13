@@ -59,6 +59,8 @@
 		AAF038F62A36BD3E00FCF14A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AAF038F52A36BD3E00FCF14A /* GoogleService-Info.plist */; };
 		AAF038F82A36BD7300FCF14A /* The-Herd-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AAF038F72A36BD7300FCF14A /* The-Herd-Info.plist */; };
 		AAF038FA2A36C33900FCF14A /* NewPostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF038F92A36C33900FCF14A /* NewPostView.swift */; };
+		AAF070A32A37982100DA2615 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF070A22A37982100DA2615 /* ProfileView.swift */; };
+		AAF070A52A37A62800DA2615 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF070A42A37A62800DA2615 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,6 +114,8 @@
 		AAF038F52A36BD3E00FCF14A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		AAF038F72A36BD7300FCF14A /* The-Herd-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "The-Herd-Info.plist"; sourceTree = "<group>"; };
 		AAF038F92A36C33900FCF14A /* NewPostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostView.swift; sourceTree = "<group>"; };
+		AAF070A22A37982100DA2615 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		AAF070A42A37A62800DA2615 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +159,8 @@
 				AAF038EE2A36AE1800FCF14A /* DispatchView.swift */,
 				AAF038E42A3670A000FCF14A /* SignInView.swift */,
 				AAF038E92A36798000FCF14A /* PhoneSignInView.swift */,
+				AAF070A22A37982100DA2615 /* ProfileView.swift */,
+				AAF070A42A37A62800DA2615 /* SettingsView.swift */,
 				AA04EDEE2A2BCBA90062F66A /* PostBrowserView.swift */,
 				AA04EDF32A2BD1B00062F66A /* PostOptionView.swift */,
 				AACC89302A2CF68800B2E673 /* PostDetailView.swift */,
@@ -410,6 +416,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AAF038E52A3670A000FCF14A /* SignInView.swift in Sources */,
+				AAF070A52A37A62800DA2615 /* SettingsView.swift in Sources */,
 				AA1343F62A258CA500E92BB2 /* Taylor.swift in Sources */,
 				AA1343F22A258B4F00E92BB2 /* IDServices.swift in Sources */,
 				AAF038FA2A36C33900FCF14A /* NewPostView.swift in Sources */,
@@ -429,6 +436,7 @@
 				AA1343E52A255BB900E92BB2 /* Operation.swift in Sources */,
 				AA1343EA2A255C3600E92BB2 /* User.swift in Sources */,
 				AA04EDEF2A2BCBA90062F66A /* PostBrowserView.swift in Sources */,
+				AAF070A32A37982100DA2615 /* ProfileView.swift in Sources */,
 				AAF038EA2A36798000FCF14A /* PhoneSignInView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

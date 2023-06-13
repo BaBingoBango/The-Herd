@@ -131,7 +131,7 @@ struct PhoneSignInView: View {
                 }
             }
             .padding(.horizontal)
-            .padding(.bottom, phoneSignInVerificationID.isEmpty ? 15 : 0)
+            .padding(.bottom, phoneSignInVerificationID.isEmpty ? 15 : 5)
             
             if !phoneSignInVerificationID.isEmpty {
                 Button(action: {

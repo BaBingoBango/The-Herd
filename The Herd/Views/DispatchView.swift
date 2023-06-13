@@ -17,42 +17,34 @@ struct DispatchView: View {
     // MARK: View Body
     var body: some View {
         Group {
+            // If the listener has been called, use isSignedIn to dispatch!
             if let isSignedIn = isSignedIn {
-                // If the listener has been called, use isSignedIn to dispatch!
                 if isSignedIn {
-                    Button(action: {
-                        try! Auth.auth().signOut()
-                    }) {
-                        Text("sign out!")
-                    }
+                    PostBrowserView()
                 } else {
                     SignInView()
                 }
                 
+            // If not, check the Auth object!
             } else {
-                // If not, check the Auth object!
-                if let user = Auth.auth().currentUser {
-                    Button(action: {
-                        try! Auth.auth().signOut()
-                    }) {
-                        Text("sign out!")
-                    }
+                if Auth.auth().currentUser != nil {
+                    PostBrowserView()
                 } else {
                     SignInView()
                 }
             }
         }
-            .onAppear {
-                // MARK: View Launch Code
-                let authListener = Auth.auth().addStateDidChangeListener { auth, user in
-                    
-                    if let user = user {
-                        isSignedIn = true
-                    } else {
-                        isSignedIn = false
-                    }
+        .onAppear {
+            // MARK: View Launch Code
+            _ = Auth.auth().addStateDidChangeListener { auth, user in
+                
+                if user != nil {
+                    isSignedIn = true
+                } else {
+                    isSignedIn = false
                 }
             }
+        }
     }
     
     // MARK: View Functions

@@ -6,15 +6,19 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
+import FirebaseAuth
 import FirebaseFunctions
 
 /// An app view written in SwiftUI!
 struct PostBrowserView: View {
     
     // MARK: View Variables
+    @State var currentUser: User? = nil
+    @State var showingProfileView = false
     @State var posts: [Post] = []
     @State var postUpdate = Operation()
-    @State var isShowingNewPostView = false
+    @State var showingNewPostView = false
     
     // MARK: View Body
     var body: some View {
@@ -46,17 +50,39 @@ struct PostBrowserView: View {
             // MARK: Navigation Settings
             .navigationTitle("Nearby")
             .toolbar(content: {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        showingProfileView = true
+                    }) {
+                        ZStack {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(currentUser?.color ?? .gray.opacity(0.25))
+
+                            if let currentUser = currentUser {
+                                Text(currentUser.emoji)
+                                    .font(.system(size: 20))
+                            } else {
+                                ProgressView()
+                            }
+                        }
+                    }
+                    .sheet(isPresented: $showingProfileView) {
+                        ProfileView()
+                    }
+                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        isShowingNewPostView = true
+                        showingNewPostView = true
                     }) {
                         Image(systemName: "plus.circle.fill")
                             .font(.system(size: 25))
                             .fontWeight(.bold)
                             .foregroundColor(.accentColor)
                     }
-                    .sheet(isPresented: $isShowingNewPostView) {
-                        EmptyView()
+                    .sheet(isPresented: $showingNewPostView) {
+                        NewPostView()
                     }
                 }
             })
@@ -70,6 +96,8 @@ struct PostBrowserView: View {
                 return
             }
             
+            posts = Post.getSamples()
+            postUpdate.status = .success
             // Load the posts array with 50 posts from the cloud function!
 //            postUpdate.status = .inProgress
 //            Functions.functions().httpsCallable("getLatestPosts").call(["latitude" : "50", "longitude" : "50", "startIndex" : "0"]) { result, error in
@@ -91,6 +119,20 @@ struct PostBrowserView: View {
 //                    postUpdate.status = .success
 //                }
 //            }
+            
+            // If we haven't loaded the user's profile yet, transport it!
+            if let userID = Auth.auth().currentUser?.uid {
+                User.transportUserFromServer(userID,
+                                             onError: { error in fatalError(error.localizedDescription) },
+                                             onSuccess: { user in currentUser = user })
+                
+                // Set up a real-time listener for the user's profile!
+                usersCollection.document(userID).addSnapshotListener({ snapshot, error in
+                    if let snapshot = snapshot {
+                        if let snapshotData = snapshot.data() { currentUser = User.dedictify(snapshotData) }
+                    }
+                })
+            }
         }
     }
     

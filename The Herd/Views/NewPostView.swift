@@ -27,10 +27,6 @@ struct NewPostView: View {
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)
                     
-                    Text("Anyone within five miles of where you are will be able to see your post, but you'll be able to see it from anywhere!")
-                        .font(.system(size: 17.5))
-                        .multilineTextAlignment(.center)
-                    
                     ZStack {
                         VStack {
                             HStack {
@@ -55,24 +51,66 @@ struct NewPostView: View {
                     .frame(height: 300)
                     .cornerRadius(10)
                     .shadow(color: .gray.opacity(0.3), radius: 10)
+                    
+                    HStack {
+                        Text("🗺️")
+                            .font(.system(size: 40))
+                        
+                        Text("Anyone within five miles of where you are will be able to see your post, but you'll be able to see it from anywhere!")
+                            .font(.system(size: 17.5))
+                            .fontWeight(.medium)
+                            .multilineTextAlignment(.leading)
+                        
+                        Spacer()
+                    }
+                    .padding()
+                    .modifier(RectangleWrapper(color: .teal, opacity: 0.25))
+                    .padding(.top, 5)
+                    
+                    HStack {
+                        Text("🔒")
+                            .font(.system(size: 40))
+                        
+                        Text("Drafts are end-to-end encrypted and can't be accessed by anyone but you.")
+                            .font(.system(size: 17.5))
+                            .fontWeight(.medium)
+                            .multilineTextAlignment(.leading)
+                        
+                        Spacer()
+                    }
+                    .padding()
+                    .modifier(RectangleWrapper(color: .red, opacity: 0.25))
                 }
                 .padding(.horizontal)
             }
             
-            Button(action: {
-                uploadPost.status = .inProgress
+            HStack {
+                Button(action: {
+                    uploadPost.status = .inProgress
+                    
+                    // TODO: create and upload a new post!
+                }) {
+                    if uploadPost.status != .inProgress {
+                        Text("Submit!")
+                            .font(.system(size: 20))
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .modifier(RectangleWrapper(fixedHeight: 55, color: .accentColor))
+                    } else {
+                        ProgressView()
+                            .modifier(RectangleWrapper(fixedHeight: 55, color: .gray.opacity(0.25)))
+                    }
+                }
                 
-                // TODO: create and upload a new post!
-            }) {
-                if uploadPost.status != .inProgress {
-                    Text("Submit!")
+                Button(action: {
+                    // TODO: add a draft!
+                }) {
+                    Text("Save Draft")
                         .font(.system(size: 20))
                         .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .modifier(RectangleWrapper(fixedHeight: 55, color: .accentColor))
-                } else {
-                    ProgressView()
-                        .modifier(RectangleWrapper(fixedHeight: 55, color: .gray.opacity(0.25)))
+                        .foregroundColor(.accentColor)
+                        .modifier(RectangleWrapper(fixedHeight: 55, color: .gray.opacity(0.15)))
+                        .disabled(uploadPost.status == .inProgress)
                 }
             }
             .padding([.bottom, .horizontal])
