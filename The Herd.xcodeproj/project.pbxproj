@@ -61,6 +61,7 @@
 		AAF038FA2A36C33900FCF14A /* NewPostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF038F92A36C33900FCF14A /* NewPostView.swift */; };
 		AAF070A32A37982100DA2615 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF070A22A37982100DA2615 /* ProfileView.swift */; };
 		AAF070A52A37A62800DA2615 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF070A42A37A62800DA2615 /* SettingsView.swift */; };
+		AAF070A82A394FCC00DA2615 /* DynamicFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF070A72A394FCC00DA2615 /* DynamicFont.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -116,6 +117,7 @@
 		AAF038F92A36C33900FCF14A /* NewPostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostView.swift; sourceTree = "<group>"; };
 		AAF070A22A37982100DA2615 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		AAF070A42A37A62800DA2615 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		AAF070A72A394FCC00DA2615 /* DynamicFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicFont.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -255,6 +257,7 @@
 				AA1343F12A258B4F00E92BB2 /* IDServices.swift */,
 				AA04EDEC2A2BCB140062F66A /* DateServices.swift */,
 				AA1343F52A258CA500E92BB2 /* Taylor.swift */,
+				AAF070A72A394FCC00DA2615 /* DynamicFont.swift */,
 			);
 			path = "Helper Files";
 			sourceTree = "<group>";
@@ -431,6 +434,7 @@
 				AA1343A72A2559D700E92BB2 /* Persistence.swift in Sources */,
 				AA1343EE2A255C9D00E92BB2 /* Post.swift in Sources */,
 				AA13439E2A2559D600E92BB2 /* The_HerdApp.swift in Sources */,
+				AAF070A82A394FCC00DA2615 /* DynamicFont.swift in Sources */,
 				AA1763712A33A23D00365439 /* Emoji.swift in Sources */,
 				AA1343DC2A255B2800E92BB2 /* Vote.swift in Sources */,
 				AA1343E52A255BB900E92BB2 /* Operation.swift in Sources */,

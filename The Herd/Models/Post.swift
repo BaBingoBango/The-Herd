@@ -80,7 +80,7 @@ struct Post: Transportable {
         var successes = 0
         for eachLyric in Taylor.lyrics {
             let newPost = Post(author: .getSample(), text: eachLyric + " (50, 50)", votes: Vote.samples, comments: [Post.sample], timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50)
-            newPost.transportToServer(path: Firestore.firestore().collection("posts"),
+            newPost.transportToServer(path: postsCollection,
                                       documentID: newPost.UUID,
                                       operation: nil,
                                       onError: { error in fatalError(error.localizedDescription) },

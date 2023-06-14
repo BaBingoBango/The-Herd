@@ -24,7 +24,7 @@ struct PostBrowserView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack {
+                VStack(spacing: 0) {
                     switch postUpdate.status {
                     case .failure:
                         Text("error: \(postUpdate.errorMessage)")
@@ -36,7 +36,7 @@ struct PostBrowserView: View {
                         
                         ForEach(posts, id: \.UUID) { eachPost in
                             NavigationLink(destination: PostDetailView(post: eachPost)) {
-                                PostOptionView(post: eachPost)
+                                PostOptionView(post: eachPost, currentUser: currentUser!)
                             }
                         }
                         
@@ -87,6 +87,9 @@ struct PostBrowserView: View {
                 }
             })
         }
+        .refreshable {
+            await getLatestPosts()
+        }
         .onAppear {
             // MARK: View Launch Code
             // Add preview data!
@@ -96,29 +99,9 @@ struct PostBrowserView: View {
                 return
             }
             
-            posts = Post.getSamples()
-            postUpdate.status = .success
-            // Load the posts array with 50 posts from the cloud function!
-//            postUpdate.status = .inProgress
-//            Functions.functions().httpsCallable("getLatestPosts").call(["latitude" : "50", "longitude" : "50", "startIndex" : "0"]) { result, error in
-//                
-//                // Check for errors!
-//                if let error = error {
-//                    postUpdate.setError(message: error.localizedDescription)
-//                } else {
-//                    
-//                    // Convert the results to Post objects!
-//                    var postObjects: [Post] = []
-//                    for eachPostString in (result!.data as! [String : Any])["acceptedPosts"] as! [String] {
-//                        let postDictionary = try! JSONSerialization.jsonObject(with: eachPostString.data(using: .utf8)!, options: []) as! [String: Any]
-//                        postObjects.append(Post.dedictify(postDictionary))
-//                    }
-//                    
-//                    // Update the view state with the new posts!
-//                    posts = postObjects
-//                    postUpdate.status = .success
-//                }
-//            }
+//            posts = Post.getSamples()
+//            postUpdate.status = .success
+            Task { await getLatestPosts() }
             
             // If we haven't loaded the user's profile yet, transport it!
             if let userID = Auth.auth().currentUser?.uid {
@@ -137,7 +120,32 @@ struct PostBrowserView: View {
     }
     
     // MARK: View Functions
-    // Functions go here! :)
+    func getLatestPosts() async {
+        // Load the posts array with 50 posts from the cloud function!
+        postUpdate.status = .inProgress
+        Functions.functions().httpsCallable("getLatestPosts").call([
+            "latitude" : "0",
+            "longitude" : "0",
+            "startIndex" : "0"]) { result, error in
+            
+            // Check for errors!
+            if let error = error {
+                postUpdate.setError(message: error.localizedDescription)
+            } else {
+                
+                // Convert the results to Post objects!
+                var postObjects: [Post] = []
+                for eachPostString in (result!.data as! [String : Any])["acceptedPosts"] as! [String] {
+                    let postDictionary = try! JSONSerialization.jsonObject(with: eachPostString.data(using: .utf8)!, options: []) as! [String: Any]
+                    postObjects.append(Post.dedictify(postDictionary))
+                }
+                
+                // Update the view state with the new posts!
+                posts = postObjects
+                postUpdate.status = .success
+            }
+        }
+    }
 }
 
 // MARK: View Preview

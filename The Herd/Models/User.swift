@@ -37,7 +37,7 @@ struct User: Transportable, Codable {
             let colorComponents = dictionary["color"] as! [Double]
             return Color(cgColor: .init(red: colorComponents[0], green: colorComponents[1], blue: colorComponents[2], alpha: colorComponents[3]))
         }(),
-                    joinDate: (dictionary["joinDate"] as! Timestamp).dateValue())
+                    joinDate: Date.decodeDate(dictionary["joinDate"]!))
     }
     
     static func transportUserFromServer(_ userID: String, onError: ((Error) -> ())?, onSuccess: ((Self) -> ())?) {

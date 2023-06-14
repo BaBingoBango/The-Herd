@@ -13,16 +13,17 @@ struct PostOptionView: View {
     
     // MARK: View Variables
     @State var post = Post.sample
+    var currentUser = User.getSample()
     var showTopBar = true
     var showText = true
     var seperateControls = true
     var cornerRadius = 20.0
-    var bottomBarSize: CGFloat = 20
+    var bottomBarFont: Font = .headline
     var voteValue: Int {
-        post.votes[User.getSample().UUID]?.value ?? 0
+        post.votes[currentUser.UUID]?.value ?? 0
     }
     var hasUserCommented: Bool {
-        Post.hasUserCommented(post.comments, userUUID: User.getSample().UUID)
+        Post.hasUserCommented(post.comments, userUUID: currentUser.UUID)
     }
     
     // MARK: View Body
@@ -41,7 +42,7 @@ struct PostOptionView: View {
                     .offset(y: -12.5)
                     
                     Text("\(post.distanceFromNow) ago · \(post.calculateDistanceFromLocation(latitude: 42.50807, longitude: 83.40217)) away")
-                        .font(.system(size: 17.5))
+                        .dynamicFont(.callout, padding: 0)
                         .fontWeight(.heavy)
                         .foregroundColor(.secondary)
                         .offset(y: -4.5)
@@ -61,7 +62,7 @@ struct PostOptionView: View {
             
             if showText {
                 Text(post.text)
-                    .font(.system(size: 30, design: .default))
+                    .dynamicFont(.title2, lineLimit: 3, padding: 0)
                     .fontWeight(.medium)
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.leading)
@@ -72,7 +73,7 @@ struct PostOptionView: View {
             
             HStack {
                 Label("\(Post.countComments(post.comments))", systemImage: hasUserCommented ? "bubble.left.fill" : "bubble.left")
-                    .font(.system(size: bottomBarSize))
+                    .dynamicFont(bottomBarFont, padding: 0)
                     .fontWeight(.semibold)
                     .foregroundColor(hasUserCommented ? post.author.color : .secondary)
                     .padding(.trailing, seperateControls ? 0 : 15)
@@ -85,13 +86,13 @@ struct PostOptionView: View {
                     changeVote(newValue: voteValue == 1 ? 0 : 1)
                 }) {
                     Image(systemName: voteValue == 1 ? "hand.thumbsup.fill" : "hand.thumbsup")
-                        .font(.system(size: bottomBarSize))
+                        .dynamicFont(bottomBarFont, padding: 0)
                         .fontWeight(.semibold)
                         .foregroundColor(voteValue == 1 ? .green : .secondary)
                 }
                 
                 Text("\(post.score)")
-                    .font(.system(size: bottomBarSize))
+                    .dynamicFont(bottomBarFont, padding: 0)
                     .fontWeight(.semibold)
                     .foregroundColor({
                         switch voteValue {
@@ -105,7 +106,7 @@ struct PostOptionView: View {
                     changeVote(newValue: voteValue == -1 ? 0 : -1)
                 }) {
                     Image(systemName: voteValue == -1 ? "hand.thumbsdown.fill" : "hand.thumbsdown")
-                        .font(.system(size: bottomBarSize))
+                        .dynamicFont(bottomBarFont, padding: 0)
                         .fontWeight(.semibold)
                         .foregroundColor(voteValue == -1 ? .red : .secondary)
                 }
@@ -113,15 +114,15 @@ struct PostOptionView: View {
             .padding(.horizontal, seperateControls ? 15 : 5)
         }
         .padding(.bottom)
-        .modifier(RectangleWrapper(color: post.author.color, useGradient: true, opacity: 0.04, cornerRadius: cornerRadius, hideRectangle: !showText))
-        .padding(.top, showTopBar ? 20 : 0)
+        .modifier(RectangleWrapper(color: post.author.color, useGradient: true, opacity: 0.15, cornerRadius: cornerRadius, hideRectangle: !showText))
+        .padding(.top, showTopBar ? 15 : 0)
     }
     
     // MARK: View Functions
     func changeVote(newValue: Int) {
         let originalPost = post
-        let newVote = Vote(voter: User.getSample(), value: newValue, timePosted: Date())
-        post.votes[User.getSample().UUID] = newVote
+        let newVote = Vote(voter: currentUser, value: newValue, timePosted: Date())
+        post.votes[currentUser.UUID] = newVote
         updatePostOnServer(originalPost: originalPost)
     }
     

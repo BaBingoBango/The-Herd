@@ -38,6 +38,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         // Start up Firebase!
         FirebaseApp.configure()
+        
+        // Clear the offline cache!
+//        Firestore.firestore().clearPersistence()
 
         // We did it!
         return true

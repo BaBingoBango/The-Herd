@@ -97,7 +97,7 @@ struct CommentsView: View {
                     .padding(.leading, 7.5)
                     .padding(.bottom)
                 
-                PostOptionView(post: eachComment, showTopBar: false, showText: false, seperateControls: false, cornerRadius: 0, bottomBarSize: 17.5)
+                PostOptionView(post: eachComment, showTopBar: false, showText: false, seperateControls: false, cornerRadius: 0, bottomBarFont: .body)
                 
                 CommentsView(comments: eachComment.comments, post: post, barColor: eachComment.author.color)
                     .padding(.leading)
