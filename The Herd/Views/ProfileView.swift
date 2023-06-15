@@ -14,6 +14,9 @@ struct ProfileView: View {
     // MARK: View Variables
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @State var currentUser: User? = nil
+    @State var loadActivity = Operation()
+    @State var userPosts: [Post] = []
+    @State var selectedActivityView = 1
     
     // MARK: View Body
     var body: some View {
@@ -38,29 +41,29 @@ struct ProfileView: View {
                         VStack(alignment: .leading, spacing: 5) {
                             HStack(spacing: 10) {
                                 Label("5000", systemImage: "hand.thumbsup.fill")
-                                    .font(.system(size: 22.5, design: .rounded))
+                                    .dynamicFont(.title2, fontDesign: .rounded, padding: 0)
                                     .fontWeight(.bold)
                                     .foregroundColor(.green)
                                 
                                 Label("145", systemImage: "bubble.left.fill")
-                                    .font(.system(size: 22.5, design: .rounded))
+                                    .dynamicFont(.title2, fontDesign: .rounded, padding: 0)
                                     .fontWeight(.bold)
                                     .foregroundColor(.blue)
                             }
                             
                             HStack {
                                 Image(systemName: "laurel.leading")
-                                    .font(.system(size: 20, design: .rounded))
+                                    .dynamicFont(.title2, fontDesign: .rounded, padding: 0)
                                     .foregroundColor(.secondary)
                                     .fontWeight(.bold)
                                 
                                 Text("Since June 2023")
-                                    .font(.system(size: 20, design: .rounded))
+                                    .dynamicFont(.title2, fontDesign: .rounded, padding: 0)
                                     .foregroundColor(.secondary)
                                     .fontWeight(.bold)
                                 
                                 Image(systemName: "laurel.trailing")
-                                    .font(.system(size: 20, design: .rounded))
+                                    .dynamicFont(.title2, fontDesign: .rounded, padding: 0)
                                     .foregroundColor(.secondary)
                                     .fontWeight(.bold)
                             }
@@ -69,20 +72,46 @@ struct ProfileView: View {
                         Spacer()
                     }
                     
-                    HStack {
-                        Text("Activity")
-                            .font(.system(size: 27.5))
-                            .fontWeight(.bold)
-                        Spacer()
+                    switch loadActivity.status {
+                    case .failure:
+                        Text("error: \(loadActivity.errorMessage)")
+                        
+                    case .success:
+                        HStack {
+                            Text("Activity")
+                                .dynamicFont(.title, padding: 0)
+                                .fontWeight(.bold)
+                            Spacer()
+                        }
+                        .padding(.top, 5)
+                        
+                        Picker(selection: $selectedActivityView, label: Text("")) {
+                            Text("Posts").tag(1)
+                            Text("Comments").tag(2)
+                            Text("Votes").tag(2)
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        
+                        switch selectedActivityView{
+                        case 1:
+                            if userPosts.isEmpty {
+                                Text("no user posts!")
+                            }
+                            
+                            ForEach(userPosts, id: \.UUID) { eachPost in
+                                PostOptionView(post: eachPost, currentUser: currentUser!)
+                            }
+                            
+                        case 2:
+                            Text("nothing yet...")
+                            
+                        default:
+                            Text("nothing yet...")
+                        }
+                        
+                    default:
+                        ProgressView()
                     }
-                    .padding(.top, 5)
-                    
-                    Picker(selection: .constant(1), label: Text("")) {
-                        Text("Posts").tag(1)
-                        Text("Comments").tag(2)
-                        Text("Votes").tag(2)
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
                 }
                 .padding(.horizontal)
             }
@@ -97,6 +126,25 @@ struct ProfileView: View {
                     }
                 }
             })
+        }
+        .onChange(of: currentUser) { _ in
+            if let currentUser = currentUser {
+                loadActivity.status = .inProgress
+                
+                // Query the server for the user's posts!
+                postsCollection.whereField("author.UUID", isEqualTo: currentUser.UUID).getDocuments() { snapshot, error in
+                    if let error = error {
+                        loadActivity.setError(message: error.localizedDescription)
+                        
+                    } else {
+                        for eachDocument in snapshot!.documents {
+                            userPosts.append(Post.dedictify(eachDocument.data()))
+                        }
+                        
+                        loadActivity.status = .success
+                    }
+                }
+            }
         }
         .onAppear {
             // MARK: View Launch Code

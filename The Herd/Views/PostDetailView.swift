@@ -6,21 +6,25 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 /// An app view written in SwiftUI!
 struct PostDetailView: View {
     
     // MARK: View Variables
-    @State var post = Post.sample
+    @Binding var post: Post
+    @State var currentUser: User? = nil
     
     // MARK: View Body
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
-                PostOptionView(post: post, showTopBar: false, cornerRadius: 0)
-                
-                CommentsView(comments: post.comments, post: post)
-                    .padding(.horizontal)
+                if let currentUser = currentUser {
+                    PostOptionView(post: post, currentUser: currentUser, showTopBar: false, cornerRadius: 0)
+                    
+                    CommentsView(comments: post.comments, post: post)
+                        .padding(.horizontal)
+                }
             }
             
             // MARK: Navigation Settings
@@ -50,6 +54,28 @@ struct PostDetailView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
+        .onAppear {
+            // MARK: View Launch Code
+            // If we haven't loaded the user's profile yet, transport it!
+            if let userID = Auth.auth().currentUser?.uid {
+                User.transportUserFromServer(userID,
+                                             onError: { error in fatalError(error.localizedDescription) },
+                                             onSuccess: { user in currentUser = user })
+                
+                // Set up a real-time listener for the user's profile!
+                usersCollection.document(userID).addSnapshotListener({ snapshot, error in
+                    if let snapshot = snapshot {
+                        if let snapshotData = snapshot.data() { currentUser = User.dedictify(snapshotData) }
+                    }
+                })
+            }
+            // Set up a real-time listener for this post!
+            postsCollection.document(post.UUID).addSnapshotListener({ snapshot, error in
+                if let snapshot = snapshot {
+                    if let snapshotData = snapshot.data() { post = Post.dedictify(snapshotData) }
+                }
+            })
+        }
     }
     
     // MARK: View Functions
@@ -60,7 +86,7 @@ struct PostDetailView: View {
 struct PostDetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            PostDetailView()
+            PostDetailView(post: .constant(Post.sample))
         }
     }
 }

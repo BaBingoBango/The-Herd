@@ -10,11 +10,15 @@ import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
 
-struct User: Transportable, Codable {
+struct User: Transportable, Codable, Equatable {
     var UUID = Foundation.UUID.getTripleID()
     var emoji: String
     var color: Color
     var joinDate: Date
+    
+    static func == (lhs: User, rhs: User) -> Bool {
+        return lhs.UUID == rhs.UUID
+    }
     
     func dictify() -> [String : Any] {
         return [

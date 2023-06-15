@@ -35,7 +35,7 @@ struct PostBrowserView: View {
                         }
                         
                         ForEach(posts, id: \.UUID) { eachPost in
-                            NavigationLink(destination: PostDetailView(post: eachPost)) {
+                            NavigationLink(destination: PostDetailView(post: $posts.first(where: { $0.wrappedValue.UUID == eachPost.UUID })!, currentUser: currentUser)) {
                                 PostOptionView(post: eachPost, currentUser: currentUser!)
                             }
                         }
