@@ -39,8 +39,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Start up Firebase!
         FirebaseApp.configure()
         
-        // Clear the offline cache!
-//        Firestore.firestore().clearPersistence()
+        // TODO: Clear the offline cache?
+        Firestore.firestore().clearPersistence()
 
         // We did it!
         return true

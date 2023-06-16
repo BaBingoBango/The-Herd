@@ -49,6 +49,8 @@
 		AA7C8E472A26F2B000F10CD7 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E462A26F2B000F10CD7 /* FirebaseFirestoreSwift */; };
 		AA7C8E492A26F2B000F10CD7 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E482A26F2B000F10CD7 /* FirebaseFunctions */; };
 		AA7C8E4B2A26F2B000F10CD7 /* FirebaseFunctionsCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E4A2A26F2B000F10CD7 /* FirebaseFunctionsCombine-Community */; };
+		AA7EC71B2A3C096A00276C42 /* ScanLocationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7EC71A2A3C096A00276C42 /* ScanLocationsView.swift */; };
+		AA7EC71D2A3C0CAD00276C42 /* SavedLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7EC71C2A3C0CAD00276C42 /* SavedLocation.swift */; };
 		AACC89312A2CF68800B2E673 /* PostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACC89302A2CF68800B2E673 /* PostDetailView.swift */; };
 		AAF038E52A3670A000FCF14A /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF038E42A3670A000FCF14A /* SignInView.swift */; };
 		AAF038EA2A36798000FCF14A /* PhoneSignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF038E92A36798000FCF14A /* PhoneSignInView.swift */; };
@@ -106,6 +108,8 @@
 		AA1343F52A258CA500E92BB2 /* Taylor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Taylor.swift; sourceTree = "<group>"; };
 		AA17636E2A32EA2F00365439 /* ColorServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorServices.swift; sourceTree = "<group>"; };
 		AA1763702A33A23D00365439 /* Emoji.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emoji.swift; sourceTree = "<group>"; };
+		AA7EC71A2A3C096A00276C42 /* ScanLocationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanLocationsView.swift; sourceTree = "<group>"; };
+		AA7EC71C2A3C0CAD00276C42 /* SavedLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLocation.swift; sourceTree = "<group>"; };
 		AACC89302A2CF68800B2E673 /* PostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailView.swift; sourceTree = "<group>"; };
 		AAF038E32A3665A800FCF14A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AAF038E42A3670A000FCF14A /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
@@ -167,6 +171,7 @@
 				AA04EDF32A2BD1B00062F66A /* PostOptionView.swift */,
 				AACC89302A2CF68800B2E673 /* PostDetailView.swift */,
 				AAF038F92A36C33900FCF14A /* NewPostView.swift */,
+				AA7EC71A2A3C096A00276C42 /* ScanLocationsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -242,6 +247,7 @@
 				AA1343E92A255C3600E92BB2 /* User.swift */,
 				AA1343ED2A255C9D00E92BB2 /* Post.swift */,
 				AA1343DB2A255B2800E92BB2 /* Vote.swift */,
+				AA7EC71C2A3C0CAD00276C42 /* SavedLocation.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -434,7 +440,9 @@
 				AA1343A72A2559D700E92BB2 /* Persistence.swift in Sources */,
 				AA1343EE2A255C9D00E92BB2 /* Post.swift in Sources */,
 				AA13439E2A2559D600E92BB2 /* The_HerdApp.swift in Sources */,
+				AA7EC71D2A3C0CAD00276C42 /* SavedLocation.swift in Sources */,
 				AAF070A82A394FCC00DA2615 /* DynamicFont.swift in Sources */,
+				AA7EC71B2A3C096A00276C42 /* ScanLocationsView.swift in Sources */,
 				AA1763712A33A23D00365439 /* Emoji.swift in Sources */,
 				AA1343DC2A255B2800E92BB2 /* Vote.swift in Sources */,
 				AA1343E52A255BB900E92BB2 /* Operation.swift in Sources */,
