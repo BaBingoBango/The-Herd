@@ -34,14 +34,11 @@ struct SavedLocation: Transportable {
 }
 
 enum LocationMode: Equatable {
-    case none
     case current
     case saved(locationID: String)
     
     func toString() -> String {
         switch self {
-        case .none:
-            return "none"
         case .current:
             return "current"
         case .saved(let locationID):
@@ -50,9 +47,7 @@ enum LocationMode: Equatable {
     }
     
     static func fromString(_ string: String) -> LocationMode {
-        if string == "none" {
-            return .none
-        } else if string == "current" {
+        if string == "current" {
             return .current
         } else {
             return .saved(locationID: string)

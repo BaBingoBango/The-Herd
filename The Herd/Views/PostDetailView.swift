@@ -36,7 +36,7 @@ struct PostDetailView: View {
                             .font(.system(size: 25))
                             .padding(.top, 10)
                         
-                        Text("\(post.distanceFromNow) ago · \(post.calculateDistanceFromLocation(latitude: 42.50807, longitude: 83.40217)) away")
+                        Text("\(post.distanceFromNow) · \(post.calculateDistanceFromLocation(latitude: 42.50807, longitude: 83.40217)) away")
                             .font(.system(size: 15))
                             .fontWeight(.heavy)
                             .padding(.bottom, 17.5)

@@ -42,6 +42,8 @@
 		AA1343F82A258CA500E92BB2 /* Taylor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343F52A258CA500E92BB2 /* Taylor.swift */; };
 		AA17636F2A32EA2F00365439 /* ColorServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA17636E2A32EA2F00365439 /* ColorServices.swift */; };
 		AA1763712A33A23D00365439 /* Emoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1763702A33A23D00365439 /* Emoji.swift */; };
+		AA3BE5412A3D0A690040C7BD /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3BE5402A3D0A690040C7BD /* LocationManager.swift */; };
+		AA3BE5432A3EA32D0040C7BD /* Draft.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3BE5422A3EA32D0040C7BD /* Draft.swift */; };
 		AA7C8E3F2A26F2B000F10CD7 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E3E2A26F2B000F10CD7 /* FirebaseAuth */; };
 		AA7C8E412A26F2B000F10CD7 /* FirebaseAuthCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E402A26F2B000F10CD7 /* FirebaseAuthCombine-Community */; };
 		AA7C8E432A26F2B000F10CD7 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E422A26F2B000F10CD7 /* FirebaseFirestore */; };
@@ -108,6 +110,8 @@
 		AA1343F52A258CA500E92BB2 /* Taylor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Taylor.swift; sourceTree = "<group>"; };
 		AA17636E2A32EA2F00365439 /* ColorServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorServices.swift; sourceTree = "<group>"; };
 		AA1763702A33A23D00365439 /* Emoji.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emoji.swift; sourceTree = "<group>"; };
+		AA3BE5402A3D0A690040C7BD /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		AA3BE5422A3EA32D0040C7BD /* Draft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Draft.swift; sourceTree = "<group>"; };
 		AA7EC71A2A3C096A00276C42 /* ScanLocationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanLocationsView.swift; sourceTree = "<group>"; };
 		AA7EC71C2A3C0CAD00276C42 /* SavedLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLocation.swift; sourceTree = "<group>"; };
 		AACC89302A2CF68800B2E673 /* PostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailView.swift; sourceTree = "<group>"; };
@@ -246,6 +250,7 @@
 			children = (
 				AA1343E92A255C3600E92BB2 /* User.swift */,
 				AA1343ED2A255C9D00E92BB2 /* Post.swift */,
+				AA3BE5422A3EA32D0040C7BD /* Draft.swift */,
 				AA1343DB2A255B2800E92BB2 /* Vote.swift */,
 				AA7EC71C2A3C0CAD00276C42 /* SavedLocation.swift */,
 			);
@@ -264,6 +269,7 @@
 				AA04EDEC2A2BCB140062F66A /* DateServices.swift */,
 				AA1343F52A258CA500E92BB2 /* Taylor.swift */,
 				AAF070A72A394FCC00DA2615 /* DynamicFont.swift */,
+				AA3BE5402A3D0A690040C7BD /* LocationManager.swift */,
 			);
 			path = "Helper Files";
 			sourceTree = "<group>";
@@ -443,6 +449,7 @@
 				AA7EC71D2A3C0CAD00276C42 /* SavedLocation.swift in Sources */,
 				AAF070A82A394FCC00DA2615 /* DynamicFont.swift in Sources */,
 				AA7EC71B2A3C096A00276C42 /* ScanLocationsView.swift in Sources */,
+				AA3BE5432A3EA32D0040C7BD /* Draft.swift in Sources */,
 				AA1763712A33A23D00365439 /* Emoji.swift in Sources */,
 				AA1343DC2A255B2800E92BB2 /* Vote.swift in Sources */,
 				AA1343E52A255BB900E92BB2 /* Operation.swift in Sources */,
@@ -450,6 +457,7 @@
 				AA04EDEF2A2BCBA90062F66A /* PostBrowserView.swift in Sources */,
 				AAF070A32A37982100DA2615 /* ProfileView.swift in Sources */,
 				AAF038EA2A36798000FCF14A /* PhoneSignInView.swift in Sources */,
+				AA3BE5412A3D0A690040C7BD /* LocationManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -627,11 +635,14 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The-Herd-Info.plist";
+				INFOPLIST_KEY_NSLocationUsageDescription = "The Herd can scan for posts created within five miles of your current location.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "The Herd can scan for posts created within five miles of your current location.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -658,11 +669,14 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "The-Herd-Info.plist";
+				INFOPLIST_KEY_NSLocationUsageDescription = "The Herd can scan for posts created within five miles of your current location.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "The Herd can scan for posts created within five miles of your current location.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

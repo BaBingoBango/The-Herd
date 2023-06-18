@@ -12,7 +12,7 @@ struct ScanLocationsView: View {
     
     // MARK: View Variables
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    @State var currentUser: User
+    @ObservedObject var currentUser: User
     
     // MARK: View Body
     var body: some View {
@@ -38,7 +38,7 @@ struct ScanLocationsView: View {
                     }
                     
                     Button(action: {
-                        var newUserObject = currentUser
+                        let newUserObject = currentUser
                         newUserObject.locationMode = .current
                         newUserObject.transportToServer(path: usersCollection, documentID: currentUser.UUID, operation: nil, onError: nil, onSuccess: nil)
                         
@@ -94,7 +94,7 @@ struct ScanLocationsView: View {
                     
                     ForEach(Array(currentUser.savedLocations.values), id: \.UUID) { eachLocation in
                         Button(action: {
-                            var newUserObject = currentUser
+                            let newUserObject = currentUser
                             newUserObject.locationMode = .saved(locationID: eachLocation.UUID)
                             newUserObject.transportToServer(path: usersCollection, documentID: currentUser.UUID, operation: nil, onError: nil, onSuccess: nil)
                             
@@ -168,7 +168,7 @@ struct ScanLocationsView: View {
             // Set up a real-time listener for the user's profile!
             usersCollection.document(currentUser.UUID).addSnapshotListener({ snapshot, error in
                 if let snapshot = snapshot {
-                    if let snapshotData = snapshot.data() { currentUser = User.dedictify(snapshotData) }
+                    if let snapshotData = snapshot.data() { currentUser.replaceFields(User.dedictify(snapshotData)) }
                 }
             })
         }

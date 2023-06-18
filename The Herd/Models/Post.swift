@@ -11,7 +11,7 @@ import CoreLocation
 
 struct Post: Transportable {
     var UUID = Foundation.UUID.getTripleID()
-    var author: User
+    var author: User // TODO: replace this with ID for privacy reasons
     var text: String
     /// User UUID : User Vote
     var votes: [String : Vote]
@@ -35,19 +35,19 @@ struct Post: Transportable {
             return "just now"
             
         } else if secondsFromNow < 60 {
-            return "\(Int(secondsFromNow.rounded())) sec"
+            return "\(Int(secondsFromNow.rounded())) sec ago"
             
         } else if secondsFromNow < 60 * 60 {
-            return "\(Int(secondsFromNow.rounded() / 60)) min"
+            return "\(Int(secondsFromNow.rounded() / 60)) min ago"
             
         } else if secondsFromNow < 60 * 60 * 24 {
-            return "\(Int(secondsFromNow.rounded() / (60 * 60))) hr"
+            return "\(Int(secondsFromNow.rounded() / (60 * 60))) hr ago"
         
         } else if secondsFromNow < 60 * 60 * 24 * 7 {
-            return "\(Int(secondsFromNow.rounded() / (60 * 60 * 24))) dy"
+            return "\(Int(secondsFromNow.rounded() / (60 * 60 * 24))) dy ago"
         
         } else {
-            return "\(Int(secondsFromNow.rounded() / (60 * 60 * 24 * 7))) wk"
+            return "\(Int(secondsFromNow.rounded() / (60 * 60 * 24 * 7))) wk ago"
         }
     }
     
@@ -76,16 +76,25 @@ struct Post: Transportable {
         return false
     }
     
-    static func uploadSampleData() {
-        var successes = 0
-        for eachLyric in Taylor.lyrics {
-            let newPost = Post(author: .getSample(), text: eachLyric + " (50, 50)", votes: Vote.samples, comments: [Post.sample], timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50)
-            newPost.transportToServer(path: postsCollection,
-                                      documentID: newPost.UUID,
-                                      operation: nil,
-                                      onError: { error in fatalError(error.localizedDescription) },
-                                      onSuccess: { successes += 1; print("⭐️ uploaded post no. \(successes)! ⭐️") })
+    static func uploadSampleData(successes: Int = 0) {
+        if successes >= 2000 {
+            return
         }
+        
+        let newPost = Post(author: .getSample(),
+                           text: Taylor.lyrics.randomElement()!,
+                           votes: Vote.samples,
+                           comments: [Post.sample],
+//                                   timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))),
+                           timePosted: Date(),
+                           latitude: 10 * Double.random(in: 1...5),
+                           longitude: 10 * Double.random(in: 1...5))
+        
+        newPost.transportToServer(path: postsCollection,
+                                  documentID: newPost.UUID,
+                                  operation: nil,
+                                  onError: { error in fatalError(error.localizedDescription) },
+                                  onSuccess: { print("⭐️ uploaded post no. \(successes)! ⭐️"); uploadSampleData(successes: successes + 1) })
     }
     
     static func getSamples() -> [Post] {

@@ -31,7 +31,7 @@ class User: Transportable, Equatable, ObservableObject {
         return lhs.UUID == rhs.UUID
     }
     
-    func replace(_ user: User) {
+    func replaceFields(_ user: User) {
         self.UUID = user.UUID
         self.emoji = user.emoji
         self.color = user.color
@@ -79,7 +79,7 @@ class User: Transportable, Equatable, ObservableObject {
                                           emoji: Emoji.allEmojis.randomElement()!,
                                           color: User.iconColors.randomElement()!,
                                           joinDate: Date(),
-                                          locationMode: .none,
+                                          locationMode: .current,
                                           savedLocations: [:])
                 
                 newUserProfile.transportToServer(path: usersCollection,
@@ -93,12 +93,30 @@ class User: Transportable, Equatable, ObservableObject {
         }
     }
     
+    func getLocation(_ locationManager: LocationManager) -> (Double, Double)? {
+        switch locationMode {
+        case .current:
+            if let location = locationManager.lastLocation {
+                return (location.coordinate.latitude, location.coordinate.longitude)
+            } else {
+                return nil
+            }
+            
+        case .saved(let locationID):
+            if let location = savedLocations[locationID] {
+                return (location.latitude, location.longitude)
+            } else {
+                return nil
+            }
+        }
+    }
+    
     static func getSample() -> User {
         return .init(UUID: "sample user",
                      emoji: Emoji.allEmojis.randomElement()!,
                      color: User.iconColors.randomElement()!,
                      joinDate: Date(),
-                     locationMode: .none,
+                     locationMode: .saved(locationID: "BEACH!!"),
                      savedLocations: ["BEACH!!" : .init(emoji: "🏖️", nickname: "the beach!", latitude: 25.79327, longitude: 25.237094)])
     }
     

@@ -14,9 +14,10 @@ import FirebaseFunctions
 struct PostBrowserView: View {
     
     // MARK: View Variables
+    @State var currentUserExists = false
     @ObservedObject var currentUser: User = .getSample()
-    @State var updates: [LocationMode] = []
-    @State var locationMode: LocationMode = .none
+    @StateObject var locationManager = LocationManager()
+    @State var locationMode: LocationMode = .current
     @State var showingProfileView = false
     @State var posts: [Post] = []
     @State var postUpdate = Operation()
@@ -28,27 +29,17 @@ struct PostBrowserView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 0) {
-                    Text(String(updates.last?.toString() ?? "0 elements"))
-                    Text(String(updates.count))
-                    if updates.count >= 1 { Text(String(updates[0].toString())) }
-                    
                     Button(action: {
                         showingScanView = true
                     }) {
                         HStack {
-                            if true {
+                            if currentUserExists {
                                 switch locationMode {
-                                case .none:
-                                    Image(systemName: "location.slash.fill")
-                                        .dynamicFont(.title, fontDesign: .rounded, padding: 0)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.gray)
-                                    
                                 case .current:
-                                    Image(systemName: "location.fill")
+                                    Image(systemName: locationManager.locationStatus == .authorizedWhenInUse ? "location.fill" : "location.slash.fill")
                                         .dynamicFont(.title, fontDesign: .rounded, padding: 0)
                                         .fontWeight(.bold)
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(locationManager.locationStatus == .authorizedWhenInUse ? .blue : .gray)
                                     
                                 case .saved(locationID: let locationID):
                                     if let locationEmoji = currentUser.savedLocations[locationID]?.emoji {
@@ -77,12 +68,10 @@ struct PostBrowserView: View {
                                 
                                 HStack(spacing: 5) {
                                     Text(verbatim: {
-                                        if true {
+                                        if currentUserExists {
                                             switch locationMode {
-                                            case .none:
-                                                return "Not Scanning"
                                             case .current:
-                                                return "Current Location"
+                                                return locationManager.locationStatus == .authorizedWhenInUse ? "Current Location" : "Location Unknown"
                                             case .saved(locationID: let locationID):
                                                 return currentUser.savedLocations[locationID]?.nickname ?? "Not Scanning"
                                             }
@@ -93,7 +82,7 @@ struct PostBrowserView: View {
                                         .foregroundColor(.primary)
                                         .fontWeight(.bold)
                                     
-                                    if currentUser != nil {
+                                    if currentUserExists {
                                         Image(systemName: "chevron.right")
                                             .dynamicFont(.headline, fontDesign: .rounded, padding: 0)
                                             .foregroundColor(.primary)
@@ -104,13 +93,13 @@ struct PostBrowserView: View {
                             
                             Spacer()
                             
-                            if true {
+                            if currentUserExists {
                                 VStack {
                                     Text("RANGE")
                                         .dynamicFont(.callout, fontDesign: .monospaced, padding: 0)
                                         .foregroundColor(.primary)
                                     
-                                    Text(locationMode != .none ? "5mi" : "0mi")
+                                    Text((locationManager.locationStatus != .authorizedWhenInUse && currentUser.locationMode == .current) ? "0mi" : "5mi")
                                         .dynamicFont(.title3, fontDesign: .monospaced, padding: 0)
                                         .foregroundColor(.primary)
                                 }
@@ -118,12 +107,10 @@ struct PostBrowserView: View {
                         }
                         .padding()
                         .modifier(RectangleWrapper(color: {
-                            if true {
+                            if currentUserExists {
                                 switch locationMode {
-                                case .none:
-                                    return .gray
                                 case .current:
-                                    return .blue
+                                    return locationManager.locationStatus == .authorizedWhenInUse ? .blue : .gray
                                 case .saved(locationID: let locationID):
                                     return currentUser.savedLocations[locationID] != nil ? .accentColor : .gray
                                 }
@@ -132,30 +119,53 @@ struct PostBrowserView: View {
                             
                         }(), useGradient: true, opacity: 0.15))
                     }
-                    .disabled(currentUser == nil)
+                    .disabled(!currentUserExists)
                     .sheet(isPresented: $showingScanView) {
                         ScanLocationsView(currentUser: currentUser)
                     }
                     
-                    switch postUpdate.status {
-                    case .failure:
-                        Text("error: \(postUpdate.errorMessage)")
+                    if currentUserExists {
+                        if currentUser.locationMode == .current && locationManager.locationStatus != .authorizedWhenInUse {
+                            Image(systemName: "location.fill.viewfinder")
+                                .dynamicFont(.system(size: 75), fontDesign: .rounded)
+                                .fontWeight(.medium)
+                                .foregroundColor(.gray)
+                                .padding(.top, 30)
+                            
+                            Text("Location Unknown")
+                                .dynamicFont(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundColor(.gray)
+                            
+                            Text("Grant location access in Settings or choose a custom location by tapping on the banner above.")
+                                .dynamicFont(.headline, lineLimit: 10)
+                                .fontWeight(.regular)
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.gray)
+                                .padding(.top, 5)
                         
-                    case .success:
-                        if posts.isEmpty {
-                            Text("no posts!")
-                        }
-                        
-                        if true {
-                            ForEach(posts, id: \.UUID) { eachPost in
-                                NavigationLink(destination: PostDetailView(post: $posts.first(where: { $0.wrappedValue.UUID == eachPost.UUID })!, currentUser: currentUser)) {
-                                    PostOptionView(post: eachPost, currentUser: currentUser)
+                        } else {
+                            switch postUpdate.status {
+                            case .failure:
+                                Text("error: \(postUpdate.errorMessage)")
+                                
+                            case .success:
+                                if posts.isEmpty {
+                                    Text("no posts!")
                                 }
+                                
+                                if currentUserExists {
+                                    ForEach(posts, id: \.UUID) { eachPost in
+                                        PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager)
+                                    }
+                                }
+                                
+                            default:
+                                ProgressView()
+                                    .controlSize(.large)
+                                    .padding(.top, 30)
                             }
                         }
-                        
-                    default:
-                        ProgressView()
                     }
                 }
                 .padding([.leading, .bottom, .trailing])
@@ -171,9 +181,9 @@ struct PostBrowserView: View {
                         ZStack {
                             Image(systemName: "circle.fill")
                                 .font(.system(size: 30))
-                                .foregroundColor(currentUser.color ?? .gray.opacity(0.25))
+                                .foregroundColor(currentUserExists ? currentUser.color : .gray.opacity(0.25))
 
-                            if true {
+                            if currentUserExists {
                                 Text(currentUser.emoji)
                                     .font(.system(size: 20))
                             } else {
@@ -182,7 +192,7 @@ struct PostBrowserView: View {
                         }
                     }
                     .sheet(isPresented: $showingProfileView) {
-                        ProfileView()
+                        ProfileView(currentUser: currentUser)
                     }
                 }
                 
@@ -196,36 +206,39 @@ struct PostBrowserView: View {
                             .foregroundColor(.accentColor)
                     }
                     .sheet(isPresented: $showingNewPostView) {
-                        NewPostView()
+                        NewPostView(currentUser: currentUser, locationManager: locationManager)
                     }
+                    .disabled(!currentUserExists || currentUser.getLocation(locationManager) == nil)
                 }
             })
         }
         .refreshable {
             await getLatestPosts()
         }
+        .onChange(of: showingNewPostView) { newValue in
+            if !newValue { Task { await getLatestPosts() } }
+        }
         .onAppear {
             // MARK: View Launch Code
             // Add preview data!
-            if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+            if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" || false {
                 posts = Post.getSamples()
-                currentUser.replace(.getSample())
+                currentUser.replaceFields(.getSample())
+                currentUserExists = true
                 postUpdate.status = .success
                 return
             }
-            
-            Task { await getLatestPosts() }
             
             // If we haven't loaded the user's profile yet, transport it!
             if let userID = Auth.auth().currentUser?.uid {
                 User.transportUserFromServer(userID,
                                              onError: { error in fatalError(error.localizedDescription) },
-                                             onSuccess: { user in currentUser.replace(user) })
+                                             onSuccess: { user in currentUser.replaceFields(user); Task { await getLatestPosts() } })
                 
                 // Set up a real-time listener for the user's profile!
                 usersCollection.document(userID).addSnapshotListener({ snapshot, error in
                     if let snapshot = snapshot {
-                        if let snapshotData = snapshot.data() { currentUser.replace(User.dedictify(snapshotData)); locationMode = currentUser.locationMode; updates.insert(currentUser.locationMode, at: 0) }
+                        if let snapshotData = snapshot.data() { currentUser.replaceFields(User.dedictify(snapshotData)); currentUserExists = true }
                     }
                 })
             }
@@ -236,26 +249,30 @@ struct PostBrowserView: View {
     func getLatestPosts() async {
         // Load the posts array with 50 posts from the cloud function!
         postUpdate.status = .inProgress
-        Functions.functions().httpsCallable("getLatestPosts").call([
-            "latitude" : "0",
-            "longitude" : "0",
-            "startIndex" : "0"]) { result, error in
+        
+        // First confirm that we have a valid location for the user!
+        if let userLocation = currentUser.getLocation(locationManager) {
+            Functions.functions().httpsCallable("getLatestPosts").call([
+                "latitude" : String(userLocation.0),
+                "longitude" : String(userLocation.1),
+                "startIndex" : "0"]) { result, error in
 
-            // Check for errors!
-            if let error = error {
-                postUpdate.setError(message: error.localizedDescription)
-            } else {
+                // Check for errors!
+                if let error = error {
+                    postUpdate.setError(message: error.localizedDescription)
+                } else {
 
-                // Convert the results to Post objects!
-                var postObjects: [Post] = []
-                for eachPostString in (result!.data as! [String : Any])["acceptedPosts"] as! [String] {
-                    let postDictionary = try! JSONSerialization.jsonObject(with: eachPostString.data(using: .utf8)!, options: []) as! [String: Any]
-                    postObjects.append(Post.dedictify(postDictionary))
+                    // Convert the results to Post objects!
+                    var postObjects: [Post] = []
+                    for eachPostString in (result!.data as! [String : Any])["acceptedPosts"] as! [String] {
+                        let postDictionary = try! JSONSerialization.jsonObject(with: eachPostString.data(using: .utf8)!, options: []) as! [String: Any]
+                        postObjects.append(Post.dedictify(postDictionary))
+                    }
+
+                    // Update the view state with the new posts!
+                    posts = postObjects
+                    postUpdate.status = .success
                 }
-
-                // Update the view state with the new posts!
-                posts = postObjects
-                postUpdate.status = .success
             }
         }
     }

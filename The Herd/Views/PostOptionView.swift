@@ -13,7 +13,10 @@ struct PostOptionView: View {
     
     // MARK: View Variables
     @State var post = Post.sample
+    var activateNavigation = false
+    @State var showingPostDetail = false
     var currentUser = User.getSample()
+    var locationManager = LocationManager()
     var showTopBar = true
     var showText = true
     var seperateControls = true
@@ -41,7 +44,7 @@ struct PostOptionView: View {
                     }
                     .offset(y: -12.5)
                     
-                    Text("\(post.distanceFromNow) ago · \(post.calculateDistanceFromLocation(latitude: 42.50807, longitude: 83.40217)) away")
+                    Text("\(post.distanceFromNow) · \(post.calculateDistanceFromLocation(latitude: currentUser.getLocation(locationManager)!.0, longitude: currentUser.getLocation(locationManager)!.1)) away")
                         .dynamicFont(.callout, padding: 0)
                         .fontWeight(.heavy)
                         .foregroundColor(.secondary)
@@ -49,10 +52,26 @@ struct PostOptionView: View {
                     
                     Spacer()
                     
-                    Image(systemName: "ellipsis")
-                        .font(.system(size: 25))
-                        .foregroundColor(.secondary)
-                        .offset(y: -5)
+                    Menu {
+                        Button(action: {}) { // TODO: add share!
+                            Label("Share...", systemImage: "square.and.arrow.up")
+                        }
+                        
+                        Button(action: {}) { // TODO: add saving!
+                            Label("Save Post", systemImage: "bookmark")
+                        }
+                        
+                        Divider()
+                        
+                        Button(role: .destructive, action: {}) { // TODO: add delete!
+                            Label("Delete Post", systemImage: "trash")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .font(.system(size: 20))
+                            .foregroundColor(.secondary)
+                    }
+                    .offset(y: -5)
                 }
                 .padding(.horizontal)
                 
@@ -60,58 +79,66 @@ struct PostOptionView: View {
                     .offset(y: -8)
             }
             
-            if showText {
-                Text(post.text)
-                    .dynamicFont(.title2, lineLimit: 3, padding: 0)
-                    .fontWeight(.medium)
-                    .foregroundColor(.primary)
-                    .multilineTextAlignment(.leading)
-                    .padding(.bottom, 15)
-                    .padding(.top, showTopBar ? 5 : 20)
-                    .padding(.horizontal)
-            }
+            NavigationLink(destination: PostDetailView(post: $post, currentUser: currentUser), isActive: $showingPostDetail) { EmptyView() }
             
-            HStack {
-                Label("\(Post.countComments(post.comments))", systemImage: hasUserCommented ? "bubble.left.fill" : "bubble.left")
-                    .dynamicFont(bottomBarFont, padding: 0)
-                    .fontWeight(.semibold)
-                    .foregroundColor(hasUserCommented ? post.author.color : .secondary)
-                    .padding(.trailing, seperateControls ? 0 : 15)
-                
-                if seperateControls {
-                    Spacer()
-                }
-                
-                Button(action: {
-                    changeVote(newValue: voteValue == 1 ? 0 : 1)
-                }) {
-                    Image(systemName: voteValue == 1 ? "hand.thumbsup.fill" : "hand.thumbsup")
-                        .dynamicFont(bottomBarFont, padding: 0)
-                        .fontWeight(.semibold)
-                        .foregroundColor(voteValue == 1 ? .green : .secondary)
-                }
-                
-                Text("\(post.score)")
-                    .dynamicFont(bottomBarFont, padding: 0)
-                    .fontWeight(.semibold)
-                    .foregroundColor({
-                        switch voteValue {
-                        case 1: return .green
-                        case -1: return .red
-                        default: return .secondary
+            Button(action: {
+                if activateNavigation { showingPostDetail = true }
+            }) {
+                VStack(alignment: .leading) {
+                    if showText {
+                        Text(post.text)
+                            .dynamicFont(.title2, lineLimit: 100, padding: 0)
+                            .fontWeight(.medium)
+                            .foregroundColor(.primary)
+                            .multilineTextAlignment(.leading)
+                            .padding(.bottom, 15)
+                            .padding(.top, showTopBar ? 5 : 20)
+                            .padding(.horizontal)
+                    }
+                    
+                    HStack {
+                        Label("\(Post.countComments(post.comments))", systemImage: hasUserCommented ? "bubble.left.fill" : "bubble.left")
+                            .dynamicFont(bottomBarFont, padding: 0)
+                            .fontWeight(.semibold)
+                            .foregroundColor(hasUserCommented ? post.author.color : .secondary)
+                            .padding(.trailing, seperateControls ? 0 : 15)
+                        
+                        if seperateControls {
+                            Spacer()
                         }
-                    }())
-                
-                Button(action: {
-                    changeVote(newValue: voteValue == -1 ? 0 : -1)
-                }) {
-                    Image(systemName: voteValue == -1 ? "hand.thumbsdown.fill" : "hand.thumbsdown")
-                        .dynamicFont(bottomBarFont, padding: 0)
-                        .fontWeight(.semibold)
-                        .foregroundColor(voteValue == -1 ? .red : .secondary)
+                        
+                        Button(action: {
+                            changeVote(newValue: voteValue == 1 ? 0 : 1)
+                        }) {
+                            Image(systemName: voteValue == 1 ? "hand.thumbsup.fill" : "hand.thumbsup")
+                                .dynamicFont(bottomBarFont, padding: 0)
+                                .fontWeight(.semibold)
+                                .foregroundColor(voteValue == 1 ? .green : .secondary)
+                        }
+                        
+                        Text("\(post.score)")
+                            .dynamicFont(bottomBarFont, padding: 0)
+                            .fontWeight(.semibold)
+                            .foregroundColor({
+                                switch voteValue {
+                                case 1: return .green
+                                case -1: return .red
+                                default: return .secondary
+                                }
+                            }())
+                        
+                        Button(action: {
+                            changeVote(newValue: voteValue == -1 ? 0 : -1)
+                        }) {
+                            Image(systemName: voteValue == -1 ? "hand.thumbsdown.fill" : "hand.thumbsdown")
+                                .dynamicFont(bottomBarFont, padding: 0)
+                                .fontWeight(.semibold)
+                                .foregroundColor(voteValue == -1 ? .red : .secondary)
+                        }
+                    }
+                    .padding(.horizontal, seperateControls ? 15 : 5)
                 }
             }
-            .padding(.horizontal, seperateControls ? 15 : 5)
         }
         .padding(.bottom)
         .modifier(RectangleWrapper(color: post.author.color, useGradient: true, opacity: 0.15, cornerRadius: cornerRadius, hideRectangle: !showText))
