@@ -15,7 +15,7 @@ struct NewPostView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.colorScheme) var colorScheme
     @State var enteredText = ""
-    @State var showingDrafts = 1
+    @State var showingDrafts = 0
     @State var getDrafts = Operation()
     @State var userDrafts: [Draft] = []
     @State var uploadPost = Operation()
@@ -100,117 +100,121 @@ struct NewPostView: View {
                     }
                 }
                 .padding(.horizontal)
-            }
-            
-            if showingDrafts == 0 {
-                HStack {
-                    Button(action: {
-                        // Check if the current user is loaded in!
-                        uploadPost.status = .inProgress
-                        
-                        // Create the new Post object!
-                        let newPost = Post(author: currentUser,
-                                           text: enteredText,
-                                           votes: [currentUser.UUID : .init(voter: currentUser, value: 1, timePosted: Date())],
-                                           comments: [],
-                                           timePosted: Date(),
-                                           latitude: currentUser.getLocation(locationManager)!.0,
-                                           longitude: currentUser.getLocation(locationManager)!.1)
-                        
-                        // Transport the new post!
-                        newPost.transportToServer(path: postsCollection,
-                                                  documentID: newPost.UUID,
-                                                  operation: $uploadPost,
-                                                  onError: { error in uploadPost.setError(message: error.localizedDescription) },
-                                                  onSuccess: { presentationMode.wrappedValue.dismiss() })
-                    }) {
-                        if uploadPost.status != .inProgress || (uploadPost.status == .inProgress && uploadingDraft) {
-                            Text("Submit!")
-                                .dynamicFont(.title3)
-                                .fontWeight(.bold)
-                                .foregroundColor(.white)
-                                .modifier(RectangleWrapper(fixedHeight: 55, color: .accentColor))
-                        } else {
-                            ProgressView()
-                                .padding(.horizontal)
-                                .modifier(RectangleWrapper(fixedHeight: 55, color: .gray.opacity(0.25)))
-                        }
-                    }
-                    .disabled(!withinCharacterLimits || currentUser.getLocation(locationManager) == nil)
-                    
-                    Button(action: {
-                        // Transport the draft!
-                        uploadingDraft = true
-                        let newDraft = Draft(text: enteredText, dateCreated: Date())
-                        newDraft.transportToServer(path: usersCollection.document(currentUser.UUID).collection("drafts"),
-                                                   documentID: newDraft.UUID,
-                                                   operation: $uploadPost,
-                                                   onError: { error in uploadPost.setError(message: error.localizedDescription); uploadingDraft = false },
-                                                   onSuccess: { presentationMode.wrappedValue.dismiss() })
-                    }) {
-                        if uploadPost.status != .inProgress || (uploadPost.status == .inProgress && !uploadingDraft) {
-                            Text("Save Draft")
-                                .dynamicFont(.title3)
-                                .fontWeight(.bold)
-                                .foregroundColor(.accentColor)
-                                .modifier(RectangleWrapper(fixedHeight: 55, color: .gray.opacity(0.15)))
-                        } else {
-                            ProgressView()
-                                .padding(.horizontal)
-                                .modifier(RectangleWrapper(fixedHeight: 55, color: .gray.opacity(0.25)))
-                        }
-                    }
-                    .disabled(!withinCharacterLimits || uploadPost.status == .inProgress)
-                }
-                .padding([.bottom, .horizontal])
                 
-                // MARK: Navigation Settings (New Post)
-                .toolbar(content: {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button(action: {
-                            presentationMode.wrappedValue.dismiss()
-                        }) {
-                            Text("Cancel")
-                                .fontWeight(.bold)
-                        }
-                    }
-                })
-                
-            } else {
                 Group {
-                    if getDrafts.status != .success {
-                        ProgressView()
-                            .controlSize(.large)
-                            .padding(.top, 30)
+                    if showingDrafts == 0 {
+                        HStack {
+                            Button(action: {
+                                // Check if the current user is loaded in!
+                                uploadPost.status = .inProgress
+                                
+                                // Create the new Post object!
+                                let newPost = Post(author: currentUser,
+                                                   text: enteredText,
+                                                   votes: [currentUser.UUID : .init(voter: currentUser, value: 1, timePosted: Date())],
+                                                   comments: [],
+                                                   timePosted: Date(),
+                                                   latitude: currentUser.getLocation(locationManager)!.0,
+                                                   longitude: currentUser.getLocation(locationManager)!.1)
+                                
+                                // Transport the new post!
+                                newPost.transportToServer(path: postsCollection,
+                                                          documentID: newPost.UUID,
+                                                          operation: $uploadPost,
+                                                          onError: { error in uploadPost.setError(message: error.localizedDescription) },
+                                                          onSuccess: { presentationMode.wrappedValue.dismiss() })
+                            }) {
+                                if uploadPost.status != .inProgress || (uploadPost.status == .inProgress && uploadingDraft) {
+                                    Text("Submit!")
+                                        .dynamicFont(.title3)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.white)
+                                        .modifier(RectangleWrapper(fixedHeight: 55, color: .accentColor))
+                                } else {
+                                    ProgressView()
+                                        .padding(.horizontal)
+                                        .modifier(RectangleWrapper(fixedHeight: 55, color: .gray.opacity(0.25)))
+                                }
+                            }
+                            .disabled(!withinCharacterLimits || currentUser.getLocation(locationManager) == nil)
+                            
+                            Button(action: {
+                                // Transport the draft!
+                                uploadingDraft = true
+                                let newDraft = Draft(text: enteredText, dateCreated: Date())
+                                newDraft.transportToServer(path: usersCollection.document(currentUser.UUID).collection("drafts"),
+                                                           documentID: newDraft.UUID,
+                                                           operation: $uploadPost,
+                                                           onError: { error in uploadPost.setError(message: error.localizedDescription); uploadingDraft = false },
+                                                           onSuccess: { presentationMode.wrappedValue.dismiss() })
+                            }) {
+                                if uploadPost.status != .inProgress || (uploadPost.status == .inProgress && !uploadingDraft) {
+                                    Text("Save Draft")
+                                        .dynamicFont(.title3)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.accentColor)
+                                        .modifier(RectangleWrapper(fixedHeight: 55, color: .gray.opacity(0.15)))
+                                } else {
+                                    ProgressView()
+                                        .padding(.horizontal)
+                                        .modifier(RectangleWrapper(fixedHeight: 55, color: .gray.opacity(0.25)))
+                                }
+                            }
+                            .disabled(!withinCharacterLimits || uploadPost.status == .inProgress)
+                        }
+                        .padding([.bottom, .horizontal])
                         
                     } else {
-                        ForEach(userDrafts, id: \.UUID) { eachDraft in
-                            Button(action: {}) {
-                                Text(eachDraft.text)
-                                    .dynamicFont(.title2, lineLimit: 100, padding: 0)
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.primary)
-                                    .multilineTextAlignment(.leading)
-                                    .padding(.bottom, 15)
-                                    .padding(20)
+                        if getDrafts.status != .success {
+                            ProgressView()
+                                .controlSize(.large)
+                                .padding(.top, 15)
+                            
+                        } else {
+                            ForEach(userDrafts, id: \.UUID) { eachDraft in
+                                Button(action: {}) {
+                                    VStack(spacing: 0) {
+                                        HStack {
+                                            Text(eachDraft.text)
+                                                .dynamicFont(.title3, lineLimit: 100)
+                                                .fontWeight(.medium)
+                                                .foregroundColor(.primary)
+                                                .multilineTextAlignment(.leading)
+                                                .padding(.vertical)
+                                            
+                                            Spacer()
+                                        }
+                                        
+                                        HStack {
+                                            Text("Added \(eachDraft.dateCreated.formatted())")
+                                                .dynamicFont(.callout)
+                                                .foregroundColor(.secondary)
+                                                .fontWeight(.bold)
+                                                .padding(.bottom)
+                                            
+                                            Spacer()
+                                        }
+                                    }
+                                    .modifier(RectangleWrapper(color: .accentColor, opacity: 0.2))
                                     .padding(.horizontal)
+                                }
                             }
                         }
                     }
                 }
-                
-                // MARK: Navigation Settings (Drafts)
-                .toolbar(content: {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button(action: {
-                            presentationMode.wrappedValue.dismiss()
-                        }) {
-                            Text("Cancel")
-                                .fontWeight(.bold)
-                        }
-                    }
-                })
             }
+            
+            // MARK: Navigation Settings (Drafts)
+            .toolbar(content: {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Text("Cancel")
+                            .fontWeight(.bold)
+                    }
+                }
+            })
         }
         .alert(isPresented: $uploadPost.isShowingErrorMessage) {
             Alert(title: Text("Couldn't Create Post"),
