@@ -11,6 +11,8 @@
 		AA04EDEF2A2BCBA90062F66A /* PostBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04EDEE2A2BCBA90062F66A /* PostBrowserView.swift */; };
 		AA04EDF22A2BCC050062F66A /* RectangleWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04EDF12A2BCC050062F66A /* RectangleWrapper.swift */; };
 		AA04EDF42A2BD1B00062F66A /* PostOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04EDF32A2BD1B00062F66A /* PostOptionView.swift */; };
+		AA054C642A41EED50064DCDD /* DraftsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA054C632A41EED50064DCDD /* DraftsView.swift */; };
+		AA054C662A41FAFE0064DCDD /* ManagePostsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA054C652A41FAFE0064DCDD /* ManagePostsView.swift */; };
 		AA13439E2A2559D600E92BB2 /* The_HerdApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA13439D2A2559D600E92BB2 /* The_HerdApp.swift */; };
 		AA1343A22A2559D700E92BB2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA1343A12A2559D700E92BB2 /* Assets.xcassets */; };
 		AA1343A52A2559D700E92BB2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA1343A42A2559D700E92BB2 /* Preview Assets.xcassets */; };
@@ -90,6 +92,8 @@
 		AA04EDEE2A2BCBA90062F66A /* PostBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostBrowserView.swift; sourceTree = "<group>"; };
 		AA04EDF12A2BCC050062F66A /* RectangleWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RectangleWrapper.swift; sourceTree = "<group>"; };
 		AA04EDF32A2BD1B00062F66A /* PostOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostOptionView.swift; sourceTree = "<group>"; };
+		AA054C632A41EED50064DCDD /* DraftsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftsView.swift; sourceTree = "<group>"; };
+		AA054C652A41FAFE0064DCDD /* ManagePostsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagePostsView.swift; sourceTree = "<group>"; };
 		AA13439A2A2559D600E92BB2 /* The Herd.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "The Herd.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA13439D2A2559D600E92BB2 /* The_HerdApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = The_HerdApp.swift; sourceTree = "<group>"; };
 		AA1343A12A2559D700E92BB2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -174,7 +178,9 @@
 				AA04EDEE2A2BCBA90062F66A /* PostBrowserView.swift */,
 				AA04EDF32A2BD1B00062F66A /* PostOptionView.swift */,
 				AACC89302A2CF68800B2E673 /* PostDetailView.swift */,
+				AA054C652A41FAFE0064DCDD /* ManagePostsView.swift */,
 				AAF038F92A36C33900FCF14A /* NewPostView.swift */,
+				AA054C632A41EED50064DCDD /* DraftsView.swift */,
 				AA7EC71A2A3C096A00276C42 /* ScanLocationsView.swift */,
 			);
 			path = Views;
@@ -437,6 +443,7 @@
 				AAF038FA2A36C33900FCF14A /* NewPostView.swift in Sources */,
 				AA1343AA2A2559D700E92BB2 /* The_Herd.xcdatamodeld in Sources */,
 				AAF038EF2A36AE1800FCF14A /* DispatchView.swift in Sources */,
+				AA054C642A41EED50064DCDD /* DraftsView.swift in Sources */,
 				AACC89312A2CF68800B2E673 /* PostDetailView.swift in Sources */,
 				AA17636F2A32EA2F00365439 /* ColorServices.swift in Sources */,
 				AA04EDF42A2BD1B00062F66A /* PostOptionView.swift in Sources */,
@@ -458,6 +465,7 @@
 				AAF070A32A37982100DA2615 /* ProfileView.swift in Sources */,
 				AAF038EA2A36798000FCF14A /* PhoneSignInView.swift in Sources */,
 				AA3BE5412A3D0A690040C7BD /* LocationManager.swift in Sources */,
+				AA054C662A41FAFE0064DCDD /* ManagePostsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
