@@ -22,6 +22,7 @@ struct PostOptionView: View {
     var seperateControls = true
     var cornerRadius = 20.0
     var bottomBarFont: Font = .headline
+    var blockRecursion = false
     var voteValue: Int {
         post.votes[currentUser.UUID]?.value ?? 0
     }
@@ -52,26 +53,31 @@ struct PostOptionView: View {
                     
                     Spacer()
                     
-                    Menu {
-                        Button(action: {}) { // TODO: add share!
-                            Label("Share...", systemImage: "square.and.arrow.up")
+                    if !blockRecursion {
+                        Menu {
+                            let viewCopy = PostOptionView(post: post, currentUser: currentUser, locationManager: locationManager, blockRecursion: true).frame(width: 500)
+                            let viewImage = Image(uiImage: ImageRenderer(content: viewCopy).uiImage!)
+                            
+                            ShareLink(item: viewImage, preview: SharePreview(post.text, image: viewImage)) {
+                                Label("Share...", systemImage: "square.and.arrow.up")
+                            }
+                            
+                            Button(action: {}) { // TODO: add saving!
+                                Label("Save Post", systemImage: "bookmark")
+                            }
+                            
+                            Divider()
+                            
+                            Button(role: .destructive, action: {}) { // TODO: add delete!
+                                Label("Delete Post", systemImage: "trash")
+                            }
+                        } label: {
+                            Image(systemName: "ellipsis.circle")
+                                .font(.system(size: 20))
+                                .foregroundColor(.secondary)
                         }
-                        
-                        Button(action: {}) { // TODO: add saving!
-                            Label("Save Post", systemImage: "bookmark")
-                        }
-                        
-                        Divider()
-                        
-                        Button(role: .destructive, action: {}) { // TODO: add delete!
-                            Label("Delete Post", systemImage: "trash")
-                        }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
-                            .font(.system(size: 20))
-                            .foregroundColor(.secondary)
+                        .offset(y: -5)
                     }
-                    .offset(y: -5)
                 }
                 .padding(.horizontal)
                 
@@ -141,7 +147,7 @@ struct PostOptionView: View {
             }
         }
         .padding(.bottom)
-        .modifier(RectangleWrapper(color: post.author.color, useGradient: true, opacity: 0.15, cornerRadius: cornerRadius, hideRectangle: !showText))
+        .modifier(RectangleWrapper(color: post.author.color, useGradient: true, opacity:  !blockRecursion ? 0.15 : 0.75, cornerRadius: cornerRadius, hideRectangle: !showText))
         .padding(.top, showTopBar ? 15 : 0)
     }
     

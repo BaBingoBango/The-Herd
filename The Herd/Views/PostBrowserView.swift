@@ -206,7 +206,7 @@ struct PostBrowserView: View {
                             .foregroundColor(.accentColor)
                     }
                     .sheet(isPresented: $showingNewPostView) {
-                        NewPostView(currentUser: currentUser, locationManager: locationManager)
+                        ManagePostsView(currentUser: currentUser, locationManager: locationManager)
                     }
                     .disabled(!currentUserExists || currentUser.getLocation(locationManager) == nil)
                 }

@@ -12,7 +12,7 @@ struct ManagePostsView: View {
     
     // MARK: View Variables
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    @State var showingDrafts = 1
+    @State var showingDrafts = 0
     @ObservedObject var currentUser: User = .getSample()
     var locationManager: LocationManager
     

@@ -14,6 +14,7 @@ struct NewPostView: View {
     // MARK: View Variables
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.colorScheme) var colorScheme
+    var draftID: String?
     @State var enteredText = ""
     @State var uploadPost = Operation()
     @State var uploadingDraft = false
@@ -32,6 +33,7 @@ struct NewPostView: View {
                     .dynamicFont(.largeTitle, lineLimit: 2)
                     .fontWeight(.bold)
                     .multilineTextAlignment(.center)
+                    .padding(.top, 12.5)
                 
                 ZStack {
                     VStack {
@@ -105,11 +107,29 @@ struct NewPostView: View {
                                    longitude: currentUser.getLocation(locationManager)!.1)
                 
                 // Transport the new post!
+                // FIXME: none of the transports in this view are working when its source is DraftsView!
                 newPost.transportToServer(path: postsCollection,
                                           documentID: newPost.UUID,
                                           operation: $uploadPost,
                                           onError: { error in uploadPost.setError(message: error.localizedDescription) },
-                                          onSuccess: { presentationMode.wrappedValue.dismiss() })
+                                          onSuccess: {
+                    
+                    // If this was a draft, delete it!
+                    if let draftID = draftID {
+                        usersCollection.document(currentUser.UUID).collection("drafts").document(draftID).delete() { error in
+                            
+                            if let error = error {
+                                uploadPost.setError(message: error.localizedDescription)
+                            } else {
+                                presentationMode.wrappedValue.dismiss()
+                            }
+                        }
+                        
+                    } else {
+                        // If not, just dismiss!
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                })
             }) {
                 if uploadPost.status != .inProgress || (uploadPost.status == .inProgress && uploadingDraft) {
                     Text("Submit!")
@@ -128,7 +148,8 @@ struct NewPostView: View {
             Button(action: {
                 // Transport the draft!
                 uploadingDraft = true
-                let newDraft = Draft(text: enteredText, dateCreated: Date())
+                var newDraft = Draft(text: enteredText, dateCreated: Date())
+                if let draftID = draftID { newDraft.UUID = draftID }
                 newDraft.transportToServer(path: usersCollection.document(currentUser.UUID).collection("drafts"),
                                            documentID: newDraft.UUID,
                                            operation: $uploadPost,
@@ -175,7 +196,9 @@ struct NewPostView: View {
 // MARK: View Preview
 struct NewPostView_Previews: PreviewProvider {
     static var previews: some View {
-        NewPostView(locationManager: LocationManager())
+        VStack {
+            NewPostView(locationManager: LocationManager())
+        }
     }
 }
 
