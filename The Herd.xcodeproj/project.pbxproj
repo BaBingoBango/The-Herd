@@ -649,6 +649,7 @@
 				INFOPLIST_FILE = "The-Herd-Info.plist";
 				INFOPLIST_KEY_NSLocationUsageDescription = "The Herd can scan for posts created within five miles of your current location.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "The Herd can scan for posts created within five miles of your current location.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "The Herd can add photo exports of posts to your library.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -683,6 +684,7 @@
 				INFOPLIST_FILE = "The-Herd-Info.plist";
 				INFOPLIST_KEY_NSLocationUsageDescription = "The Herd can scan for posts created within five miles of your current location.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "The Herd can scan for posts created within five miles of your current location.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "The Herd can add photo exports of posts to your library.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

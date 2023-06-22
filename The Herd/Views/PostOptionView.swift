@@ -23,6 +23,7 @@ struct PostOptionView: View {
     var cornerRadius = 20.0
     var bottomBarFont: Font = .headline
     var blockRecursion = false
+    @State var deletePost = Operation()
     var voteValue: Int {
         post.votes[currentUser.UUID]?.value ?? 0
     }
@@ -68,7 +69,11 @@ struct PostOptionView: View {
                             
                             Divider()
                             
-                            Button(role: .destructive, action: {}) { // TODO: add delete!
+                            Button(role: .destructive, action: {
+                                deletePost.status = .inProgress
+                                
+                                // TODO: add delete!
+                            }) {
                                 Label("Delete Post", systemImage: "trash")
                             }
                         } label: {
@@ -87,62 +92,101 @@ struct PostOptionView: View {
             
             NavigationLink(destination: PostDetailView(post: $post, currentUser: currentUser), isActive: $showingPostDetail) { EmptyView() }
             
-            Button(action: {
-                if activateNavigation { showingPostDetail = true }
-            }) {
-                VStack(alignment: .leading) {
-                    if showText {
-                        Text(post.text)
-                            .dynamicFont(.title2, lineLimit: 100, padding: 0)
-                            .fontWeight(.medium)
-                            .foregroundColor(.primary)
-                            .multilineTextAlignment(.leading)
-                            .padding(.bottom, 15)
-                            .padding(.top, showTopBar ? 5 : 20)
-                            .padding(.horizontal)
+            switch deletePost.status {
+            case .inProgress:
+                HStack {
+                    Spacer()
+                    
+                    VStack(spacing: 7.5) {
+                        ProgressView()
+                            .controlSize(.large)
+                        
+                        Text("Deleting...")
+                            .dynamicFont(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.secondary)
                     }
                     
-                    HStack {
-                        Label("\(Post.countComments(post.comments))", systemImage: hasUserCommented ? "bubble.left.fill" : "bubble.left")
-                            .dynamicFont(bottomBarFont, padding: 0)
-                            .fontWeight(.semibold)
-                            .foregroundColor(hasUserCommented ? post.author.color : .secondary)
-                            .padding(.trailing, seperateControls ? 0 : 15)
+                    Spacer()
+                }
+                
+            case .success:
+                HStack {
+                    Spacer()
+                    
+                    VStack(spacing: 7.5) {
+                        Image(systemName: "trash")
+                            .font(.system(size: 25))
+                            .fontWeight(.bold)
+                            .foregroundColor(.secondary)
                         
-                        if seperateControls {
-                            Spacer()
-                        }
-                        
-                        Button(action: {
-                            changeVote(newValue: voteValue == 1 ? 0 : 1)
-                        }) {
-                            Image(systemName: voteValue == 1 ? "hand.thumbsup.fill" : "hand.thumbsup")
-                                .dynamicFont(bottomBarFont, padding: 0)
-                                .fontWeight(.semibold)
-                                .foregroundColor(voteValue == 1 ? .green : .secondary)
-                        }
-                        
-                        Text("\(post.score)")
-                            .dynamicFont(bottomBarFont, padding: 0)
-                            .fontWeight(.semibold)
-                            .foregroundColor({
-                                switch voteValue {
-                                case 1: return .green
-                                case -1: return .red
-                                default: return .secondary
-                                }
-                            }())
-                        
-                        Button(action: {
-                            changeVote(newValue: voteValue == -1 ? 0 : -1)
-                        }) {
-                            Image(systemName: voteValue == -1 ? "hand.thumbsdown.fill" : "hand.thumbsdown")
-                                .dynamicFont(bottomBarFont, padding: 0)
-                                .fontWeight(.semibold)
-                                .foregroundColor(voteValue == -1 ? .red : .secondary)
-                        }
+                        Text("Post Deleted")
+                            .dynamicFont(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.secondary)
                     }
-                    .padding(.horizontal, seperateControls ? 15 : 5)
+                    
+                    Spacer()
+                }
+                
+            default:
+                Button(action: {
+                    if activateNavigation { showingPostDetail = true }
+                }) {
+                    VStack(alignment: .leading) {
+                        if showText {
+                            Text(post.text)
+                                .dynamicFont(.title2, lineLimit: 100, padding: 0)
+                                .fontWeight(.medium)
+                                .foregroundColor(.primary)
+                                .multilineTextAlignment(.leading)
+                                .padding(.bottom, 15)
+                                .padding(.top, showTopBar ? 5 : 20)
+                                .padding(.horizontal)
+                        }
+                        
+                        HStack {
+                            Label("\(Post.countComments(post.comments))", systemImage: hasUserCommented ? "bubble.left.fill" : "bubble.left")
+                                .dynamicFont(bottomBarFont, padding: 0)
+                                .fontWeight(.semibold)
+                                .foregroundColor(hasUserCommented ? post.author.color : .secondary)
+                                .padding(.trailing, seperateControls ? 0 : 15)
+                            
+                            if seperateControls {
+                                Spacer()
+                            }
+                            
+                            Button(action: {
+                                changeVote(newValue: voteValue == 1 ? 0 : 1)
+                            }) {
+                                Image(systemName: voteValue == 1 ? "hand.thumbsup.fill" : "hand.thumbsup")
+                                    .dynamicFont(bottomBarFont, padding: 0)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(voteValue == 1 ? .green : .secondary)
+                            }
+                            
+                            Text("\(post.score)")
+                                .dynamicFont(bottomBarFont, padding: 0)
+                                .fontWeight(.semibold)
+                                .foregroundColor({
+                                    switch voteValue {
+                                    case 1: return .green
+                                    case -1: return .red
+                                    default: return .secondary
+                                    }
+                                }())
+                            
+                            Button(action: {
+                                changeVote(newValue: voteValue == -1 ? 0 : -1)
+                            }) {
+                                Image(systemName: voteValue == -1 ? "hand.thumbsdown.fill" : "hand.thumbsdown")
+                                    .dynamicFont(bottomBarFont, padding: 0)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(voteValue == -1 ? .red : .secondary)
+                            }
+                        }
+                        .padding(.horizontal, seperateControls ? 15 : 5)
+                    }
                 }
             }
         }

@@ -221,7 +221,7 @@ struct PostBrowserView: View {
         .onAppear {
             // MARK: View Launch Code
             // Add preview data!
-            if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" || false {
+            if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
                 posts = Post.getSamples()
                 currentUser.replaceFields(.getSample())
                 currentUserExists = true
@@ -247,33 +247,34 @@ struct PostBrowserView: View {
     
     // MARK: View Functions
     func getLatestPosts() async {
+        // TODO: update to server 2!
         // Load the posts array with 50 posts from the cloud function!
         postUpdate.status = .inProgress
         
         // First confirm that we have a valid location for the user!
         if let userLocation = currentUser.getLocation(locationManager) {
-            Functions.functions().httpsCallable("getLatestPosts").call([
-                "latitude" : String(userLocation.0),
-                "longitude" : String(userLocation.1),
-                "startIndex" : "0"]) { result, error in
-
-                // Check for errors!
-                if let error = error {
-                    postUpdate.setError(message: error.localizedDescription)
-                } else {
-
-                    // Convert the results to Post objects!
-                    var postObjects: [Post] = []
-                    for eachPostString in (result!.data as! [String : Any])["acceptedPosts"] as! [String] {
-                        let postDictionary = try! JSONSerialization.jsonObject(with: eachPostString.data(using: .utf8)!, options: []) as! [String: Any]
-                        postObjects.append(Post.dedictify(postDictionary))
-                    }
-
-                    // Update the view state with the new posts!
-                    posts = postObjects
-                    postUpdate.status = .success
-                }
-            }
+//            Functions.functions().httpsCallable("getLatestPosts").call([
+//                "latitude" : String(userLocation.0),
+//                "longitude" : String(userLocation.1),
+//                "startIndex" : "0"]) { result, error in
+//
+//                // Check for errors!
+//                if let error = error {
+//                    postUpdate.setError(message: error.localizedDescription)
+//                } else {
+//
+//                    // Convert the results to Post objects!
+//                    var postObjects: [Post] = []
+//                    for eachPostString in (result!.data as! [String : Any])["acceptedPosts"] as! [String] {
+//                        let postDictionary = try! JSONSerialization.jsonObject(with: eachPostString.data(using: .utf8)!, options: []) as! [String: Any]
+//                        postObjects.append(Post.dedictify(postDictionary))
+//                    }
+//
+//                    // Update the view state with the new posts!
+//                    posts = postObjects
+//                    postUpdate.status = .success
+//                }
+//            }
         }
     }
 }
