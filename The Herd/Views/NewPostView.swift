@@ -108,11 +108,9 @@ struct NewPostView: View {
                 
                 // Transport the new post!
                 // FIXME: none of the transports in this view are working when its source is DraftsView!
-                newPost.transportToServer(path: postsCollection,
-                                          documentID: newPost.UUID,
-                                          operation: $uploadPost,
-                                          onError: { error in uploadPost.setError(message: error.localizedDescription) },
-                                          onSuccess: {
+                newPost.upload(operation: $uploadPost,
+                               onError: { error in uploadPost.setError(message: error.localizedDescription) },
+                               onSuccess: {
                     
                     // If this was a draft, delete it!
                     if let draftID = draftID {

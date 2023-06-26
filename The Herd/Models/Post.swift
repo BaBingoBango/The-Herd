@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import FirebaseFirestore
 import CoreLocation
 
@@ -51,6 +52,26 @@ struct Post: Transportable {
         }
     }
     
+    func upload(operation: Binding<Operation>?, onError: ((Error) -> ())?, onSuccess: (() -> ())?) {
+        // First, upload the post!
+        transportToServer(path: postsCollection,
+                                  documentID: UUID,
+                                  operation: operation,
+                                  onError: { error in onError?(error) },
+                                  onSuccess: {
+            
+            // Then, upload the location!
+            GeoFirestore(collectionRef: postsCollection).setLocation(geopoint: .init(latitude: latitude, longitude: longitude), forDocumentWithID: UUID) { error in
+                if let error = error {
+                    onError?(error)
+                    
+                } else {
+                    onSuccess?()
+                }
+            }
+        })
+    }
+    
     func calculateDistanceFromLocation(latitude: Double, longitude: Double) -> String {
         let postLocation = CLLocation(latitude: self.latitude, longitude: self.longitude)
         let requestedLocation = CLLocation(latitude: latitude, longitude: longitude)
@@ -90,11 +111,9 @@ struct Post: Transportable {
                            latitude: 10 * Double.random(in: 1...5),
                            longitude: 10 * Double.random(in: 1...5))
         
-        newPost.transportToServer(path: postsCollection,
-                                  documentID: newPost.UUID,
-                                  operation: nil,
-                                  onError: { error in fatalError(error.localizedDescription) },
-                                  onSuccess: { print("⭐️ uploaded post no. \(successes)! ⭐️"); uploadSampleData(successes: successes + 1) })
+        newPost.upload(operation: nil,
+                       onError: { error in fatalError(error.localizedDescription) },
+                       onSuccess: { print("⭐️ uploaded post no. \(successes)! ⭐️"); uploadSampleData(successes: successes + 1) })
     }
     
     static func getSamples() -> [Post] {

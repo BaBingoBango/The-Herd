@@ -248,8 +248,37 @@ struct PostBrowserView: View {
     // MARK: View Functions
     func getLatestPosts() async {
         // TODO: update to server 2!
-        // Load the posts array with 50 posts from the cloud function!
         postUpdate.status = .inProgress
+        posts.removeAll()
+        var postsInRange = 0
+        
+        // 5 miles = 8,046.72 m = 8.04672 km
+        let scanQuery = GeoFirestore(collectionRef: postsCollection).query(withCenter: locationManager.lastLocation!, radius: 8.04672)
+        let _ = scanQuery.observe(.documentEntered, with: { documentID, _ in
+            if let documentID = documentID {
+                
+                postsInRange += 1
+                
+                Post.transportFromServer(path: postsCollection.document(documentID),
+                                         operation: nil,
+                                         onError: { error in postUpdate.setError(message: error.localizedDescription) },
+                                         onSuccess: { post in
+                    
+                    posts.append(post)
+                    if posts.count == postsInRange {
+                        posts.sort(by: { $0.timePosted > $1.timePosted }) // TODO: fix this!
+                        postUpdate.status = .success
+                    }
+                })
+            } else {
+                postUpdate.setError(message: "TODO: add error message!")
+            }
+        })
+        let _ = scanQuery.observeReady {
+            if postsInRange == 0 {
+                postUpdate.status = .success
+            }
+        }
         
         // First confirm that we have a valid location for the user!
         if let userLocation = currentUser.getLocation(locationManager) {

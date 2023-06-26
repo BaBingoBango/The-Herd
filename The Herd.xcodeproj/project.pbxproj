@@ -46,16 +46,20 @@
 		AA1763712A33A23D00365439 /* Emoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1763702A33A23D00365439 /* Emoji.swift */; };
 		AA3BE5412A3D0A690040C7BD /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3BE5402A3D0A690040C7BD /* LocationManager.swift */; };
 		AA3BE5432A3EA32D0040C7BD /* Draft.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3BE5422A3EA32D0040C7BD /* Draft.swift */; };
-		AA7C8E3F2A26F2B000F10CD7 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E3E2A26F2B000F10CD7 /* FirebaseAuth */; };
-		AA7C8E412A26F2B000F10CD7 /* FirebaseAuthCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E402A26F2B000F10CD7 /* FirebaseAuthCombine-Community */; };
-		AA7C8E432A26F2B000F10CD7 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E422A26F2B000F10CD7 /* FirebaseFirestore */; };
-		AA7C8E452A26F2B000F10CD7 /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E442A26F2B000F10CD7 /* FirebaseFirestoreCombine-Community */; };
-		AA7C8E472A26F2B000F10CD7 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E462A26F2B000F10CD7 /* FirebaseFirestoreSwift */; };
-		AA7C8E492A26F2B000F10CD7 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E482A26F2B000F10CD7 /* FirebaseFunctions */; };
-		AA7C8E4B2A26F2B000F10CD7 /* FirebaseFunctionsCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = AA7C8E4A2A26F2B000F10CD7 /* FirebaseFunctionsCombine-Community */; };
 		AA7EC71B2A3C096A00276C42 /* ScanLocationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7EC71A2A3C096A00276C42 /* ScanLocationsView.swift */; };
 		AA7EC71D2A3C0CAD00276C42 /* SavedLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7EC71C2A3C0CAD00276C42 /* SavedLocation.swift */; };
+		AAB8E9152A49073B00FD6FBB /* Geofirestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAB8E9142A49073B00FD6FBB /* Geofirestore.swift */; };
+		AAB8E9182A49095100FD6FBB /* GeoFire in Frameworks */ = {isa = PBXBuildFile; productRef = AAB8E9172A49095100FD6FBB /* GeoFire */; };
+		AAB8E91A2A49095100FD6FBB /* GeoFireUtils in Frameworks */ = {isa = PBXBuildFile; productRef = AAB8E9192A49095100FD6FBB /* GeoFireUtils */; };
 		AACC89312A2CF68800B2E673 /* PostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACC89302A2CF68800B2E673 /* PostDetailView.swift */; };
+		AAD70F6A2A4624EB00FE96AA /* MapItemPicker in Frameworks */ = {isa = PBXBuildFile; productRef = AAD70F692A4624EB00FE96AA /* MapItemPicker */; };
+		AAD70F732A462C9D00FE96AA /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = AAD70F722A462C9D00FE96AA /* FirebaseAuth */; };
+		AAD70F752A462C9D00FE96AA /* FirebaseAuthCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = AAD70F742A462C9D00FE96AA /* FirebaseAuthCombine-Community */; };
+		AAD70F772A462C9D00FE96AA /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = AAD70F762A462C9D00FE96AA /* FirebaseFirestore */; };
+		AAD70F792A462C9D00FE96AA /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = AAD70F782A462C9D00FE96AA /* FirebaseFirestoreCombine-Community */; };
+		AAD70F7B2A462C9D00FE96AA /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = AAD70F7A2A462C9D00FE96AA /* FirebaseFirestoreSwift */; };
+		AAD70F7D2A462C9D00FE96AA /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = AAD70F7C2A462C9D00FE96AA /* FirebaseFunctions */; };
+		AAD70F7F2A462C9D00FE96AA /* FirebaseFunctionsCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = AAD70F7E2A462C9D00FE96AA /* FirebaseFunctionsCombine-Community */; };
 		AAF038E52A3670A000FCF14A /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF038E42A3670A000FCF14A /* SignInView.swift */; };
 		AAF038EA2A36798000FCF14A /* PhoneSignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF038E92A36798000FCF14A /* PhoneSignInView.swift */; };
 		AAF038ED2A3679F200FCF14A /* iPhoneNumberField in Frameworks */ = {isa = PBXBuildFile; productRef = AAF038EC2A3679F200FCF14A /* iPhoneNumberField */; };
@@ -119,6 +123,7 @@
 		AA3BE5422A3EA32D0040C7BD /* Draft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Draft.swift; sourceTree = "<group>"; };
 		AA7EC71A2A3C096A00276C42 /* ScanLocationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanLocationsView.swift; sourceTree = "<group>"; };
 		AA7EC71C2A3C0CAD00276C42 /* SavedLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLocation.swift; sourceTree = "<group>"; };
+		AAB8E9142A49073B00FD6FBB /* Geofirestore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geofirestore.swift; sourceTree = "<group>"; };
 		AACC89302A2CF68800B2E673 /* PostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailView.swift; sourceTree = "<group>"; };
 		AAF038E32A3665A800FCF14A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AAF038E42A3670A000FCF14A /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
@@ -139,16 +144,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA7C8E4B2A26F2B000F10CD7 /* FirebaseFunctionsCombine-Community in Frameworks */,
+				AAB8E9182A49095100FD6FBB /* GeoFire in Frameworks */,
 				AAF038ED2A3679F200FCF14A /* iPhoneNumberField in Frameworks */,
-				AA7C8E472A26F2B000F10CD7 /* FirebaseFirestoreSwift in Frameworks */,
-				AA7C8E3F2A26F2B000F10CD7 /* FirebaseAuth in Frameworks */,
-				AA7C8E452A26F2B000F10CD7 /* FirebaseFirestoreCombine-Community in Frameworks */,
+				AAD70F792A462C9D00FE96AA /* FirebaseFirestoreCombine-Community in Frameworks */,
+				AAD70F752A462C9D00FE96AA /* FirebaseAuthCombine-Community in Frameworks */,
+				AAD70F732A462C9D00FE96AA /* FirebaseAuth in Frameworks */,
+				AAD70F6A2A4624EB00FE96AA /* MapItemPicker in Frameworks */,
 				AAF038F42A36B88800FCF14A /* GoogleSignInSwift in Frameworks */,
-				AA7C8E492A26F2B000F10CD7 /* FirebaseFunctions in Frameworks */,
-				AA7C8E412A26F2B000F10CD7 /* FirebaseAuthCombine-Community in Frameworks */,
-				AA7C8E432A26F2B000F10CD7 /* FirebaseFirestore in Frameworks */,
 				AAF038F22A36B88800FCF14A /* GoogleSignIn in Frameworks */,
+				AAD70F7D2A462C9D00FE96AA /* FirebaseFunctions in Frameworks */,
+				AAD70F772A462C9D00FE96AA /* FirebaseFirestore in Frameworks */,
+				AAB8E91A2A49095100FD6FBB /* GeoFireUtils in Frameworks */,
+				AAD70F7F2A462C9D00FE96AA /* FirebaseFunctionsCombine-Community in Frameworks */,
+				AAD70F7B2A462C9D00FE96AA /* FirebaseFirestoreSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,6 +276,7 @@
 		AA1343E82A255C2900E92BB2 /* Helper Files */ = {
 			isa = PBXGroup;
 			children = (
+				AAB8E9142A49073B00FD6FBB /* Geofirestore.swift */,
 				AA1763702A33A23D00365439 /* Emoji.swift */,
 				AA17636E2A32EA2F00365439 /* ColorServices.swift */,
 				AA04EDF12A2BCC050062F66A /* RectangleWrapper.swift */,
@@ -307,16 +316,19 @@
 			);
 			name = "The Herd";
 			packageProductDependencies = (
-				AA7C8E3E2A26F2B000F10CD7 /* FirebaseAuth */,
-				AA7C8E402A26F2B000F10CD7 /* FirebaseAuthCombine-Community */,
-				AA7C8E422A26F2B000F10CD7 /* FirebaseFirestore */,
-				AA7C8E442A26F2B000F10CD7 /* FirebaseFirestoreCombine-Community */,
-				AA7C8E462A26F2B000F10CD7 /* FirebaseFirestoreSwift */,
-				AA7C8E482A26F2B000F10CD7 /* FirebaseFunctions */,
-				AA7C8E4A2A26F2B000F10CD7 /* FirebaseFunctionsCombine-Community */,
 				AAF038EC2A3679F200FCF14A /* iPhoneNumberField */,
 				AAF038F12A36B88800FCF14A /* GoogleSignIn */,
 				AAF038F32A36B88800FCF14A /* GoogleSignInSwift */,
+				AAD70F692A4624EB00FE96AA /* MapItemPicker */,
+				AAD70F722A462C9D00FE96AA /* FirebaseAuth */,
+				AAD70F742A462C9D00FE96AA /* FirebaseAuthCombine-Community */,
+				AAD70F762A462C9D00FE96AA /* FirebaseFirestore */,
+				AAD70F782A462C9D00FE96AA /* FirebaseFirestoreCombine-Community */,
+				AAD70F7A2A462C9D00FE96AA /* FirebaseFirestoreSwift */,
+				AAD70F7C2A462C9D00FE96AA /* FirebaseFunctions */,
+				AAD70F7E2A462C9D00FE96AA /* FirebaseFunctionsCombine-Community */,
+				AAB8E9172A49095100FD6FBB /* GeoFire */,
+				AAB8E9192A49095100FD6FBB /* GeoFireUtils */,
 			);
 			productName = "The Herd";
 			productReference = AA13439A2A2559D600E92BB2 /* The Herd.app */;
@@ -391,9 +403,11 @@
 			);
 			mainGroup = AA1343912A2559D600E92BB2;
 			packageReferences = (
-				AA7C8E3D2A26F2B000F10CD7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				AAF038EB2A3679F200FCF14A /* XCRemoteSwiftPackageReference "iPhoneNumberField" */,
 				AAF038F02A36B88800FCF14A /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				AAD70F682A4624EB00FE96AA /* XCRemoteSwiftPackageReference "swiftui-map-item-picker" */,
+				AAD70F712A462C9D00FE96AA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				AAB8E9162A49095000FD6FBB /* XCRemoteSwiftPackageReference "geofire-objc" */,
 			);
 			productRefGroup = AA13439B2A2559D600E92BB2 /* Products */;
 			projectDirPath = "";
@@ -466,6 +480,7 @@
 				AA1343E52A255BB900E92BB2 /* Operation.swift in Sources */,
 				AA1343EA2A255C3600E92BB2 /* User.swift in Sources */,
 				AA04EDEF2A2BCBA90062F66A /* PostBrowserView.swift in Sources */,
+				AAB8E9152A49073B00FD6FBB /* Geofirestore.swift in Sources */,
 				AAF070A32A37982100DA2615 /* ProfileView.swift in Sources */,
 				AAF038EA2A36798000FCF14A /* PhoneSignInView.swift in Sources */,
 				AA3BE5412A3D0A690040C7BD /* LocationManager.swift in Sources */,
@@ -822,7 +837,23 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		AA7C8E3D2A26F2B000F10CD7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+		AAB8E9162A49095000FD6FBB /* XCRemoteSwiftPackageReference "geofire-objc" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/BaBingoBango/geofire-objc";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		AAD70F682A4624EB00FE96AA /* XCRemoteSwiftPackageReference "swiftui-map-item-picker" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/lorenzofiamingo/swiftui-map-item-picker";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+		AAD70F712A462C9D00FE96AA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
@@ -849,39 +880,54 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		AA7C8E3E2A26F2B000F10CD7 /* FirebaseAuth */ = {
+		AAB8E9172A49095100FD6FBB /* GeoFire */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AA7C8E3D2A26F2B000F10CD7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = AAB8E9162A49095000FD6FBB /* XCRemoteSwiftPackageReference "geofire-objc" */;
+			productName = GeoFire;
+		};
+		AAB8E9192A49095100FD6FBB /* GeoFireUtils */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAB8E9162A49095000FD6FBB /* XCRemoteSwiftPackageReference "geofire-objc" */;
+			productName = GeoFireUtils;
+		};
+		AAD70F692A4624EB00FE96AA /* MapItemPicker */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAD70F682A4624EB00FE96AA /* XCRemoteSwiftPackageReference "swiftui-map-item-picker" */;
+			productName = MapItemPicker;
+		};
+		AAD70F722A462C9D00FE96AA /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAD70F712A462C9D00FE96AA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
 		};
-		AA7C8E402A26F2B000F10CD7 /* FirebaseAuthCombine-Community */ = {
+		AAD70F742A462C9D00FE96AA /* FirebaseAuthCombine-Community */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AA7C8E3D2A26F2B000F10CD7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = AAD70F712A462C9D00FE96AA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseAuthCombine-Community";
 		};
-		AA7C8E422A26F2B000F10CD7 /* FirebaseFirestore */ = {
+		AAD70F762A462C9D00FE96AA /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AA7C8E3D2A26F2B000F10CD7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = AAD70F712A462C9D00FE96AA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
 		};
-		AA7C8E442A26F2B000F10CD7 /* FirebaseFirestoreCombine-Community */ = {
+		AAD70F782A462C9D00FE96AA /* FirebaseFirestoreCombine-Community */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AA7C8E3D2A26F2B000F10CD7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = AAD70F712A462C9D00FE96AA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseFirestoreCombine-Community";
 		};
-		AA7C8E462A26F2B000F10CD7 /* FirebaseFirestoreSwift */ = {
+		AAD70F7A2A462C9D00FE96AA /* FirebaseFirestoreSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AA7C8E3D2A26F2B000F10CD7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = AAD70F712A462C9D00FE96AA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestoreSwift;
 		};
-		AA7C8E482A26F2B000F10CD7 /* FirebaseFunctions */ = {
+		AAD70F7C2A462C9D00FE96AA /* FirebaseFunctions */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AA7C8E3D2A26F2B000F10CD7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = AAD70F712A462C9D00FE96AA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFunctions;
 		};
-		AA7C8E4A2A26F2B000F10CD7 /* FirebaseFunctionsCombine-Community */ = {
+		AAD70F7E2A462C9D00FE96AA /* FirebaseFunctionsCombine-Community */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = AA7C8E3D2A26F2B000F10CD7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = AAD70F712A462C9D00FE96AA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseFunctionsCombine-Community";
 		};
 		AAF038EC2A3679F200FCF14A /* iPhoneNumberField */ = {
