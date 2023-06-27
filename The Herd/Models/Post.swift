@@ -12,7 +12,9 @@ import CoreLocation
 
 struct Post: Transportable {
     var UUID = Foundation.UUID.getTripleID()
-    var author: User // TODO: replace this with ID for privacy reasons
+    var authorUUID: String
+    var authorEmoji: String
+    var authorColor: Color
     var text: String
     /// User UUID : User Vote
     var votes: [String : Vote]
@@ -91,7 +93,7 @@ struct Post: Transportable {
     
     static func hasUserCommented(_ commentsToCheck: [Post], userUUID: String) -> Bool {
         for eachComment in commentsToCheck {
-            if eachComment.author.UUID == userUUID { return true }
+            if eachComment.authorUUID == userUUID { return true }
             return Post.hasUserCommented(eachComment.comments, userUUID: userUUID)
         }
         return false
@@ -102,7 +104,9 @@ struct Post: Transportable {
             return
         }
         
-        let newPost = Post(author: .getSample(),
+        let newPost = Post(authorUUID: User.getSample().UUID,
+                           authorEmoji: User.getSample().emoji,
+                           authorColor: User.getSample().color,
                            text: Taylor.lyrics.randomElement()!,
                            votes: Vote.samples,
                            comments: [Post.sample],
@@ -119,7 +123,7 @@ struct Post: Transportable {
     static func getSamples() -> [Post] {
         var posts: [Post] = []
         for eachLyric in Taylor.lyrics {
-            posts.append(.init(author: .getSample(), text: eachLyric, votes: Vote.samples, comments: [Post.sample], timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50))
+            posts.append(.init(authorUUID: User.getSample().UUID, authorEmoji: User.getSample().emoji, authorColor: User.getSample().color, text: eachLyric, votes: Vote.samples, comments: [Post.sample], timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50))
         }
         return posts
     }
@@ -127,7 +131,14 @@ struct Post: Transportable {
     func dictify() -> [String : Any] {
         return [
             "UUID" : UUID,
-            "author" : author.dictify(),
+            "authorUUID" : authorUUID,
+            "authorEmoji" : authorEmoji,
+            "authorColor" : [
+                Double(UIColor(authorColor).cgColor.components![0]),
+                Double(UIColor(authorColor).cgColor.components![1]),
+                Double(UIColor(authorColor).cgColor.components![2]),
+                Double(UIColor(authorColor).cgColor.components![3])
+            ],
             "text" : text,
             "votes" : votes.mapValues({ $0.dictify() }),
             "comments" : comments.map({ $0.dictify() }),
@@ -139,7 +150,12 @@ struct Post: Transportable {
     
     static func dedictify(_ dictionary: [String : Any]) -> Post {
         return Post(UUID: dictionary["UUID"] as! String,
-                    author: User.dedictify(dictionary["author"] as! [String : Any]),
+                    authorUUID: dictionary["authorUUID"] as! String,
+                    authorEmoji: dictionary["authorEmoji"] as! String,
+                    authorColor: {
+            let colorComponents = dictionary["authorColor"] as! [Double]
+            return Color(cgColor: .init(red: colorComponents[0], green: colorComponents[1], blue: colorComponents[2], alpha: colorComponents[3]))
+        }(),
                     text: dictionary["text"] as! String,
                     votes: (dictionary["votes"] as! [String : Any]).mapValues({ Vote.dedictify($0 as! [String : Any]) }),
                     comments: (dictionary["comments"] as! [[String : Any]]).map { Post.dedictify($0) },

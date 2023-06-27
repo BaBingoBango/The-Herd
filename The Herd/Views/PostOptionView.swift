@@ -72,7 +72,13 @@ struct PostOptionView: View {
                             Button(role: .destructive, action: {
                                 deletePost.status = .inProgress
                                 
-                                // TODO: add delete!
+                                postsCollection.document(post.UUID).delete() { error in
+                                    if let error = error {
+                                        deletePost.setError(message: error.localizedDescription)
+                                    } else {
+                                        deletePost.status = .success
+                                    }
+                                }
                             }) {
                                 Label("Delete Post", systemImage: "trash")
                             }
