@@ -32,7 +32,7 @@ struct PostDetailView: View {
             .toolbar(content: {
                 ToolbarItem(placement: .principal) {
                     VStack {
-                        Text(post.author.emoji)
+                        Text(post.authorEmoji)
                             .font(.system(size: 25))
                             .padding(.top, 10)
                         
@@ -50,7 +50,7 @@ struct PostDetailView: View {
                         .foregroundColor(.accentColor)
                 }
             })
-            .toolbarBackground(post.author.color, for: .navigationBar)
+            .toolbarBackground(post.authorColor, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
@@ -105,9 +105,9 @@ struct CommentsView: View {
                     ZStack {
                         Image(systemName: "circle.fill")
                             .font(.system(size: 37.5))
-                            .foregroundColor(eachComment.author.color)
+                            .foregroundColor(eachComment.authorColor)
                         
-                        Text(eachComment.author.emoji)
+                        Text(eachComment.authorEmoji)
                             .font(.system(size: 25))
                     }
                     
@@ -125,7 +125,7 @@ struct CommentsView: View {
                 
                 PostOptionView(post: eachComment, showTopBar: false, showText: false, seperateControls: false, cornerRadius: 0, bottomBarFont: .body)
                 
-                CommentsView(comments: eachComment.comments, post: post, barColor: eachComment.author.color)
+                CommentsView(comments: eachComment.comments, post: post, barColor: eachComment.authorColor)
                     .padding(.leading)
             }
         }

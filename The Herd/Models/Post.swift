@@ -165,13 +165,15 @@ struct Post: Transportable {
         )
     }
     
-    static var sample = Post(author: .getSample(),
+    static var sample = Post(authorUUID: Foundation.UUID.getTripleID(),
+                             authorEmoji: Emoji.allEmojis.randomElement()!,
+                             authorColor: User.iconColors.randomElement()!,
                              text: Taylor.lyrics.randomElement()!,
                              votes: Vote.samples,
-                             comments: [.init(author: .getSample(), text: "amazing post", votes: Vote.samples, comments: [
-                                .init(author: .getSample(), text: "This is a longer comment. I wonder how lots of these comments will appear in the app?", votes: [:], comments: [], timePosted: Date(), latitude: 0, longitude: 0)
+                             comments: [.init(authorUUID: Foundation.UUID.getTripleID(), authorEmoji: Emoji.allEmojis.randomElement()!, authorColor: User.iconColors.randomElement()!, text: "amazing post", votes: Vote.samples, comments: [
+                                .init(authorUUID: Foundation.UUID.getTripleID(), authorEmoji: Emoji.allEmojis.randomElement()!, authorColor: User.iconColors.randomElement()!, text: "This is a longer comment. I wonder how lots of these comments will appear in the app?", votes: [:], comments: [], timePosted: Date(), latitude: 0, longitude: 0)
                              ], timePosted: Date(), latitude: 0, longitude: 0),
-                                        .init(author: .getSample(), text: "w content 🥶", votes: [:], comments: [], timePosted: Date(), latitude: 0, longitude: 0)],
+                                        .init(authorUUID: Foundation.UUID.getTripleID(), authorEmoji: Emoji.allEmojis.randomElement()!, authorColor: User.iconColors.randomElement()!, text: "w content 🥶", votes: [:], comments: [], timePosted: Date(), latitude: 0, longitude: 0)],
                              timePosted: Date(timeIntervalSinceNow: -6759),
                              latitude: 42.50807,
                              longitude: 83.40217)

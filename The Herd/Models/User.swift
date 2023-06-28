@@ -68,6 +68,12 @@ class User: Transportable, Equatable, ObservableObject {
                     savedLocations: (dictionary["savedLocations"] as! [String : Any]).mapValues({ SavedLocation.dedictify($0 as! [String : Any]) }))
     }
     
+    func formatJoinDate() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMMM yyyy"
+        return dateFormatter.string(from: joinDate)
+    }
+    
     static func transportUserFromServer(_ userID: String, onError: ((Error) -> ())?, onSuccess: ((User) -> ())?) {
         usersCollection.document(userID).getDocument { document, error in
             

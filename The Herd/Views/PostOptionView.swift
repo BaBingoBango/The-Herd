@@ -39,9 +39,9 @@ struct PostOptionView: View {
                     ZStack {
                         Image(systemName: "circle.fill")
                             .font(.system(size: 37.5))
-                            .foregroundColor(post.author.color)
+                            .foregroundColor(post.authorColor)
 
-                        Text(post.author.emoji)
+                        Text(post.authorEmoji)
                             .font(.system(size: 25))
                     }
                     .offset(y: -12.5)
@@ -155,7 +155,7 @@ struct PostOptionView: View {
                             Label("\(Post.countComments(post.comments))", systemImage: hasUserCommented ? "bubble.left.fill" : "bubble.left")
                                 .dynamicFont(bottomBarFont, padding: 0)
                                 .fontWeight(.semibold)
-                                .foregroundColor(hasUserCommented ? post.author.color : .secondary)
+                                .foregroundColor(hasUserCommented ? post.authorColor : .secondary)
                                 .padding(.trailing, seperateControls ? 0 : 15)
                             
                             if seperateControls {
@@ -197,14 +197,14 @@ struct PostOptionView: View {
             }
         }
         .padding(.bottom)
-        .modifier(RectangleWrapper(color: post.author.color, useGradient: true, opacity:  !blockRecursion ? 0.15 : 0.75, cornerRadius: cornerRadius, hideRectangle: !showText))
+        .modifier(RectangleWrapper(color: post.authorColor, useGradient: true, opacity:  !blockRecursion ? 0.15 : 0.75, cornerRadius: cornerRadius, hideRectangle: !showText))
         .padding(.top, showTopBar ? 15 : 0)
     }
     
     // MARK: View Functions
     func changeVote(newValue: Int) {
         let originalPost = post
-        let newVote = Vote(voter: currentUser, value: newValue, timePosted: Date())
+        let newVote = Vote(voterUUID: currentUser.UUID, value: newValue, timePosted: Date())
         post.votes[currentUser.UUID] = newVote
         updatePostOnServer(originalPost: originalPost)
     }

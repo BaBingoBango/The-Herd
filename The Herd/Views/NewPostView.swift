@@ -98,9 +98,11 @@ struct NewPostView: View {
                 uploadPost.status = .inProgress
                 
                 // Create the new Post object!
-                let newPost = Post(author: currentUser,
+                let newPost = Post(authorUUID: currentUser.UUID,
+                                   authorEmoji: currentUser.emoji,
+                                   authorColor: currentUser.color,
                                    text: enteredText,
-                                   votes: [currentUser.UUID : .init(voter: currentUser, value: 1, timePosted: Date())],
+                                   votes: [currentUser.UUID : .init(voterUUID: currentUser.UUID, value: 1, timePosted: Date())],
                                    comments: [],
                                    timePosted: Date(),
                                    latitude: currentUser.getLocation(locationManager)!.0,
@@ -184,6 +186,7 @@ struct NewPostView: View {
                     if let snapshotData = snapshot.data() { currentUser.replaceFields(User.dedictify(snapshotData)) }
                 }
             })
+            Post.uploadSampleData() // TODO: delete this!!!!!
         }
     }
     

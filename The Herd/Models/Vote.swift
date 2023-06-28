@@ -10,21 +10,21 @@ import FirebaseFirestore
 
 struct Vote: Transportable {
     var UUID = Foundation.UUID.getTripleID()
-    var voter: User
+    var voterUUID: String
     var value: Int
     var timePosted: Date
     
     static let samples: [String : Vote] = [
-        Foundation.UUID.getTripleID() : .init(voter: .getSample(), value: 1, timePosted: Date()),
-        Foundation.UUID.getTripleID() : .init(voter: .getSample(), value: 1, timePosted: Date()),
-        Foundation.UUID.getTripleID() : .init(voter: .getSample(), value: -1, timePosted: Date()),
-        Foundation.UUID.getTripleID() : .init(voter: .getSample(), value: 0, timePosted: Date())
+        Foundation.UUID.getTripleID() : .init(voterUUID: Foundation.UUID.getTripleID(), value: 1, timePosted: Date()),
+        Foundation.UUID.getTripleID() : .init(voterUUID: Foundation.UUID.getTripleID(), value: 1, timePosted: Date()),
+        Foundation.UUID.getTripleID() : .init(voterUUID: Foundation.UUID.getTripleID(), value: -1, timePosted: Date()),
+        Foundation.UUID.getTripleID() : .init(voterUUID: Foundation.UUID.getTripleID(), value: 0, timePosted: Date())
     ]
     
     func dictify() -> [String : Any] {
         return [
             "UUID" : UUID,
-            "voter" : voter.dictify(),
+            "voterUUID" : Foundation.UUID.getTripleID(),
             "value" : value,
             "timePosted" : Timestamp(date: timePosted)
         ]
@@ -32,7 +32,7 @@ struct Vote: Transportable {
     
     static func dedictify(_ dictionary: [String : Any]) -> Vote {
         return Vote(UUID: dictionary["UUID"] as! String,
-                    voter: User.dedictify(dictionary["voter"] as! [String : Any]),
+                    voterUUID: dictionary["voterUUID"] as! String,
                     value: dictionary["value"] as! Int,
                     timePosted: Date.decodeDate(dictionary["timePosted"]!))
     }

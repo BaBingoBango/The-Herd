@@ -192,8 +192,9 @@ struct PostBrowserView: View {
                         }
                     }
                     .sheet(isPresented: $showingProfileView) {
-                        ProfileView(currentUser: currentUser)
+                        ProfileView(currentUser: currentUser, locationManager: locationManager)
                     }
+                    .disabled(!currentUserExists || currentUser.getLocation(locationManager) == nil)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -266,7 +267,7 @@ struct PostBrowserView: View {
                     
                     posts.append(post)
                     if posts.count == postsInRange {
-                        posts.sort(by: { $0.timePosted > $1.timePosted }) // TODO: fix this!
+                        posts.sort(by: { $0.timePosted > $1.timePosted }) // TODO: fix this! (querying literally every post is that the issue? lol i think so)
                         postUpdate.status = .success
                     }
                 })
@@ -278,32 +279,6 @@ struct PostBrowserView: View {
             if postsInRange == 0 {
                 postUpdate.status = .success
             }
-        }
-        
-        // First confirm that we have a valid location for the user!
-        if let userLocation = currentUser.getLocation(locationManager) {
-//            Functions.functions().httpsCallable("getLatestPosts").call([
-//                "latitude" : String(userLocation.0),
-//                "longitude" : String(userLocation.1),
-//                "startIndex" : "0"]) { result, error in
-//
-//                // Check for errors!
-//                if let error = error {
-//                    postUpdate.setError(message: error.localizedDescription)
-//                } else {
-//
-//                    // Convert the results to Post objects!
-//                    var postObjects: [Post] = []
-//                    for eachPostString in (result!.data as! [String : Any])["acceptedPosts"] as! [String] {
-//                        let postDictionary = try! JSONSerialization.jsonObject(with: eachPostString.data(using: .utf8)!, options: []) as! [String: Any]
-//                        postObjects.append(Post.dedictify(postDictionary))
-//                    }
-//
-//                    // Update the view state with the new posts!
-//                    posts = postObjects
-//                    postUpdate.status = .success
-//                }
-//            }
         }
     }
 }
