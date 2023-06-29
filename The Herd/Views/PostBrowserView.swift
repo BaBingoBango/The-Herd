@@ -248,7 +248,6 @@ struct PostBrowserView: View {
     
     // MARK: View Functions
     func getLatestPosts() async {
-        // TODO: update to server 2!
         postUpdate.status = .inProgress
         posts.removeAll()
         var postsInRange = 0

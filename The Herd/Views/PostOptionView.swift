@@ -24,6 +24,8 @@ struct PostOptionView: View {
     var bottomBarFont: Font = .headline
     var blockRecursion = false
     @State var deletePost = Operation()
+    @State var savePost = Operation()
+    @State var isPostSaved = false
     var voteValue: Int {
         post.votes[currentUser.UUID]?.value ?? 0
     }
@@ -63,8 +65,35 @@ struct PostOptionView: View {
                                 Label("Share...", systemImage: "square.and.arrow.up")
                             }
                             
-                            Button(action: {}) { // TODO: add saving!
-                                Label("Save Post", systemImage: "bookmark")
+                            Button(action: {
+                                savePost.status = .inProgress
+                                
+                                if !isPostSaved {
+                                    let newSaveRecord = SavedPostRecord(userUUID: currentUser.UUID, postUUID: post.UUID, dateSaved: Date())
+                                    newSaveRecord.transportToServer(path: postsCollection.document(post.UUID).collection("saved"),
+                                                                    documentID: currentUser.UUID,
+                                                                    operation: nil,
+                                                                    onError: { error in savePost.setError(message: error.localizedDescription) },
+                                                                    onSuccess: { isPostSaved = true; savePost.status = .success })
+                                } else {
+                                    postsCollection.document(post.UUID).collection("saved").document(currentUser.UUID).delete() { error in
+                                        if let error = error {
+                                            savePost.setError(message: error.localizedDescription)
+                                        } else {
+                                            isPostSaved = false
+                                            savePost.status = .success
+                                        }
+                                    }
+                                }
+                                
+                            }) {
+                                Label(!isPostSaved ? "Save Post" : "Unsave Post", systemImage: !isPostSaved ? "bookmark" : "bookmark.slash.fill")
+                                // TODO: NEXT - this is not updating as it should! You shouldn't need to refresh! :)
+                            }
+                            .alert(isPresented: $savePost.isShowingErrorMessage) {
+                                Alert(title: Text("Couldn't Save Post"),
+                                      message: Text(savePost.errorMessage),
+                                      dismissButton: .default(Text("Close")))
                             }
                             
                             Divider()
@@ -82,6 +111,12 @@ struct PostOptionView: View {
                             }) {
                                 Label("Delete Post", systemImage: "trash")
                             }
+                            .alert(isPresented: $deletePost.isShowingErrorMessage) {
+                                Alert(title: Text("Couldn't Delete Post"),
+                                      message: Text(deletePost.errorMessage),
+                                      dismissButton: .default(Text("Close")))
+                            }
+                            
                         } label: {
                             Image(systemName: "ellipsis.circle")
                                 .font(.system(size: 20))
@@ -199,6 +234,19 @@ struct PostOptionView: View {
         .padding(.bottom)
         .modifier(RectangleWrapper(color: post.authorColor, useGradient: true, opacity:  !blockRecursion ? 0.15 : 0.75, cornerRadius: cornerRadius, hideRectangle: !showText))
         .padding(.top, showTopBar ? 15 : 0)
+        
+        .onAppear {
+            // MARK: View Launch Code
+            postsCollection.document(post.UUID).collection("saved").document(currentUser.UUID).getDocument() { snapshot, error in
+                if let error = error {
+                    return
+                } else if let snapshot = snapshot {
+                    if snapshot.exists {
+                        isPostSaved = true
+                    }
+                }
+            }
+        }
     }
     
     // MARK: View Functions
