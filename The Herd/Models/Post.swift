@@ -18,6 +18,7 @@ struct Post: Transportable {
     var text: String
     /// User UUID : User Vote
     var votes: [String : Vote]
+    var commentLevel = 0
     var comments: [Post]
     var timePosted: Date
     var latitude: Double
@@ -170,10 +171,37 @@ struct Post: Transportable {
                              authorColor: User.iconColors.randomElement()!,
                              text: Taylor.lyrics.randomElement()!,
                              votes: Vote.samples,
-                             comments: [.init(authorUUID: Foundation.UUID.getTripleID(), authorEmoji: Emoji.allEmojis.randomElement()!, authorColor: User.iconColors.randomElement()!, text: "amazing post", votes: Vote.samples, comments: [
-                                .init(authorUUID: Foundation.UUID.getTripleID(), authorEmoji: Emoji.allEmojis.randomElement()!, authorColor: User.iconColors.randomElement()!, text: "This is a longer comment. I wonder how lots of these comments will appear in the app?", votes: [:], comments: [], timePosted: Date(), latitude: 0, longitude: 0)
-                             ], timePosted: Date(), latitude: 0, longitude: 0),
-                                        .init(authorUUID: Foundation.UUID.getTripleID(), authorEmoji: Emoji.allEmojis.randomElement()!, authorColor: User.iconColors.randomElement()!, text: "w content 🥶", votes: [:], comments: [], timePosted: Date(), latitude: 0, longitude: 0)],
+                             comments: [.init(authorUUID: Foundation.UUID.getTripleID(),
+                                              authorEmoji: Emoji.allEmojis.randomElement()!,
+                                              authorColor: User.iconColors.randomElement()!,
+                                              text: "amazing post",
+                                              votes: Vote.samples,
+                                              
+                                              commentLevel: 1,
+                                              comments: [.init(authorUUID: Foundation.UUID.getTripleID(),
+                                                               authorEmoji: Emoji.allEmojis.randomElement()!,
+                                                               authorColor: User.iconColors.randomElement()!,
+                                                               text: "This is a longer comment. I wonder how lots of these comments will appear in the app?",
+                                                               votes: [:],
+                                                               commentLevel: 2,
+                                                               comments: [],
+                                                               timePosted: Date(),
+                                                               latitude: 0,
+                                                               longitude: 0)],
+                                              
+                                              timePosted: Date(),
+                                              latitude: 0,
+                                              longitude: 0),
+                                        
+                                        .init(authorUUID: Foundation.UUID.getTripleID(),
+                                              authorEmoji: Emoji.allEmojis.randomElement()!,
+                                              authorColor: User.iconColors.randomElement()!, text: "w content 🥶",
+                                              votes: [:],
+                                              commentLevel: 1,
+                                              comments: [],
+                                              timePosted: Date(),
+                                              latitude: 0,
+                                              longitude: 0)],
                              timePosted: Date(timeIntervalSinceNow: -6759),
                              latitude: 42.50807,
                              longitude: 83.40217)

@@ -186,7 +186,6 @@ struct NewPostView: View {
                     if let snapshotData = snapshot.data() { currentUser.replaceFields(User.dedictify(snapshotData)) }
                 }
             })
-            Post.uploadSampleData() // TODO: delete this!!!!!
         }
     }
     

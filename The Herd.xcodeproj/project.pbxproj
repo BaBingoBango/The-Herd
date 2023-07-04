@@ -49,6 +49,7 @@
 		AA6116632A4DD43300EBCC53 /* SavedPostRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6116622A4DD43300EBCC53 /* SavedPostRecord.swift */; };
 		AA7EC71B2A3C096A00276C42 /* ScanLocationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7EC71A2A3C096A00276C42 /* ScanLocationsView.swift */; };
 		AA7EC71D2A3C0CAD00276C42 /* SavedLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7EC71C2A3C0CAD00276C42 /* SavedLocation.swift */; };
+		AA95D3372A53652E0089A8D4 /* CommentFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA95D3362A53652E0089A8D4 /* CommentFieldView.swift */; };
 		AAB8E9152A49073B00FD6FBB /* Geofirestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAB8E9142A49073B00FD6FBB /* Geofirestore.swift */; };
 		AAB8E9182A49095100FD6FBB /* GeoFire in Frameworks */ = {isa = PBXBuildFile; productRef = AAB8E9172A49095100FD6FBB /* GeoFire */; };
 		AAB8E91A2A49095100FD6FBB /* GeoFireUtils in Frameworks */ = {isa = PBXBuildFile; productRef = AAB8E9192A49095100FD6FBB /* GeoFireUtils */; };
@@ -125,6 +126,7 @@
 		AA6116622A4DD43300EBCC53 /* SavedPostRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPostRecord.swift; sourceTree = "<group>"; };
 		AA7EC71A2A3C096A00276C42 /* ScanLocationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanLocationsView.swift; sourceTree = "<group>"; };
 		AA7EC71C2A3C0CAD00276C42 /* SavedLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLocation.swift; sourceTree = "<group>"; };
+		AA95D3362A53652E0089A8D4 /* CommentFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentFieldView.swift; sourceTree = "<group>"; };
 		AAB8E9142A49073B00FD6FBB /* Geofirestore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geofirestore.swift; sourceTree = "<group>"; };
 		AACC89302A2CF68800B2E673 /* PostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailView.swift; sourceTree = "<group>"; };
 		AAF038E32A3665A800FCF14A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -190,6 +192,7 @@
 				AA04EDEE2A2BCBA90062F66A /* PostBrowserView.swift */,
 				AA04EDF32A2BD1B00062F66A /* PostOptionView.swift */,
 				AACC89302A2CF68800B2E673 /* PostDetailView.swift */,
+				AA95D3362A53652E0089A8D4 /* CommentFieldView.swift */,
 				AA054C652A41FAFE0064DCDD /* ManagePostsView.swift */,
 				AAF038F92A36C33900FCF14A /* NewPostView.swift */,
 				AA054C632A41EED50064DCDD /* DraftsView.swift */,
@@ -461,6 +464,7 @@
 				AA1343F62A258CA500E92BB2 /* Taylor.swift in Sources */,
 				AA1343F22A258B4F00E92BB2 /* IDServices.swift in Sources */,
 				AAF038FA2A36C33900FCF14A /* NewPostView.swift in Sources */,
+				AA95D3372A53652E0089A8D4 /* CommentFieldView.swift in Sources */,
 				AA1343AA2A2559D700E92BB2 /* The_Herd.xcdatamodeld in Sources */,
 				AAF038EF2A36AE1800FCF14A /* DispatchView.swift in Sources */,
 				AA054C642A41EED50064DCDD /* DraftsView.swift in Sources */,

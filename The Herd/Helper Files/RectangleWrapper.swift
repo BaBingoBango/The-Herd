@@ -21,6 +21,7 @@ public struct RectangleWrapper: ViewModifier {
     var opacity = 1.0
     var cornerRadius = 15.0
     var hideRectangle = false
+    var enforceLayoutPriority = false
     
     /// Produces the modified view given the original content.
     public func body(content: Content) -> some View {
@@ -32,12 +33,14 @@ public struct RectangleWrapper: ViewModifier {
                             .foregroundColor(color)
                             .opacity(opacity)
                             .cornerRadius(cornerRadius)
+                            .layoutPriority(!enforceLayoutPriority ? 0 : -100)
                     } else {
                         Rectangle()
                             .foregroundColor(color)
                             .frame(height: CGFloat(fixedHeight!))
                             .opacity(opacity)
                             .cornerRadius(cornerRadius)
+                            .layoutPriority(!enforceLayoutPriority ? 0 : -100)
                     }
                 } else {
                     if fixedHeight == nil {
@@ -45,12 +48,14 @@ public struct RectangleWrapper: ViewModifier {
                             .fill(color.gradient)
                             .opacity(opacity)
                             .cornerRadius(cornerRadius)
+                            .layoutPriority(!enforceLayoutPriority ? 0 : -100)
                     } else {
                         Rectangle()
                             .fill(color.gradient)
                             .frame(height: CGFloat(fixedHeight!))
                             .opacity(opacity)
                             .cornerRadius(cornerRadius)
+                            .layoutPriority(!enforceLayoutPriority ? 0 : -100)
                     }
                 }
             }

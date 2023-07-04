@@ -13,68 +13,92 @@ struct PostDetailView: View {
     
     // MARK: View Variables
     @Binding var post: Post
-    @State var currentUser: User? = nil
+    @ObservedObject var currentUser: User = .getSample()
+    var locationManager = LocationManager()
+    @State var showingCommentField = false
+    @State var commentFieldDetent = PresentationDetent.medium
+    @State var deletePost = Operation()
+    @State var savePost = Operation()
+    @State var isPostSaved = false
     
     // MARK: View Body
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading) {
-                if let currentUser = currentUser {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading) {
+                    // FIXME: the comment count dosen't update when new comments are added bc this is static and not a state pass-in to POV
+                    // FIX? make an optional state version? probs not...acc maybe with an on change?
                     PostOptionView(post: post, currentUser: currentUser, showTopBar: false, cornerRadius: 0)
                     
                     CommentsView(comments: post.comments, post: post)
                         .padding(.horizontal)
                 }
-            }
-            
-            // MARK: Navigation Settings
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar(content: {
-                ToolbarItem(placement: .principal) {
-                    VStack {
-                        Text(post.authorEmoji)
-                            .font(.system(size: 25))
-                            .padding(.top, 10)
-                        
-                        Text("\(post.distanceFromNow) · \(post.calculateDistanceFromLocation(latitude: 42.50807, longitude: 83.40217)) away")
-                            .font(.system(size: 15))
-                            .fontWeight(.heavy)
-                            .padding(.bottom, 17.5)
+                
+                // MARK: Navigation Settings
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar(content: {
+                    ToolbarItem(placement: .principal) {
+                        VStack {
+                            Text(post.authorEmoji)
+                                .font(.system(size: 25))
+                                .padding(.top, 10)
+                            
+                            Text("\(post.distanceFromNow) · \(post.calculateDistanceFromLocation(latitude: 42.50807, longitude: 83.40217)) away")
+                                .font(.system(size: 15))
+                                .fontWeight(.heavy)
+                                .foregroundColor(.white)
+                                .padding(.bottom, 17.5)
+                        }
                     }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Image(systemName: "ellipsis.circle")
-                        .font(.system(size: 20))
-                        .fontWeight(.bold)
-                        .foregroundColor(.accentColor)
-                }
-            })
-            .toolbarBackground(post.authorColor, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarColorScheme(.dark, for: .navigationBar)
-        }
-        .onAppear {
-            // MARK: View Launch Code
-            // If we haven't loaded the user's profile yet, transport it!
-            if let userID = Auth.auth().currentUser?.uid {
-                User.transportUserFromServer(userID,
-                                             onError: { error in fatalError(error.localizedDescription) },
-                                             onSuccess: { user in currentUser = user })
-                
-                // Set up a real-time listener for the user's profile!
-                usersCollection.document(userID).addSnapshotListener({ snapshot, error in
+                    
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        // FIXME: post already is a binding - why would it let us use $post?
+    //                    PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: $deletePost, savePost: $savePost, isPostSaved: $isPostSaved, makeBold: true)
+                    }
+                    
+                    ToolbarItemGroup(placement: .bottomBar) {
+                        Button(action: {
+                            showingCommentField = true
+                        }) {
+                            HStack {
+                                ZStack {
+                                    Image(systemName: "circle.fill")
+                                        .font(.system(size: 25))
+                                        .foregroundColor(currentUser.color)
+
+                                    Text(currentUser.emoji)
+                                        .font(.system(size: 17))
+                                }
+
+                                Text("Reply to this post...")
+                                    .dynamicFont(.body, padding: 0)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .sheet(isPresented: $showingCommentField) {
+                            CommentFieldView(post: $post, currentUser: currentUser, locationManager: locationManager)
+                                .presentationDetents([.medium, .large], selection: $commentFieldDetent)
+                        }
+                        .padding(.bottom, 5)
+
+                        Spacer()
+                    }
+                })
+                .toolbarBackground(post.authorColor, for: .navigationBar)
+                .toolbarBackground(.visible, for: .navigationBar)
+                .toolbarColorScheme(.dark, for: .navigationBar)
+                .toolbar(.visible, for: .bottomBar)
+            }
+            .onAppear {
+                // MARK: View Launch Code
+                // Set up a real-time listener for this post!
+                postsCollection.document(post.UUID).addSnapshotListener({ snapshot, error in
                     if let snapshot = snapshot {
-                        if let snapshotData = snapshot.data() { currentUser = User.dedictify(snapshotData) }
+                        if let snapshotData = snapshot.data() { post = Post.dedictify(snapshotData) }
                     }
                 })
             }
-            // Set up a real-time listener for this post!
-            postsCollection.document(post.UUID).addSnapshotListener({ snapshot, error in
-                if let snapshot = snapshot {
-                    if let snapshotData = snapshot.data() { post = Post.dedictify(snapshotData) }
-                }
-            })
         }
     }
     

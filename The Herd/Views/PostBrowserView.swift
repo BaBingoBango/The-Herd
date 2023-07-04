@@ -26,7 +26,7 @@ struct PostBrowserView: View {
     
     // MARK: View Body
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(spacing: 0) {
                     Button(action: {
@@ -258,6 +258,7 @@ struct PostBrowserView: View {
             if let documentID = documentID {
                 
                 postsInRange += 1
+                print("posts in range: \(postsInRange)")
                 
                 Post.transportFromServer(path: postsCollection.document(documentID),
                                          operation: nil,

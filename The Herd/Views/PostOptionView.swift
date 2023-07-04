@@ -26,6 +26,8 @@ struct PostOptionView: View {
     @State var deletePost = Operation()
     @State var savePost = Operation()
     @State var isPostSaved = false
+    @State var showingCommentField = false
+    @State var commentFieldDetent = PresentationDetent.medium
     var voteValue: Int {
         post.votes[currentUser.UUID]?.value ?? 0
     }
@@ -57,72 +59,7 @@ struct PostOptionView: View {
                     Spacer()
                     
                     if !blockRecursion {
-                        Menu {
-                            let viewCopy = PostOptionView(post: post, currentUser: currentUser, locationManager: locationManager, blockRecursion: true).frame(width: 500)
-                            let viewImage = Image(uiImage: ImageRenderer(content: viewCopy).uiImage!)
-                            
-                            ShareLink(item: viewImage, preview: SharePreview(post.text, image: viewImage)) {
-                                Label("Share...", systemImage: "square.and.arrow.up")
-                            }
-                            
-                            Button(action: {
-                                savePost.status = .inProgress
-                                
-                                if !isPostSaved {
-                                    let newSaveRecord = SavedPostRecord(userUUID: currentUser.UUID, postUUID: post.UUID, dateSaved: Date())
-                                    newSaveRecord.transportToServer(path: postsCollection.document(post.UUID).collection("saved"),
-                                                                    documentID: currentUser.UUID,
-                                                                    operation: nil,
-                                                                    onError: { error in savePost.setError(message: error.localizedDescription) },
-                                                                    onSuccess: { isPostSaved = true; savePost.status = .success })
-                                } else {
-                                    postsCollection.document(post.UUID).collection("saved").document(currentUser.UUID).delete() { error in
-                                        if let error = error {
-                                            savePost.setError(message: error.localizedDescription)
-                                        } else {
-                                            isPostSaved = false
-                                            savePost.status = .success
-                                        }
-                                    }
-                                }
-                                
-                            }) {
-                                Label(!isPostSaved ? "Save Post" : "Unsave Post", systemImage: !isPostSaved ? "bookmark" : "bookmark.slash.fill")
-                                // TODO: NEXT - this is not updating as it should! You shouldn't need to refresh! :)
-                            }
-                            .alert(isPresented: $savePost.isShowingErrorMessage) {
-                                Alert(title: Text("Couldn't Save Post"),
-                                      message: Text(savePost.errorMessage),
-                                      dismissButton: .default(Text("Close")))
-                            }
-                            
-                            Divider()
-                            
-                            Button(role: .destructive, action: {
-                                deletePost.status = .inProgress
-                                
-                                postsCollection.document(post.UUID).delete() { error in
-                                    if let error = error {
-                                        deletePost.setError(message: error.localizedDescription)
-                                    } else {
-                                        deletePost.status = .success
-                                    }
-                                }
-                            }) {
-                                Label("Delete Post", systemImage: "trash")
-                            }
-                            .alert(isPresented: $deletePost.isShowingErrorMessage) {
-                                Alert(title: Text("Couldn't Delete Post"),
-                                      message: Text(deletePost.errorMessage),
-                                      dismissButton: .default(Text("Close")))
-                            }
-                            
-                        } label: {
-                            Image(systemName: "ellipsis.circle")
-                                .font(.system(size: 20))
-                                .foregroundColor(.secondary)
-                        }
-                        .offset(y: -5)
+                        PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: $deletePost, savePost: $savePost, isPostSaved: $isPostSaved)
                     }
                 }
                 .padding(.horizontal)
@@ -131,7 +68,7 @@ struct PostOptionView: View {
                     .offset(y: -8)
             }
             
-            NavigationLink(destination: PostDetailView(post: $post, currentUser: currentUser), isActive: $showingPostDetail) { EmptyView() }
+            NavigationLink(destination: PostDetailView(post: $post, currentUser: currentUser, locationManager: locationManager), isActive: $showingPostDetail) { EmptyView() }
             
             switch deletePost.status {
             case .inProgress:
@@ -187,14 +124,24 @@ struct PostOptionView: View {
                         }
                         
                         HStack {
-                            Label("\(Post.countComments(post.comments))", systemImage: hasUserCommented ? "bubble.left.fill" : "bubble.left")
-                                .dynamicFont(bottomBarFont, padding: 0)
-                                .fontWeight(.semibold)
-                                .foregroundColor(hasUserCommented ? post.authorColor : .secondary)
-                                .padding(.trailing, seperateControls ? 0 : 15)
-                            
-                            if seperateControls {
-                                Spacer()
+                            if post.commentLevel != 2 {
+                                Button(action: {
+                                    showingCommentField = true
+                                }) {
+                                    Label(post.commentLevel == 0 ? "\(Post.countComments(post.comments))" : "Reply", systemImage: hasUserCommented ? "bubble.left.fill" : "bubble.left")
+                                        .dynamicFont(bottomBarFont, padding: 0)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(hasUserCommented ? post.authorColor : .secondary)
+                                        .padding(.trailing, seperateControls ? 0 : 15)
+                                }
+                                .sheet(isPresented: $showingCommentField) {
+                                    CommentFieldView(post: $post, currentUser: currentUser, locationManager: locationManager, comment: post.text, commenterIcon: post.authorEmoji, commenterColor: post.authorColor)
+                                        .presentationDetents([.medium, .large], selection: $commentFieldDetent)
+                                }
+                                
+                                if seperateControls {
+                                    Spacer()
+                                }
                             }
                             
                             Button(action: {
@@ -238,7 +185,7 @@ struct PostOptionView: View {
         .onAppear {
             // MARK: View Launch Code
             postsCollection.document(post.UUID).collection("saved").document(currentUser.UUID).getDocument() { snapshot, error in
-                if let error = error {
+                if error != nil {
                     return
                 } else if let snapshot = snapshot {
                     if snapshot.exists {
@@ -269,12 +216,92 @@ struct PostOptionView: View {
 // MARK: View Preview
 struct PostOptionView_Previews: PreviewProvider {
     static var previews: some View {
-        ScrollView {
-            PostOptionView()
-                .padding()
+        NavigationView {
+            ScrollView {
+                PostOptionView(activateNavigation: true)
+                    .padding()
+            }
         }
     }
 }
 
 // MARK: Support Views
-// Support views go here! :)
+struct PostMenuButton: View {
+    
+    @Binding var post: Post
+    var currentUser: User
+    var locationManager: LocationManager
+    @Binding var deletePost: Operation
+    @Binding var savePost: Operation
+    @Binding var isPostSaved: Bool
+    var makeBold = false
+    
+    var body: some View {
+        Menu {
+            let viewCopy = PostOptionView(post: post, currentUser: currentUser, locationManager: locationManager, blockRecursion: true).frame(width: 500)
+            let viewImage = Image(uiImage: ImageRenderer(content: viewCopy).uiImage!)
+            
+            ShareLink(item: viewImage, preview: SharePreview(post.text, image: viewImage)) {
+                Label("Share...", systemImage: "square.and.arrow.up")
+            }
+            
+            Button(action: {
+                savePost.status = .inProgress
+                
+                if !isPostSaved {
+                    let newSaveRecord = SavedPostRecord(userUUID: currentUser.UUID, postUUID: post.UUID, dateSaved: Date())
+                    newSaveRecord.transportToServer(path: postsCollection.document(post.UUID).collection("saved"),
+                                                    documentID: currentUser.UUID,
+                                                    operation: nil,
+                                                    onError: { error in savePost.setError(message: error.localizedDescription) },
+                                                    onSuccess: { isPostSaved = true; savePost.status = .success })
+                } else {
+                    postsCollection.document(post.UUID).collection("saved").document(currentUser.UUID).delete() { error in
+                        if let error = error {
+                            savePost.setError(message: error.localizedDescription)
+                        } else {
+                            isPostSaved = false
+                            savePost.status = .success
+                        }
+                    }
+                }
+                
+            }) {
+                Label(!isPostSaved ? "Save Post" : "Unsave Post", systemImage: !isPostSaved ? "bookmark" : "bookmark.slash.fill")
+            }
+            .alert(isPresented: $savePost.isShowingErrorMessage) {
+                Alert(title: Text("Couldn't Save Post"),
+                      message: Text(savePost.errorMessage),
+                      dismissButton: .default(Text("Close")))
+            }
+            
+            Divider()
+            
+            Button(role: .destructive, action: {
+                deletePost.status = .inProgress
+                
+                postsCollection.document(post.UUID).delete() { error in
+                    if let error = error {
+                        deletePost.setError(message: error.localizedDescription)
+                    } else {
+                        deletePost.status = .success
+                    }
+                }
+            }) {
+                Label("Delete Post", systemImage: "trash")
+            }
+            .alert(isPresented: $deletePost.isShowingErrorMessage) {
+                Alert(title: Text("Couldn't Delete Post"),
+                      message: Text(deletePost.errorMessage),
+                      dismissButton: .default(Text("Close")))
+            }
+            
+        } label: {
+            Image(systemName: "ellipsis.circle")
+                .font(.system(size: 20))
+                .fontWeight(makeBold ? .bold : .regular)
+                .foregroundColor(makeBold ? .white : .secondary)
+        }
+        .offset(y: -5)
+    }
+}
