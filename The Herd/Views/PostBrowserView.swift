@@ -252,32 +252,33 @@ struct PostBrowserView: View {
         posts.removeAll()
         var postsInRange = 0
         
-        // 5 miles = 8,046.72 m = 8.04672 km
-        let scanQuery = GeoFirestore(collectionRef: postsCollection).query(withCenter: locationManager.lastLocation!, radius: 8.04672)
-        let _ = scanQuery.observe(.documentEntered, with: { documentID, _ in
-            if let documentID = documentID {
-                
-                postsInRange += 1
-                print("posts in range: \(postsInRange)")
-                
-                Post.transportFromServer(path: postsCollection.document(documentID),
-                                         operation: nil,
-                                         onError: { error in postUpdate.setError(message: error.localizedDescription) },
-                                         onSuccess: { post in
+        if locationMode == .current, let lastLocation = locationManager.lastLocation {
+            // 5 miles = 8,046.72 m = 8.04672 km
+            let scanQuery = GeoFirestore(collectionRef: postsCollection).query(withCenter: lastLocation, radius: 8.04672)
+            let _ = scanQuery.observe(.documentEntered, with: { documentID, _ in
+                if let documentID = documentID {
                     
-                    posts.append(post)
-                    if posts.count == postsInRange {
-                        posts.sort(by: { $0.timePosted > $1.timePosted }) // TODO: fix this! (querying literally every post is that the issue? lol i think so)
-                        postUpdate.status = .success
-                    }
-                })
-            } else {
-                postUpdate.setError(message: "TODO: add error message!")
-            }
-        })
-        let _ = scanQuery.observeReady {
-            if postsInRange == 0 {
-                postUpdate.status = .success
+                    postsInRange += 1
+                    
+                    Post.transportFromServer(path: postsCollection.document(documentID),
+                                             operation: nil,
+                                             onError: { error in postUpdate.setError(message: error.localizedDescription) },
+                                             onSuccess: { post in
+                        
+                        posts.append(post)
+                        if posts.count == postsInRange {
+                            posts.sort(by: { $0.timePosted > $1.timePosted }) // TODO: fix this! (querying literally every post is that the issue? lol i think so)
+                            postUpdate.status = .success
+                        }
+                    })
+                } else {
+                    postUpdate.setError(message: "TODO: add error message!")
+                }
+            })
+            let _ = scanQuery.observeReady {
+                if postsInRange == 0 {
+                    postUpdate.status = .success
+                }
             }
         }
     }

@@ -16,8 +16,7 @@ struct Post: Transportable {
     var authorEmoji: String
     var authorColor: Color
     var text: String
-    /// User UUID : User Vote
-    var votes: [String : Vote]
+    var votes: [String : Vote] // user ID : user vote
     var commentLevel = 0
     var comments: [Post]
     var timePosted: Date

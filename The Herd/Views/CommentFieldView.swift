@@ -107,7 +107,6 @@ struct CommentFieldView: View {
                         
                     } else {
                         Button(action: {
-                            // TODO: NEXT: cahnge this for replies - change how we do votes and comments too?
                             addComment.status = .inProgress
                             let newComment = Post(authorUUID: currentUser.UUID,
                                                   authorEmoji: currentUser.emoji,
