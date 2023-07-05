@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MapItemPicker
 
 /// An app view written in SwiftUI!
 struct ScanLocationsView: View {
@@ -13,6 +14,9 @@ struct ScanLocationsView: View {
     // MARK: View Variables
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @ObservedObject var currentUser: User
+    @State var changeLocationChoice = Operation(status: .inProgress)
+    @State var changingLocationOption = ""
+    @State var showingLocationPicker = false
     
     // MARK: View Body
     var body: some View {
@@ -38,9 +42,20 @@ struct ScanLocationsView: View {
                     }
                     
                     Button(action: {
-                        let newUserObject = currentUser
-                        newUserObject.locationMode = .current
-                        newUserObject.transportToServer(path: usersCollection, documentID: currentUser.UUID, operation: nil, onError: nil, onSuccess: nil)
+                        if currentUser.locationMode != .current {
+                            
+                            changeLocationChoice.status = .inProgress
+                            changingLocationOption = "current"
+                            usersCollection.document(currentUser.UUID).updateData([
+                                "locationMode" : LocationMode.current.toString()
+                            ]) { error in
+                                if let error = error {
+                                    changeLocationChoice.setError(message: error.localizedDescription)
+                                } else {
+                                    changeLocationChoice.status = .success
+                                }
+                            }
+                        }
                         
                     }) {
                         HStack {
@@ -64,15 +79,22 @@ struct ScanLocationsView: View {
                             
                             Spacer()
                             
-                            Image(systemName: currentUser.locationMode == LocationMode.current ? "checkmark.circle.fill" : "circle")
-                                .dynamicFont(.title, fontDesign: .rounded, padding: 0)
-                                .fontWeight(.bold)
-                                .foregroundColor(.blue)
+                            if changeLocationChoice.status == .inProgress && changingLocationOption == "current" {
+                                ProgressView()
+                                    .controlSize(.large)
+                                    .scaleEffect(0.75)
+                            } else {
+                                Image(systemName: currentUser.locationMode == LocationMode.current ? "checkmark.circle.fill" : "circle")
+                                    .dynamicFont(.title, fontDesign: .rounded, padding: 0)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.blue)
+                            }
                         }
                         .padding()
                         .modifier(RectangleWrapper(color: .blue, useGradient: true, opacity: 0.15))
                         .padding(.top)
                     }
+                    .disabled(changeLocationChoice.status == .inProgress)
                     
                     HStack {
                         Text("Saved")
@@ -80,12 +102,34 @@ struct ScanLocationsView: View {
                             .fontWeight(.bold)
                         
                         Button(action: {
-                            
+                            showingLocationPicker = true
                         }) {
                             Image(systemName: "plus.circle.fill")
                                 .dynamicFont(.title2, fontDesign: .rounded, padding: 0)
                                 .fontWeight(.bold)
                                 .foregroundColor(.accentColor)
+                        }
+                        .disabled(changeLocationChoice.status == .inProgress)
+                        .mapItemPicker(isPresented: $showingLocationPicker) { location in
+                            if let location = location {
+                                
+                                changeLocationChoice.status = .inProgress
+                                let newLocation = SavedLocation(emoji: "🌎", nickname: location.name ?? "New Location", latitude: location.placemark.coordinate.latitude, longitude: location.placemark.coordinate.longitude)
+                                changingLocationOption = newLocation.UUID
+                                
+                                var newLocationList = currentUser.savedLocations
+                                newLocationList[newLocation.UUID] = newLocation
+                                usersCollection.document(currentUser.UUID).updateData([
+                                    "locationMode" : LocationMode.saved(locationID: newLocation.UUID).toString(),
+                                    "savedLocations" : newLocationList.mapValues({ $0.dictify() })
+                                ]) { error in
+                                    if let error = error {
+                                        changeLocationChoice.setError(message: error.localizedDescription)
+                                    } else {
+                                        changeLocationChoice.status = .success
+                                    }
+                                }
+                            }
                         }
                         
                         Spacer()
@@ -94,9 +138,20 @@ struct ScanLocationsView: View {
                     
                     ForEach(Array(currentUser.savedLocations.values), id: \.UUID) { eachLocation in
                         Button(action: {
-                            let newUserObject = currentUser
-                            newUserObject.locationMode = .saved(locationID: eachLocation.UUID)
-                            newUserObject.transportToServer(path: usersCollection, documentID: currentUser.UUID, operation: nil, onError: nil, onSuccess: nil)
+                            if currentUser.locationMode != .saved(locationID: eachLocation.UUID) {
+                                
+                                changeLocationChoice.status = .inProgress
+                                changingLocationOption = eachLocation.UUID
+                                usersCollection.document(currentUser.UUID).updateData([
+                                    "locationMode" : LocationMode.saved(locationID: eachLocation.UUID).toString()
+                                ]) { error in
+                                    if let error = error {
+                                        changeLocationChoice.setError(message: error.localizedDescription)
+                                    } else {
+                                        changeLocationChoice.status = .success
+                                    }
+                                }
+                            }
                             
                         }) {
                             HStack {
@@ -119,7 +174,7 @@ struct ScanLocationsView: View {
                                             .foregroundColor(.secondary)
                                             .fontWeight(.semibold)
                                         
-                                        Text(String(eachLocation.latitude))
+                                        Text(String(eachLocation.latitude).prefix(10))
                                             .dynamicFont(.callout, fontDesign: .monospaced, lineLimit: 3, padding: 0)
                                             .foregroundColor(.secondary)
                                             .fontWeight(.heavy)
@@ -129,7 +184,7 @@ struct ScanLocationsView: View {
                                             .foregroundColor(.secondary)
                                             .fontWeight(.semibold)
                                         
-                                        Text(String(eachLocation.longitude))
+                                        Text(String(eachLocation.longitude).prefix(10))
                                             .dynamicFont(.callout, fontDesign: .monospaced, lineLimit: 3, padding: 0)
                                             .foregroundColor(.secondary)
                                             .fontWeight(.heavy)
@@ -138,14 +193,21 @@ struct ScanLocationsView: View {
                                 
                                 Spacer()
                                 
-                                Image(systemName: currentUser.locationMode == .saved(locationID: eachLocation.UUID) ? "checkmark.circle.fill" : "circle")
-                                    .dynamicFont(.title, fontDesign: .rounded, padding: 0)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.accentColor)
+                                if changeLocationChoice.status == .inProgress && changingLocationOption == eachLocation.UUID {
+                                    ProgressView()
+                                        .controlSize(.large)
+                                        .scaleEffect(0.75)
+                                } else {
+                                    Image(systemName: currentUser.locationMode == .saved(locationID: eachLocation.UUID) ? "checkmark.circle.fill" : "circle")
+                                        .dynamicFont(.title, fontDesign: .rounded, padding: 0)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.accentColor)
+                                }
                             }
                             .padding()
                             .modifier(RectangleWrapper(color: .accentColor, useGradient: true, opacity: 0.15))
                         }
+                        .disabled(changeLocationChoice.status == .inProgress)
                     }
                 }
                 .padding(.horizontal)
@@ -153,11 +215,11 @@ struct ScanLocationsView: View {
             
             // MARK: Navigation Settings
             .toolbar(content: {
-                ToolbarItem(placement: .cancellationAction) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
-                        Text("Cancel")
+                        Text("Done")
                             .fontWeight(.bold)
                     }
                 }
@@ -168,7 +230,10 @@ struct ScanLocationsView: View {
             // Set up a real-time listener for the user's profile!
             usersCollection.document(currentUser.UUID).addSnapshotListener({ snapshot, error in
                 if let snapshot = snapshot {
-                    if let snapshotData = snapshot.data() { currentUser.replaceFields(User.dedictify(snapshotData)) }
+                    if let snapshotData = snapshot.data() {
+                        currentUser.replaceFields(User.dedictify(snapshotData))
+                        changeLocationChoice.status = .success
+                    }
                 }
             })
         }

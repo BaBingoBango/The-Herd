@@ -16,7 +16,7 @@ struct PostDetailView: View {
     @ObservedObject var currentUser: User = .getSample()
     var locationManager = LocationManager()
     @State var showingCommentField = false
-    @State var commentFieldDetent = PresentationDetent.medium
+    @State var commentFieldDetent = PresentationDetent.large
     @State var deletePost = Operation()
     @State var savePost = Operation()
     @State var isPostSaved = false
@@ -30,7 +30,7 @@ struct PostDetailView: View {
                     // FIX? make an optional state version? probs not...acc maybe with an on change?
                     PostOptionView(post: post, currentUser: currentUser, showTopBar: false, cornerRadius: 0)
                     
-                    CommentsView(comments: post.comments, post: post)
+                    CommentsView(currentUser: currentUser, comments: post.comments, post: post)
                         .padding(.horizontal)
                 }
                 
@@ -43,7 +43,7 @@ struct PostDetailView: View {
                                 .font(.system(size: 25))
                                 .padding(.top, 10)
                             
-                            Text("\(post.distanceFromNow) · \(post.calculateDistanceFromLocation(latitude: 42.50807, longitude: 83.40217)) away")
+                            Text("\(post.distanceFromNow) · \(post.calculateDistanceFromLocation(latitude: currentUser.getLocation(locationManager)!.0, longitude: currentUser.getLocation(locationManager)!.1)) away")
                                 .font(.system(size: 15))
                                 .fontWeight(.heavy)
                                 .foregroundColor(.white)
@@ -118,9 +118,11 @@ struct PostDetailView_Previews: PreviewProvider {
 // MARK: Support Views
 struct CommentsView: View {
     
+    var currentUser = User.getSample()
     var comments: [Post]
     var post: Post
     var barColor: Color = .clear
+    var parentPost: Post?
     
     var body: some View {
         ForEach(comments, id: \.UUID) { eachComment in
@@ -141,16 +143,32 @@ struct CommentsView: View {
                         .foregroundColor(.secondary)
                 }
                 
-                Text(eachComment.text)
-                    .font(.system(size: 22.5, design: .default))
-                    .fontWeight(.medium)
-                    .padding(.leading, 7.5)
-                    .padding(.bottom)
+                HStack {
+                    Text(eachComment.text)
+                        .font(.system(size: 22.5, design: .default))
+                        .fontWeight(.medium)
+                        .padding(.leading, 7.5)
+                        .padding(.bottom)
+                    
+                    Spacer()
+                }
                 
-                PostOptionView(post: eachComment, showTopBar: false, showText: false, seperateControls: false, cornerRadius: 0, bottomBarFont: .body)
+                PostOptionView(post: eachComment, currentUser: currentUser, showTopBar: false, showText: false, seperateControls: false, cornerRadius: 0, bottomBarFont: .body, parentPost: parentPost ?? post)
                 
-                CommentsView(comments: eachComment.comments, post: post, barColor: eachComment.authorColor)
-                    .padding(.leading)
+                if !eachComment.comments.isEmpty {
+                    HStack {
+                        Rectangle()
+                            .frame(width: 4)
+                            .cornerRadius(10)
+                            .foregroundColor(eachComment.authorColor)
+                        
+                        VStack {
+                            CommentsView(currentUser: currentUser, comments: eachComment.comments, post: post, barColor: eachComment.authorColor, parentPost: post)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .padding(.leading, 1)
+                        }
+                    }
+                }
             }
         }
     }

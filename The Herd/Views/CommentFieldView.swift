@@ -18,47 +18,46 @@ struct CommentFieldView: View {
     @Binding var post: Post
     @ObservedObject var currentUser: User = .getSample()
     var locationManager: LocationManager
-    var comment: String?
-    var commenterIcon: String?
-    var commenterColor: Color?
+    var parentPost: Post?
     @FocusState var focusedField: String?
     
     // MARK: View Body
     var body: some View {
         NavigationView {
             VStack(alignment: .leading) {
-                if let comment = comment, let commenterIcon = commenterIcon, let commenterColor = commenterColor {
-                    HStack {
-                        ZStack {
-                            Image(systemName: "circle.fill")
-                                .font(.system(size: 37.5))
-                                .foregroundColor(commenterColor)
+                HStack {
+                    ZStack {
+                        Image(systemName: "circle.fill")
+                            .font(.system(size: 37.5))
+                            .foregroundColor(post.authorColor)
 
-                            Text(commenterIcon)
-                                .font(.system(size: 25))
-                        }
-                        
-                        VStack(alignment: .leading) {
-                            Text("Replying To Comment")
-                                .dynamicFont(.callout, padding: 0)
-                                .fontWeight(.bold)
-                                .foregroundColor(.secondary)
-                            
-                            Text(comment)
-                                .dynamicFont(.headline, lineLimit: 10, padding: 0)
-                                .fontWeight(.semibold)
-                        }
+                        Text(post.authorEmoji)
+                            .font(.system(size: 25))
                     }
-                    .padding(10)
-                    .modifier(RectangleWrapper(color: commenterColor, opacity: 0.1, enforceLayoutPriority: true))
-                    .padding(.horizontal)
+                    
+                    VStack(alignment: .leading) {
+                        Text(post.commentLevel == 0 ? "Replying To Post" : "Replying To Comment")
+                            .dynamicFont(.callout, padding: 0)
+                            .fontWeight(.bold)
+                            .foregroundColor(.secondary)
+                        
+                        Text(post.text)
+                            .dynamicFont(.headline, lineLimit: 10, padding: 0)
+                            .multilineTextAlignment(.leading)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                    }
                 }
+                .padding(10)
+                .modifier(RectangleWrapper(color: post.authorColor, opacity: 0.1, enforceLayoutPriority: true))
+                .padding(.horizontal)
                 
                 ZStack {
                     VStack {
                         HStack {
                             Text("Write your comment here!")
                                 .dynamicFont(.title2, lineLimit: 2, padding: 0)
+                                .foregroundColor(.primary)
                                 .fontWeight(.bold)
                                 .padding([.leading, .top], 10)
                             
@@ -71,6 +70,7 @@ struct CommentFieldView: View {
                     TextEditor(text: $enteredComment)
                         .dynamicFont(.title2, padding: 5)
                         .fontWeight(.bold)
+                        .multilineTextAlignment(.leading)
                         .opacity(enteredComment.isEmpty ? 0.5 : 1)
                         .focused($focusedField, equals: "editor")
                 }
@@ -108,19 +108,34 @@ struct CommentFieldView: View {
                     } else {
                         Button(action: {
                             addComment.status = .inProgress
+                            
                             let newComment = Post(authorUUID: currentUser.UUID,
                                                   authorEmoji: currentUser.emoji,
                                                   authorColor: currentUser.color,
                                                   text: enteredComment,
                                                   votes: [currentUser.UUID : .init(voterUUID: currentUser.UUID, value: 1, timePosted: Date())],
-                                                  commentLevel: 1,
+                                                  commentLevel: post.commentLevel + 1,
                                                   comments: [],
                                                   timePosted: Date(),
-                                                  latitude: currentUser.getLocation(locationManager)!.0,
-                                                  longitude: currentUser.getLocation(locationManager)!.1)
+                                                  latitude: 0,
+                                                  longitude: 0)
                             
-                            postsCollection.document(post.UUID).updateData([
-                                "comments" : (post.comments + [newComment]).map({ $0.dictify() })
+                            // TODO: if the parent post has a comment level of 1, search the parent (needs to be passed in) for the original comment - then, attach the reply and reupload!
+                            
+                            var newCommentsArray = post.commentLevel == 0 ? post.comments : parentPost!.comments
+                            if post.commentLevel == 0 {
+                                newCommentsArray += [newComment]
+                                
+                            } else if post.commentLevel == 1 {
+                                newCommentsArray[newCommentsArray.firstIndex(where: { $0.UUID == post.UUID })!].comments.append(newComment)
+                                
+                            } else {
+                                addComment.setError(message: "You cannot reply to a comment that is already a reply to another comment.")
+                                return
+                            }
+                            
+                            postsCollection.document(post.commentLevel == 0 ? post.UUID : parentPost!.UUID).updateData([
+                                "comments" : newCommentsArray.map({ $0.dictify() })
                             ]) { error in
                                 if let error = error {
                                     addComment.setError(message: error.localizedDescription)
@@ -152,7 +167,7 @@ struct CommentFieldView: View {
 // MARK: View Preview
 struct CommentFieldView_Previews: PreviewProvider {
     static var previews: some View {
-        CommentFieldView(post: .constant(Post.getSamples().randomElement()!), locationManager: LocationManager(), comment: "Yo yo (yo yo) don't reply to this! You're sad (you're sad) can't cry to this!", commenterIcon: "🛰️", commenterColor: .cyan)
+        CommentFieldView(post: .constant(Post.getSamples().randomElement()!), locationManager: LocationManager())
     }
 }
 

@@ -13,6 +13,11 @@ struct SavedLocation: Transportable {
     var nickname: String
     var latitude: Double
     var longitude: Double
+    // TODO: NEXT! :)
+    // TODO: add date to this!
+    // TODO: sort the locs in the saved menu!
+    // TODO: add customizing/deleting the saved locs!
+    // TODO: add updating the location on the post browser and query!
     
     func dictify() -> [String : Any] {
         return [

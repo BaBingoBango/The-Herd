@@ -52,7 +52,7 @@ class User: Transportable, Equatable, ObservableObject {
             ],
             "joinDate" : Timestamp(date: joinDate),
             "locationMode" : locationMode.toString(),
-            "savedLocations" : savedLocations.mapValues({ $0.dictify() }),
+            "savedLocations" : savedLocations.mapValues({ $0.dictify() })
         ]
     }
     

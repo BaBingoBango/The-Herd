@@ -23,11 +23,12 @@ struct PostOptionView: View {
     var cornerRadius = 20.0
     var bottomBarFont: Font = .headline
     var blockRecursion = false
+    var parentPost: Post?
     @State var deletePost = Operation()
     @State var savePost = Operation()
     @State var isPostSaved = false
     @State var showingCommentField = false
-    @State var commentFieldDetent = PresentationDetent.medium
+    @State var commentFieldDetent = PresentationDetent.large
     var voteValue: Int {
         post.votes[currentUser.UUID]?.value ?? 0
     }
@@ -135,7 +136,7 @@ struct PostOptionView: View {
                                         .padding(.trailing, seperateControls ? 0 : 15)
                                 }
                                 .sheet(isPresented: $showingCommentField) {
-                                    CommentFieldView(post: $post, currentUser: currentUser, locationManager: locationManager, comment: post.text, commenterIcon: post.authorEmoji, commenterColor: post.authorColor)
+                                    CommentFieldView(post: $post, currentUser: currentUser, locationManager: locationManager, parentPost: post.commentLevel == 0 ? nil : parentPost)
                                         .presentationDetents([.medium, .large], selection: $commentFieldDetent)
                                 }
                                 
@@ -198,18 +199,37 @@ struct PostOptionView: View {
     
     // MARK: View Functions
     func changeVote(newValue: Int) {
-        let originalPost = post
         let newVote = Vote(voterUUID: currentUser.UUID, value: newValue, timePosted: Date())
-        post.votes[currentUser.UUID] = newVote
-        updatePostOnServer(originalPost: originalPost)
-    }
-    
-    func updatePostOnServer(originalPost: Post) {
-        post.transportToServer(path: postsCollection,
-                               documentID: post.UUID,
-                               operation: nil,
-                               onError: { error in post = originalPost; fatalError(error.localizedDescription) },
-                               onSuccess: nil)
+        var newVotesList = post.votes
+        var newCommentsArray = post.commentLevel == 0 ? post.comments : parentPost!.comments
+        
+        if post.commentLevel == 0 {
+            newVotesList[currentUser.UUID] = newVote
+        } else if post.commentLevel == 1 {
+            newCommentsArray[newCommentsArray.firstIndex(where: { $0.UUID == post.UUID })!].votes[currentUser.UUID] = newVote
+        } else if post.commentLevel == 2 {
+            for eachLevelOneCommentIndex in 0..<newCommentsArray.count {
+                for eachLevelTwoCommentIndex in 0..<newCommentsArray[eachLevelOneCommentIndex].comments.count {
+                    if newCommentsArray[eachLevelOneCommentIndex].comments[eachLevelTwoCommentIndex].UUID == post.UUID {
+                        newCommentsArray[eachLevelOneCommentIndex].comments[eachLevelTwoCommentIndex].votes[currentUser.UUID] = newVote
+                    }
+                }
+            }
+        }
+        
+        postsCollection.document(parentPost?.UUID ?? post.UUID).updateData([
+            "votes" : newVotesList.mapValues({ $0.dictify() }),
+            "comments" : newCommentsArray.map({ $0.dictify() })
+        ]) { error in
+            if error == nil {
+                post.votes = newVotesList
+                if post.commentLevel == 0 {
+                    post.votes = newVotesList
+                } else {
+                    post.votes[currentUser.UUID] = newVote
+                }
+            }
+        }
     }
 }
 
@@ -305,3 +325,6 @@ struct PostMenuButton: View {
         .offset(y: -5)
     }
 }
+
+// TODO: changing votes deletes the post lol (location thing)
+// TODO: cant vote on comments
