@@ -123,7 +123,7 @@ class User: Transportable, Equatable, ObservableObject {
                      color: User.iconColors.randomElement()!,
                      joinDate: Date(),
                      locationMode: .saved(locationID: "BEACH!!"),
-                     savedLocations: ["BEACH!!" : .init(emoji: "🏖️", nickname: "the beach!", latitude: 25.79327, longitude: 25.237094)])
+                     savedLocations: ["E1974DB9-5198-409C-9707-599C56AB84A7-D8C69522-5B0F-4106-9149-A4CA2420F027-3105478D-4B1E-4A08-8AD2-989E41EB2096" : .init(emoji: "🐳", nickname: "example!", latitude: 0, longitude: 0)])
     }
     
     static var iconColors: [Color] = [

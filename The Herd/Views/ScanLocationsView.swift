@@ -17,6 +17,7 @@ struct ScanLocationsView: View {
     @State var changeLocationChoice = Operation(status: .inProgress)
     @State var changingLocationOption = ""
     @State var showingLocationPicker = false
+    @State var showingLocationEditor = false
     
     // MARK: View Body
     var body: some View {
@@ -138,21 +139,7 @@ struct ScanLocationsView: View {
                     
                     ForEach(Array(currentUser.savedLocations.values.sorted(by: { $0.dateSaved > $1.dateSaved })), id: \.UUID) { eachLocation in
                         Button(action: {
-                            if currentUser.locationMode != .saved(locationID: eachLocation.UUID) {
-                                
-                                changeLocationChoice.status = .inProgress
-                                changingLocationOption = eachLocation.UUID
-                                usersCollection.document(currentUser.UUID).updateData([
-                                    "locationMode" : LocationMode.saved(locationID: eachLocation.UUID).toString()
-                                ]) { error in
-                                    if let error = error {
-                                        changeLocationChoice.setError(message: error.localizedDescription)
-                                    } else {
-                                        changeLocationChoice.status = .success
-                                    }
-                                }
-                            }
-                            
+                            showingLocationEditor = true
                         }) {
                             HStack {
                                 VStack(alignment: .leading) {
@@ -199,16 +186,38 @@ struct ScanLocationsView: View {
                                         .controlSize(.large)
                                         .scaleEffect(0.75)
                                 } else {
-                                    Image(systemName: currentUser.locationMode == .saved(locationID: eachLocation.UUID) ? "checkmark.circle.fill" : "circle")
-                                        .dynamicFont(.title, fontDesign: .rounded, padding: 0)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.accentColor)
+                                    Button(action: {
+                                        if currentUser.locationMode != .saved(locationID: eachLocation.UUID) {
+                                            
+                                            changeLocationChoice.status = .inProgress
+                                            changingLocationOption = eachLocation.UUID
+                                            usersCollection.document(currentUser.UUID).updateData([
+                                                "locationMode" : LocationMode.saved(locationID: eachLocation.UUID).toString()
+                                            ]) { error in
+                                                if let error = error {
+                                                    changeLocationChoice.setError(message: error.localizedDescription)
+                                                } else {
+                                                    changeLocationChoice.status = .success
+                                                }
+                                            }
+                                        }
+                                        
+                                    }) {
+                                        Image(systemName: currentUser.locationMode == .saved(locationID: eachLocation.UUID) ? "checkmark.circle.fill" : "circle")
+                                            .dynamicFont(.title, fontDesign: .rounded, padding: 0)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(eachLocation.color)
+                                    }
+                                    .disabled(changeLocationChoice.status == .inProgress)
                                 }
                             }
                             .padding()
-                            .modifier(RectangleWrapper(color: .accentColor, useGradient: true, opacity: 0.15))
+                            .modifier(RectangleWrapper(color: eachLocation.color, useGradient: true, opacity: 0.15))
                         }
                         .disabled(changeLocationChoice.status == .inProgress)
+                        .sheet(isPresented: $showingLocationEditor) {
+                            SavedLocationEditorView(currentUser: currentUser, savedLocationID: eachLocation.UUID, locationName: eachLocation.nickname)
+                        }
                     }
                 }
                 .padding(.horizontal)

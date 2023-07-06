@@ -7,10 +7,12 @@
 
 import Foundation
 import FirebaseFirestore
+import SwiftUI
 
 struct SavedLocation: Transportable {
     var UUID = Foundation.UUID.getTripleID()
     var emoji: String
+    var color = Color.cyan
     var nickname: String
     var latitude: Double
     var longitude: Double
@@ -22,6 +24,12 @@ struct SavedLocation: Transportable {
         return [
             "UUID" : UUID,
             "emoji" : emoji,
+            "color" : [
+                Double(UIColor(color).cgColor.components![0]),
+                Double(UIColor(color).cgColor.components![1]),
+                Double(UIColor(color).cgColor.components![2]),
+                Double(UIColor(color).cgColor.components![3])
+            ],
             "nickname" : nickname,
             "latitude" : latitude,
             "longitude" : longitude,
@@ -32,6 +40,10 @@ struct SavedLocation: Transportable {
     static func dedictify(_ dictionary: [String : Any]) -> SavedLocation {
         return SavedLocation(UUID: dictionary["UUID"] as! String,
                              emoji: dictionary["emoji"] as! String,
+                             color: {
+                     let colorComponents = dictionary["color"] as! [Double]
+                     return Color(cgColor: .init(red: colorComponents[0], green: colorComponents[1], blue: colorComponents[2], alpha: colorComponents[3]))
+                 }(),
                              nickname: dictionary["nickname"] as! String,
                              latitude: dictionary["latitude"] as! Double,
                              longitude: dictionary["longitude"] as! Double,

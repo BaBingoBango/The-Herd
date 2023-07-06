@@ -50,7 +50,7 @@ struct PostBrowserView: View {
                                         Image(systemName: "location.fill")
                                             .dynamicFont(.title, fontDesign: .rounded, padding: 0)
                                             .fontWeight(.bold)
-                                            .foregroundColor(.blue)
+                                            .foregroundColor(.gray)
                                     }
                                 }
                             } else {
