@@ -8,7 +8,7 @@
 import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
-import FirebaseFunctions
+import CoreLocation
 
 /// An app view written in SwiftUI!
 struct PostBrowserView: View {
@@ -17,7 +17,6 @@ struct PostBrowserView: View {
     @State var currentUserExists = false
     @ObservedObject var currentUser: User = .getSample()
     @StateObject var locationManager = LocationManager()
-    @State var locationMode: LocationMode = .current
     @State var showingProfileView = false
     @State var posts: [Post] = []
     @State var postUpdate = Operation()
@@ -34,7 +33,7 @@ struct PostBrowserView: View {
                     }) {
                         HStack {
                             if currentUserExists {
-                                switch locationMode {
+                                switch currentUser.locationMode {
                                 case .current:
                                     Image(systemName: locationManager.locationStatus == .authorizedWhenInUse ? "location.fill" : "location.slash.fill")
                                         .dynamicFont(.title, fontDesign: .rounded, padding: 0)
@@ -69,7 +68,7 @@ struct PostBrowserView: View {
                                 HStack(spacing: 5) {
                                     Text(verbatim: {
                                         if currentUserExists {
-                                            switch locationMode {
+                                            switch currentUser.locationMode {
                                             case .current:
                                                 return locationManager.locationStatus == .authorizedWhenInUse ? "Current Location" : "Location Unknown"
                                             case .saved(locationID: let locationID):
@@ -79,6 +78,7 @@ struct PostBrowserView: View {
                                         return "Loading..."
                                     }())
                                         .dynamicFont(.title2, fontDesign: .rounded, lineLimit: 4, padding: 0)
+                                        .multilineTextAlignment(.leading)
                                         .foregroundColor(.primary)
                                         .fontWeight(.bold)
                                     
@@ -108,7 +108,7 @@ struct PostBrowserView: View {
                         .padding()
                         .modifier(RectangleWrapper(color: {
                             if currentUserExists {
-                                switch locationMode {
+                                switch currentUser.locationMode {
                                 case .current:
                                     return locationManager.locationStatus == .authorizedWhenInUse ? .blue : .gray
                                 case .saved(locationID: let locationID):
@@ -219,6 +219,9 @@ struct PostBrowserView: View {
         .onChange(of: showingNewPostView) { newValue in
             if !newValue { Task { await getLatestPosts() } }
         }
+        .onChange(of: currentUser.locationMode) { _ in
+            Task { await getLatestPosts() }
+        }
         .onAppear {
             // MARK: View Launch Code
             // Add preview data!
@@ -234,7 +237,7 @@ struct PostBrowserView: View {
             if let userID = Auth.auth().currentUser?.uid {
                 User.transportUserFromServer(userID,
                                              onError: { error in fatalError(error.localizedDescription) },
-                                             onSuccess: { user in currentUser.replaceFields(user); Task { await getLatestPosts() } })
+                                             onSuccess: { user in currentUser.replaceFields(user) })
                 
                 // Set up a real-time listener for the user's profile!
                 usersCollection.document(userID).addSnapshotListener({ snapshot, error in
@@ -252,33 +255,49 @@ struct PostBrowserView: View {
         posts.removeAll()
         var postsInRange = 0
         
-        if locationMode == .current, let lastLocation = locationManager.lastLocation {
-            // 5 miles = 8,046.72 m = 8.04672 km
-            let scanQuery = GeoFirestore(collectionRef: postsCollection).query(withCenter: lastLocation, radius: 8.04672)
-            let _ = scanQuery.observe(.documentEntered, with: { documentID, _ in
-                if let documentID = documentID {
+        var scanLocation = CLLocation()
+        switch currentUser.locationMode {
+        case .current:
+            if let lastLocation = locationManager.lastLocation {
+                scanLocation = lastLocation
+            } else {
+                postUpdate.setError(message: "Current Location mode is enabled but couldn't access the device's location.")
+                return
+            }
+        case .saved(locationID: let locationID):
+            if let savedLocation = currentUser.savedLocations[locationID] {
+                scanLocation = CLLocation(latitude: savedLocation.latitude, longitude: savedLocation.longitude)
+            } else {
+                postUpdate.setError(message: "The location is set to a saved location which does not exist on the server.")
+                return
+            }
+        }
+        
+        // 5 miles = 8,046.72 m = 8.04672 km
+        let scanQuery = GeoFirestore(collectionRef: postsCollection).query(withCenter: scanLocation, radius: 8.04672)
+        let _ = scanQuery.observe(.documentEntered, with: { documentID, _ in
+            if let documentID = documentID {
+                
+                postsInRange += 1
+                
+                Post.transportFromServer(path: postsCollection.document(documentID),
+                                         operation: nil,
+                                         onError: { error in postUpdate.setError(message: error.localizedDescription) },
+                                         onSuccess: { post in
                     
-                    postsInRange += 1
-                    
-                    Post.transportFromServer(path: postsCollection.document(documentID),
-                                             operation: nil,
-                                             onError: { error in postUpdate.setError(message: error.localizedDescription) },
-                                             onSuccess: { post in
-                        
-                        posts.append(post)
-                        if posts.count == postsInRange {
-                            posts.sort(by: { $0.timePosted > $1.timePosted }) // TODO: fix this! (querying literally every post is that the issue? lol i think so)
-                            postUpdate.status = .success
-                        }
-                    })
-                } else {
-                    postUpdate.setError(message: "TODO: add error message!")
-                }
-            })
-            let _ = scanQuery.observeReady {
-                if postsInRange == 0 {
-                    postUpdate.status = .success
-                }
+                    posts.append(post)
+                    if posts.count == postsInRange {
+                        posts.sort(by: { $0.timePosted > $1.timePosted }) // TODO: fix this! (querying literally every post is that the issue? lol i think so)
+                        postUpdate.status = .success
+                    }
+                })
+            } else {
+                postUpdate.setError(message: "TODO: add error message!")
+            }
+        })
+        let _ = scanQuery.observeReady {
+            if postsInRange == 0 {
+                postUpdate.status = .success
             }
         }
     }

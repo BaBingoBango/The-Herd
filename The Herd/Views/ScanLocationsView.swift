@@ -136,7 +136,7 @@ struct ScanLocationsView: View {
                     }
                     .padding(.top)
                     
-                    ForEach(Array(currentUser.savedLocations.values), id: \.UUID) { eachLocation in
+                    ForEach(Array(currentUser.savedLocations.values.sorted(by: { $0.dateSaved > $1.dateSaved })), id: \.UUID) { eachLocation in
                         Button(action: {
                             if currentUser.locationMode != .saved(locationID: eachLocation.UUID) {
                                 
@@ -164,6 +164,7 @@ struct ScanLocationsView: View {
                                         
                                         Text(eachLocation.nickname)
                                             .dynamicFont(.title3, fontDesign: .rounded, lineLimit: 4, padding: 0)
+                                            .multilineTextAlignment(.leading)
                                             .foregroundColor(.primary)
                                             .fontWeight(.bold)
                                     }

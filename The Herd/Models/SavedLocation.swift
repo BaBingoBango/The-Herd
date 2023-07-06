@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
 struct SavedLocation: Transportable {
     var UUID = Foundation.UUID.getTripleID()
@@ -13,11 +14,9 @@ struct SavedLocation: Transportable {
     var nickname: String
     var latitude: Double
     var longitude: Double
+    var dateSaved = Date()
     // TODO: NEXT! :)
-    // TODO: add date to this!
-    // TODO: sort the locs in the saved menu!
     // TODO: add customizing/deleting the saved locs!
-    // TODO: add updating the location on the post browser and query!
     
     func dictify() -> [String : Any] {
         return [
@@ -25,7 +24,8 @@ struct SavedLocation: Transportable {
             "emoji" : emoji,
             "nickname" : nickname,
             "latitude" : latitude,
-            "longitude" : longitude
+            "longitude" : longitude,
+            "dateSaved" : Timestamp(date: dateSaved)
         ]
     }
     
@@ -34,7 +34,8 @@ struct SavedLocation: Transportable {
                              emoji: dictionary["emoji"] as! String,
                              nickname: dictionary["nickname"] as! String,
                              latitude: dictionary["latitude"] as! Double,
-                             longitude: dictionary["longitude"] as! Double)
+                             longitude: dictionary["longitude"] as! Double,
+                             dateSaved: Date.decodeDate(dictionary["dateSaved"]!))
     }
 }
 
