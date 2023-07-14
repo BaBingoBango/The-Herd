@@ -17,7 +17,7 @@ struct ScanLocationsView: View {
     @State var changeLocationChoice = Operation(status: .inProgress)
     @State var changingLocationOption = ""
     @State var showingLocationPicker = false
-    @State var showingLocationEditor = false
+    @State var selectedSavedLocation: SavedLocation?
     
     // MARK: View Body
     var body: some View {
@@ -139,7 +139,7 @@ struct ScanLocationsView: View {
                     
                     ForEach(Array(currentUser.savedLocations.values.sorted(by: { $0.dateSaved > $1.dateSaved })), id: \.UUID) { eachLocation in
                         Button(action: {
-                            showingLocationEditor = true
+                            selectedSavedLocation = eachLocation
                         }) {
                             HStack {
                                 VStack(alignment: .leading) {
@@ -215,8 +215,8 @@ struct ScanLocationsView: View {
                             .modifier(RectangleWrapper(color: eachLocation.color, useGradient: true, opacity: 0.15))
                         }
                         .disabled(changeLocationChoice.status == .inProgress)
-                        .sheet(isPresented: $showingLocationEditor) {
-                            SavedLocationEditorView(currentUser: currentUser, savedLocationID: eachLocation.UUID, locationName: eachLocation.nickname)
+                        .sheet(item: $selectedSavedLocation) { savedLocation in
+                            SavedLocationEditorView(currentUser: currentUser, savedLocationID: savedLocation.UUID, locationName: savedLocation.nickname, color: savedLocation.color, emoji: savedLocation.emoji)
                         }
                     }
                 }

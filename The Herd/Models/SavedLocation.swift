@@ -9,16 +9,14 @@ import Foundation
 import FirebaseFirestore
 import SwiftUI
 
-struct SavedLocation: Transportable {
-    var UUID = Foundation.UUID.getTripleID()
+struct SavedLocation: Transportable, Identifiable {
+    var UUID = Foundation.UUID.getTripleID(); var id: String { UUID }
     var emoji: String
     var color = Color.cyan
     var nickname: String
     var latitude: Double
     var longitude: Double
     var dateSaved = Date()
-    // TODO: NEXT! :)
-    // TODO: add customizing/deleting the saved locs!
     
     func dictify() -> [String : Any] {
         return [

@@ -112,7 +112,7 @@ struct PostBrowserView: View {
                                 case .current:
                                     return locationManager.locationStatus == .authorizedWhenInUse ? .blue : .gray
                                 case .saved(locationID: let locationID):
-                                    return currentUser.savedLocations[locationID] != nil ? .accentColor : .gray
+                                    return currentUser.savedLocations[locationID] != nil ? currentUser.savedLocations[locationID]!.color : .gray
                                 }
                             }
                             return .gray
@@ -217,6 +217,9 @@ struct PostBrowserView: View {
             await getLatestPosts()
         }
         .onChange(of: showingNewPostView) { newValue in
+            if !newValue { Task { await getLatestPosts() } }
+        }
+        .onChange(of: showingScanView) { newValue in
             if !newValue { Task { await getLatestPosts() } }
         }
         .onChange(of: currentUser.locationMode) { _ in

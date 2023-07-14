@@ -7,7 +7,9 @@
 
 import Foundation
 
-struct Taylor {
+struct Taylor: Identifiable {
+    var id = UUID()
+    
     static var lyrics: [String] = [
         "Karma's gonna track you down",
         "Touch me and you'll never be alone",
