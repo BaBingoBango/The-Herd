@@ -15,6 +15,7 @@ struct Post: Transportable {
     var authorUUID: String
     var authorEmoji: String
     var authorColor: Color
+    var anonymousIdentifierTable: [String : Int] = [:]
     var text: String
     var votes: [String : Vote] // user ID : user vote
     var commentLevel = 0
@@ -139,6 +140,7 @@ struct Post: Transportable {
                 Double(UIColor(authorColor).cgColor.components![2]),
                 Double(UIColor(authorColor).cgColor.components![3])
             ],
+            "anonymousIdentifierTable" : anonymousIdentifierTable,
             "text" : text,
             "votes" : votes.mapValues({ $0.dictify() }),
             "commentLevel" : commentLevel,
@@ -157,6 +159,7 @@ struct Post: Transportable {
             let colorComponents = dictionary["authorColor"] as! [Double]
             return Color(cgColor: .init(red: colorComponents[0], green: colorComponents[1], blue: colorComponents[2], alpha: colorComponents[3]))
         }(),
+                    anonymousIdentifierTable: dictionary["anonymousIdentifierTable"] as! [String : Int],
                     text: dictionary["text"] as! String,
                     votes: (dictionary["votes"] as! [String : Any]).mapValues({ Vote.dedictify($0 as! [String : Any]) }),
                     commentLevel: dictionary["commentLevel"] as! Int,

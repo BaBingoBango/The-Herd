@@ -130,7 +130,6 @@ class User: Transportable, Equatable, ObservableObject {
         .blue,
         .brown,
         .cyan,
-        .gray,
         .green,
         .indigo,
         .mint,

@@ -15,7 +15,9 @@ struct NewPostView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.colorScheme) var colorScheme
     var draftID: String?
+    @AppStorage("postingAnonymously") var postingAnonymously = false
     @State var enteredText = ""
+    @FocusState var focusedField: String?
     @State var uploadPost = Operation()
     @State var uploadingDraft = false
     @ObservedObject var currentUser: User = .getSample()
@@ -29,11 +31,45 @@ struct NewPostView: View {
     var body: some View {
         ScrollView {
             VStack {
-                Text("New post time?")
-                    .dynamicFont(.largeTitle, lineLimit: 2)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.center)
-                    .padding(.top, 12.5)
+//                Text("New post time?")
+//                    .dynamicFont(.largeTitle, lineLimit: 2)
+//                    .fontWeight(.bold)
+//                    .multilineTextAlignment(.center)
+//                    .padding(.top, 12.5)
+                
+                Button(action: {
+                    postingAnonymously.toggle()
+                }) {
+                    HStack(spacing: 10) {
+                        Text(postingAnonymously ? "🕶️" : currentUser.emoji)
+                            .font(.system(size: 37.5))
+                        
+                        VStack(alignment: .leading, spacing: 2.5) {
+                            Text(postingAnonymously ? "Posting Anonymously" : "Posting With Emoji")
+                                .dynamicFont(.headline, padding: 0)
+                                .fontWeight(.bold)
+                                .multilineTextAlignment(.leading)
+                                .foregroundColor(.primary)
+                            
+                            HStack(spacing: 5) {
+                                Text(postingAnonymously ? "Use Emoji" : "Go Anonymous")
+                                    .dynamicFont(.body, padding: 0)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.blue)
+                                    .multilineTextAlignment(.leading)
+                                
+                                Image(systemName: "chevron.right")
+                                    .dynamicFont(.body, padding: 0)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                        
+                        Spacer()
+                    }
+                    .padding()
+                    .modifier(RectangleWrapper(color: postingAnonymously ? .gray : currentUser.color, opacity: 0.25))
+                }
                 
                 ZStack {
                     VStack {
@@ -53,6 +89,7 @@ struct NewPostView: View {
                         .dynamicFont(.title2, padding: 0)
                         .fontWeight(.bold)
                         .opacity(enteredText.isEmpty ? 0.5 : 1)
+                        .focused($focusedField, equals: "editor")
                 }
                 .padding()
                 .background(colorScheme == .dark ? Color.gray.opacity(0.5) : Color.white)
@@ -61,10 +98,19 @@ struct NewPostView: View {
                 .shadow(color: .gray.opacity(0.3), radius: 10)
                 
                 HStack {
+                    Text("About Posting")
+                        .dynamicFont(.title2, padding: 0)
+                        .fontWeight(.bold)
+                    
+                    Spacer()
+                }
+                .padding(.top, 20)
+                
+                HStack {
                     Text("🗺️")
                         .font(.system(size: 37.5))
                     
-                    Text("Anyone within five miles of where you are will be able to see your post, but you'll be able to see it from anywhere!")
+                    Text("Anyone within five miles of where you are now will see your post!")
                         .font(.callout)
                         .fontWeight(.medium)
                         .multilineTextAlignment(.leading)
@@ -73,21 +119,20 @@ struct NewPostView: View {
                 }
                 .padding()
                 .modifier(RectangleWrapper(color: .teal, opacity: 0.25))
-                .padding(.top, 5)
                 
-//                    HStack {
-//                        Text("🔒")
-//                            .font(.system(size: 40))
-//
-//                        Text("Drafts are end-to-end encrypted and can't be accessed by anyone but you.")
-//                            .font(.system(size: 17.5))
-//                            .fontWeight(.medium)
-//                            .multilineTextAlignment(.leading)
-//
-//                        Spacer()
-//                    }
-//                    .padding()
-//                    .modifier(RectangleWrapper(color: .red, opacity: 0.25))
+                HStack {
+                    Text("🔒")
+                        .font(.system(size: 37.5))
+                    
+                    Text("Another important fact about posts? idk tbh")
+                        .font(.callout)
+                        .fontWeight(.medium)
+                        .multilineTextAlignment(.leading)
+                    
+                    Spacer()
+                }
+                .padding()
+                .modifier(RectangleWrapper(color: .yellow, opacity: 0.25))
             }
             .padding(.horizontal)
         }
@@ -99,8 +144,9 @@ struct NewPostView: View {
                 
                 // Create the new Post object!
                 let newPost = Post(authorUUID: currentUser.UUID,
-                                   authorEmoji: currentUser.emoji,
-                                   authorColor: currentUser.color,
+                                   authorEmoji: postingAnonymously ? "🕶️" : currentUser.emoji,
+                                   authorColor: postingAnonymously ? .gray : currentUser.color,
+                                   anonymousIdentifierTable: postingAnonymously ? [currentUser.UUID : 0] : [:],
                                    text: enteredText,
                                    votes: [currentUser.UUID : .init(voterUUID: currentUser.UUID, value: 1, timePosted: Date())],
                                    comments: [],
@@ -180,6 +226,8 @@ struct NewPostView: View {
         
         .onAppear {
             // MARK: View Launch Code
+            focusedField = "editor"
+            
             // Set up a real-time listener for the user's profile!
             usersCollection.document(currentUser.UUID).addSnapshotListener({ snapshot, error in
                 if let snapshot = snapshot {

@@ -17,6 +17,25 @@ struct PostDetailView: View {
     var locationManager = LocationManager()
     @State var showingCommentField = false
     @State var commentFieldDetent = PresentationDetent.large
+    @AppStorage("postingAnonymously") var postingAnonymously = false
+    var commentingAnonymously: Bool {
+        let hasSpokenAnonymously = post.anonymousIdentifierTable.contains(where: { $0.key == currentUser.UUID })
+        if post.authorUUID == currentUser.UUID {
+            return hasSpokenAnonymously
+        } else {
+            return hasSpokenAnonymously || postingAnonymously
+        }
+    }
+    var anonymousNumber: String {
+        var number = post.anonymousIdentifierTable[currentUser.UUID] ?? post.anonymousIdentifierTable.count
+        if number == 0 {
+            return "🕶️"
+        } else if number / 10 >= 1 {
+            return String(number)
+        } else {
+            return "0" + String(number)
+        }
+    }
     @State var deletePost = Operation()
     @State var savePost = Operation()
     @State var isPostSaved = false
@@ -64,10 +83,12 @@ struct PostDetailView: View {
                                 ZStack {
                                     Image(systemName: "circle.fill")
                                         .font(.system(size: 25))
-                                        .foregroundColor(currentUser.color)
+                                        .foregroundColor(commentingAnonymously ? .gray : currentUser.color)
 
-                                    Text(currentUser.emoji)
-                                        .font(.system(size: 17))
+                                    Text(commentingAnonymously ? anonymousNumber : currentUser.emoji)
+                                        .font(.system(size: 17, design: .monospaced))
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.white)
                                 }
 
                                 Text("Reply to this post...")
@@ -77,7 +98,7 @@ struct PostDetailView: View {
                             }
                         }
                         .sheet(isPresented: $showingCommentField) {
-                            CommentFieldView(post: $post, currentUser: currentUser, locationManager: locationManager)
+                            CommentFieldView(commentingAnonymously: commentingAnonymously, post: $post, currentUser: currentUser, locationManager: locationManager, parentPost: post)
                                 .presentationDetents([.medium, .large], selection: $commentFieldDetent)
                         }
                         .padding(.bottom, 5)

@@ -13,6 +13,19 @@ struct CommentFieldView: View {
     // MARK: View Variables
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.colorScheme) var colorScheme
+    @AppStorage("postingAnonymously") var postingAnonymously = false
+    var commentingAnonymously = false
+    var modeSwitchingDisabled: Bool {
+        if parentPost!.anonymousIdentifierTable.contains(where: { $0.key == currentUser.UUID }) { return true }
+        if parentPost!.authorUUID == currentUser.UUID { return true }
+        for eachComment in parentPost!.comments {
+            if eachComment.authorUUID == currentUser.UUID { return true }
+            for eachSecondLevelComment in eachComment.comments {
+                if eachSecondLevelComment.authorUUID == currentUser.UUID { return true }
+            }
+        }
+        return false
+    }
     @State var enteredComment = ""
     @State var addComment = Operation()
     @Binding var post: Post
@@ -24,63 +37,109 @@ struct CommentFieldView: View {
     // MARK: View Body
     var body: some View {
         NavigationView {
-            VStack(alignment: .leading) {
-                HStack {
-                    ZStack {
-                        Image(systemName: "circle.fill")
-                            .font(.system(size: 37.5))
-                            .foregroundColor(post.authorColor)
+            ScrollView {
+                VStack(alignment: .leading) {
+                    Button(action: {
+                        postingAnonymously.toggle()
+                    }) {
+                        HStack(spacing: 10) {
+                            ZStack {
+                                Image(systemName: "circle.fill")
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.clear)
 
-                        Text(post.authorEmoji)
-                            .font(.system(size: 25))
+                                Text(commentingAnonymously ? "🕶️" : currentUser.emoji)
+                                    .font(.system(size: 20))
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text(commentingAnonymously ? "Posting Anonymously" : "Posting With Emoji")
+                                    .dynamicFont(.callout, padding: 0)
+                                    .fontWeight(.bold)
+                                    .multilineTextAlignment(.leading)
+                                    .foregroundColor(.primary)
+                                
+                                if !modeSwitchingDisabled {
+                                    HStack(spacing: 5) {
+                                        Text(commentingAnonymously ? "Use Emoji" : "Go Anonymous")
+                                            .dynamicFont(.callout, padding: 0)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.blue)
+                                            .multilineTextAlignment(.leading)
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .dynamicFont(.callout, padding: 0)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.blue)
+                                    }
+                                }
+                            }
+                            
+                            Spacer()
+                        }
+                        .padding(10)
+                        .modifier(RectangleWrapper(color: commentingAnonymously ? .gray : currentUser.color, opacity: 0.1))
                     }
+                    .padding(.horizontal)
+                    .disabled(modeSwitchingDisabled)
                     
-                    VStack(alignment: .leading) {
-                        Text(post.commentLevel == 0 ? "Replying To Post" : "Replying To Comment")
-                            .dynamicFont(.callout, padding: 0)
-                            .fontWeight(.bold)
-                            .foregroundColor(.secondary)
+                    HStack {
+                        ZStack {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(post.authorColor)
+
+                            Text(post.authorEmoji)
+                                .font(.system(size: 12.5))
+                        }
                         
-                        Text(post.text)
-                            .dynamicFont(.headline, lineLimit: 10, padding: 0)
-                            .multilineTextAlignment(.leading)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary)
-                    }
-                }
-                .padding(10)
-                .modifier(RectangleWrapper(color: post.authorColor, opacity: 0.1, enforceLayoutPriority: true))
-                .padding(.horizontal)
-                
-                ZStack {
-                    VStack {
-                        HStack {
-                            Text("Write your comment here!")
-                                .dynamicFont(.title2, lineLimit: 2, padding: 0)
-                                .foregroundColor(.primary)
+                        VStack(alignment: .leading) {
+                            Text(post.commentLevel == 0 ? "Replying To Post" : "Replying To Comment")
+                                .dynamicFont(.callout, padding: 0)
                                 .fontWeight(.bold)
-                                .padding([.leading, .top], 10)
+                                .foregroundColor(.secondary)
+                            
+                            Text(post.text)
+                                .dynamicFont(.headline, lineLimit: 10, padding: 0)
+                                .multilineTextAlignment(.leading)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                        }
+                    }
+                    .padding(10)
+                    .modifier(RectangleWrapper(color: post.authorColor, opacity: 0.1, enforceLayoutPriority: true))
+                    .padding(.horizontal)
+                    
+                    ZStack {
+                        VStack {
+                            HStack {
+                                Text("Write your comment here!")
+                                    .dynamicFont(.title2, lineLimit: 2, padding: 0)
+                                    .foregroundColor(.primary)
+                                    .fontWeight(.bold)
+                                    .padding([.leading, .top], 10)
+                                
+                                Spacer()
+                            }
                             
                             Spacer()
                         }
                         
-                        Spacer()
+                        TextEditor(text: $enteredComment)
+                            .dynamicFont(.title2, padding: 5)
+                            .fontWeight(.bold)
+                            .multilineTextAlignment(.leading)
+                            .opacity(enteredComment.isEmpty ? 0.5 : 1)
+                            .focused($focusedField, equals: "editor")
                     }
+                    .background(colorScheme == .dark ? Color.gray.opacity(0.5) : Color.white)
+                    .frame(height: 225)
+                    .cornerRadius(10)
+                    .shadow(color: .gray.opacity(0.3), radius: 10)
+                    .padding([.horizontal, .bottom])
                     
-                    TextEditor(text: $enteredComment)
-                        .dynamicFont(.title2, padding: 5)
-                        .fontWeight(.bold)
-                        .multilineTextAlignment(.leading)
-                        .opacity(enteredComment.isEmpty ? 0.5 : 1)
-                        .focused($focusedField, equals: "editor")
+                    Spacer()
                 }
-                .background(colorScheme == .dark ? Color.gray.opacity(0.5) : Color.white)
-                .frame(height: 225)
-                .cornerRadius(10)
-                .shadow(color: .gray.opacity(0.3), radius: 10)
-                .padding([.horizontal, .bottom])
-                
-                Spacer()
             }
             .alert(isPresented: $addComment.isShowingErrorMessage) {
                 Alert(title: Text("Couldn't Post Comment"),
@@ -119,8 +178,6 @@ struct CommentFieldView: View {
                                                   timePosted: Date(),
                                                   latitude: 0,
                                                   longitude: 0)
-                            
-                            // TODO: if the parent post has a comment level of 1, search the parent (needs to be passed in) for the original comment - then, attach the reply and reupload!
                             
                             var newCommentsArray = post.commentLevel == 0 ? post.comments : parentPost!.comments
                             if post.commentLevel == 0 {
@@ -167,7 +224,7 @@ struct CommentFieldView: View {
 // MARK: View Preview
 struct CommentFieldView_Previews: PreviewProvider {
     static var previews: some View {
-        CommentFieldView(post: .constant(Post.getSamples().randomElement()!), locationManager: LocationManager())
+        CommentFieldView(post: .constant(Post.getSamples().randomElement()!), locationManager: LocationManager(), parentPost: Post.sample)
     }
 }
 
