@@ -24,6 +24,19 @@ struct Post: Transportable {
     var latitude: Double
     var longitude: Double
     
+    func getAnonymousNumber(_ userID: String) -> String? {
+        if let number = anonymousIdentifierTable[userID] {
+            if number == 0 {
+                return "🕶️"
+            } else if number / 10 >= 1 {
+                return String(number)
+            } else {
+                return "0" + String(number)
+            }
+        } else {
+            return nil
+        }
+    }
     var score: Int {
         var score = 0
         for eachVote in votes.values {
@@ -31,7 +44,6 @@ struct Post: Transportable {
         }
         return score
     }
-    
     var distanceFromNow: String {
         let secondsFromNow = timePosted.distance(to: Date())
         

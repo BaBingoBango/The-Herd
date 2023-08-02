@@ -156,7 +156,7 @@ struct PostBrowserView: View {
                                 
                                 if currentUserExists {
                                     ForEach(posts, id: \.UUID) { eachPost in
-                                        PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager)
+                                        PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost)
                                     }
                                 }
                                 

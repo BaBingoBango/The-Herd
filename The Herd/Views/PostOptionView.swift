@@ -35,6 +35,15 @@ struct PostOptionView: View {
     var hasUserCommented: Bool {
         Post.hasUserCommented(post.comments, userUUID: currentUser.UUID)
     }
+    @AppStorage("postingAnonymously") var postingAnonymously = false
+    var commentingAnonymously: Bool {
+        let hasSpokenAnonymously = parentPost!.anonymousIdentifierTable.contains(where: { $0.key == currentUser.UUID })
+        if parentPost!.authorUUID == currentUser.UUID {
+            return hasSpokenAnonymously
+        } else {
+            return hasSpokenAnonymously || postingAnonymously
+        }
+    }
     
     // MARK: View Body
     var body: some View {
@@ -44,10 +53,13 @@ struct PostOptionView: View {
                     ZStack {
                         Image(systemName: "circle.fill")
                             .font(.system(size: 37.5))
-                            .foregroundColor(post.authorColor)
+                            .foregroundColor(parentPost!.getAnonymousNumber(post.authorUUID) != nil ? .gray : post.authorColor)
 
-                        Text(post.authorEmoji)
+                        Text(parentPost!.getAnonymousNumber(post.authorUUID) ?? post.authorEmoji)
                             .font(.system(size: 25))
+                            .fontDesign(.monospaced)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
                     }
                     .offset(y: -12.5)
                     
@@ -69,7 +81,7 @@ struct PostOptionView: View {
                     .offset(y: -8)
             }
             
-            NavigationLink(destination: PostDetailView(post: $post, currentUser: currentUser, locationManager: locationManager), isActive: $showingPostDetail) { EmptyView() }
+            NavigationLink(destination: PostDetailView(post: $post, currentUser: currentUser, locationManager: locationManager, commentingAnonymously: commentingAnonymously), isActive: $showingPostDetail) { EmptyView() }
             
             switch deletePost.status {
             case .inProgress:
@@ -132,11 +144,11 @@ struct PostOptionView: View {
                                     Label(post.commentLevel == 0 ? "\(Post.countComments(post.comments))" : "Reply", systemImage: hasUserCommented ? "bubble.left.fill" : "bubble.left")
                                         .dynamicFont(bottomBarFont, padding: 0)
                                         .fontWeight(.semibold)
-                                        .foregroundColor(hasUserCommented ? post.authorColor : .secondary)
+                                        .foregroundColor(hasUserCommented ? (parentPost!.getAnonymousNumber(post.authorUUID) != nil ? .gray : post.authorColor): .secondary)
                                         .padding(.trailing, seperateControls ? 0 : 15)
                                 }
                                 .sheet(isPresented: $showingCommentField) {
-                                    CommentFieldView(post: $post, currentUser: currentUser, locationManager: locationManager, parentPost: post.commentLevel == 0 ? nil : parentPost)
+                                    CommentFieldView(commentingAnonymously: commentingAnonymously, post: $post, currentUser: currentUser, locationManager: locationManager, parentPost: post.commentLevel == 0 ? post : parentPost)
                                         .presentationDetents([.medium, .large], selection: $commentFieldDetent)
                                 }
                                 
@@ -258,7 +270,7 @@ struct PostMenuButton: View {
     
     var body: some View {
         Menu {
-            let viewCopy = PostOptionView(post: post, currentUser: currentUser, locationManager: locationManager, blockRecursion: true).frame(width: 500)
+            let viewCopy = PostOptionView(post: post, currentUser: currentUser, locationManager: locationManager, blockRecursion: true, parentPost: post).frame(width: 500)
             let viewImage = Image(uiImage: ImageRenderer(content: viewCopy).uiImage!)
             
             ShareLink(item: viewImage, preview: SharePreview(post.text, image: viewImage)) {

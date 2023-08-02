@@ -14,7 +14,7 @@ struct CommentFieldView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.colorScheme) var colorScheme
     @AppStorage("postingAnonymously") var postingAnonymously = false
-    var commentingAnonymously = false
+    var commentingAnonymously: Bool
     var modeSwitchingDisabled: Bool {
         if parentPost!.anonymousIdentifierTable.contains(where: { $0.key == currentUser.UUID }) { return true }
         if parentPost!.authorUUID == currentUser.UUID { return true }
@@ -87,10 +87,13 @@ struct CommentFieldView: View {
                         ZStack {
                             Image(systemName: "circle.fill")
                                 .font(.system(size: 30))
-                                .foregroundColor(post.authorColor)
+                                .foregroundColor(parentPost!.getAnonymousNumber(post.authorUUID) != nil ? .gray : post.authorColor)
 
-                            Text(post.authorEmoji)
+                            Text(parentPost!.getAnonymousNumber(post.authorUUID) ?? post.authorEmoji)
                                 .font(.system(size: 12.5))
+                                .fontDesign(.monospaced)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
                         }
                         
                         VStack(alignment: .leading) {
@@ -107,7 +110,7 @@ struct CommentFieldView: View {
                         }
                     }
                     .padding(10)
-                    .modifier(RectangleWrapper(color: post.authorColor, opacity: 0.1, enforceLayoutPriority: true))
+                    .modifier(RectangleWrapper(color: parentPost!.getAnonymousNumber(post.authorUUID) != nil ? .gray : post.authorColor, opacity: 0.1, enforceLayoutPriority: true))
                     .padding(.horizontal)
                     
                     ZStack {
@@ -191,8 +194,14 @@ struct CommentFieldView: View {
                                 return
                             }
                             
+                            var newAnonTable = parentPost!.anonymousIdentifierTable
+                            if commentingAnonymously && parentPost!.getAnonymousNumber(currentUser.UUID) == nil {
+                                newAnonTable[currentUser.UUID] = parentPost!.anonymousIdentifierTable[parentPost!.authorUUID] != nil ? newAnonTable.count : newAnonTable.count + 1
+                            }
+                            
                             postsCollection.document(post.commentLevel == 0 ? post.UUID : parentPost!.UUID).updateData([
-                                "comments" : newCommentsArray.map({ $0.dictify() })
+                                "comments" : newCommentsArray.map({ $0.dictify() }),
+                                "anonymousIdentifierTable" : newAnonTable
                             ]) { error in
                                 if let error = error {
                                     addComment.setError(message: error.localizedDescription)
@@ -224,7 +233,7 @@ struct CommentFieldView: View {
 // MARK: View Preview
 struct CommentFieldView_Previews: PreviewProvider {
     static var previews: some View {
-        CommentFieldView(post: .constant(Post.getSamples().randomElement()!), locationManager: LocationManager(), parentPost: Post.sample)
+        CommentFieldView(commentingAnonymously: false, post: .constant(Post.getSamples().randomElement()!), locationManager: LocationManager(), parentPost: Post.sample)
     }
 }
 

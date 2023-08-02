@@ -583,8 +583,8 @@ public class GFSQuery {
             case .documentMoved:
                 keyMovedObservers[firebaseHandle] = block
                 currentHandle += 1
-            default:
-                NSException.raise(.invalidArgumentException, format: "Event type was not a GFEventType!", arguments: getVaList(["nil"]))
+//            default:
+//                NSException.raise(.invalidArgumentException, format: "Event type was not a GFEventType!", arguments: getVaList(["nil"]))
             }
             if self.queries.isEmpty {
                 self.updateQueries()

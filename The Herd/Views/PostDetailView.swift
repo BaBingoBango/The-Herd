@@ -18,24 +18,7 @@ struct PostDetailView: View {
     @State var showingCommentField = false
     @State var commentFieldDetent = PresentationDetent.large
     @AppStorage("postingAnonymously") var postingAnonymously = false
-    var commentingAnonymously: Bool {
-        let hasSpokenAnonymously = post.anonymousIdentifierTable.contains(where: { $0.key == currentUser.UUID })
-        if post.authorUUID == currentUser.UUID {
-            return hasSpokenAnonymously
-        } else {
-            return hasSpokenAnonymously || postingAnonymously
-        }
-    }
-    var anonymousNumber: String {
-        var number = post.anonymousIdentifierTable[currentUser.UUID] ?? post.anonymousIdentifierTable.count
-        if number == 0 {
-            return "🕶️"
-        } else if number / 10 >= 1 {
-            return String(number)
-        } else {
-            return "0" + String(number)
-        }
-    }
+    var commentingAnonymously: Bool
     @State var deletePost = Operation()
     @State var savePost = Operation()
     @State var isPostSaved = false
@@ -47,9 +30,9 @@ struct PostDetailView: View {
                 VStack(alignment: .leading) {
                     // FIXME: the comment count dosen't update when new comments are added bc this is static and not a state pass-in to POV
                     // FIX? make an optional state version? probs not...acc maybe with an on change?
-                    PostOptionView(post: post, currentUser: currentUser, showTopBar: false, cornerRadius: 0)
+                    PostOptionView(post: post, currentUser: currentUser, showTopBar: false, cornerRadius: 0, parentPost: post)
                     
-                    CommentsView(currentUser: currentUser, comments: post.comments, post: post)
+                    CommentsView(currentUser: currentUser, comments: post.comments, post: post, parentPost: post, commentingAnonymously: commentingAnonymously)
                         .padding(.horizontal)
                 }
                 
@@ -85,8 +68,9 @@ struct PostDetailView: View {
                                         .font(.system(size: 25))
                                         .foregroundColor(commentingAnonymously ? .gray : currentUser.color)
 
-                                    Text(commentingAnonymously ? anonymousNumber : currentUser.emoji)
+                                    Text(commentingAnonymously ? post.getAnonymousNumber(currentUser.UUID) ?? "🕶️" : currentUser.emoji)
                                         .font(.system(size: 17, design: .monospaced))
+                                        .fontDesign(.monospaced)
                                         .fontWeight(.bold)
                                         .foregroundColor(.white)
                                 }
@@ -131,7 +115,7 @@ struct PostDetailView: View {
 struct PostDetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            PostDetailView(post: .constant(Post.sample))
+            PostDetailView(post: .constant(Post.sample), commentingAnonymously: false)
         }
     }
 }
@@ -144,6 +128,7 @@ struct CommentsView: View {
     var post: Post
     var barColor: Color = .clear
     var parentPost: Post?
+    var commentingAnonymously: Bool
     
     var body: some View {
         ForEach(comments, id: \.UUID) { eachComment in
@@ -152,10 +137,13 @@ struct CommentsView: View {
                     ZStack {
                         Image(systemName: "circle.fill")
                             .font(.system(size: 37.5))
-                            .foregroundColor(eachComment.authorColor)
+                            .foregroundColor(parentPost!.getAnonymousNumber(eachComment.authorUUID) != nil ? .gray : eachComment.authorColor)
                         
-                        Text(eachComment.authorEmoji)
-                            .font(.system(size: 25))
+                        Text(parentPost!.getAnonymousNumber(eachComment.authorUUID) ?? eachComment.authorEmoji)
+                            .font(.system(size: 22.5))
+                            .fontDesign(.monospaced)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
                     }
                     
                     Text(eachComment.distanceFromNow)
@@ -181,10 +169,10 @@ struct CommentsView: View {
                         Rectangle()
                             .frame(width: 4)
                             .cornerRadius(10)
-                            .foregroundColor(eachComment.authorColor)
+                            .foregroundColor(parentPost!.getAnonymousNumber(eachComment.authorUUID) != nil ? .gray : eachComment.authorColor)
                         
                         VStack {
-                            CommentsView(currentUser: currentUser, comments: eachComment.comments, post: post, barColor: eachComment.authorColor, parentPost: post)
+                            CommentsView(currentUser: currentUser, comments: eachComment.comments, post: post, barColor: eachComment.authorColor, parentPost: post, commentingAnonymously: commentingAnonymously)
                                 .fixedSize(horizontal: false, vertical: true)
                                 .padding(.leading, 1)
                         }
