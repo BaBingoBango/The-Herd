@@ -44,6 +44,7 @@
 		AA1343F82A258CA500E92BB2 /* Taylor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1343F52A258CA500E92BB2 /* Taylor.swift */; };
 		AA17636F2A32EA2F00365439 /* ColorServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA17636E2A32EA2F00365439 /* ColorServices.swift */; };
 		AA1763712A33A23D00365439 /* Emoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1763702A33A23D00365439 /* Emoji.swift */; };
+		AA29042E2A7B024100B41541 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA29042D2A7B024100B41541 /* Address.swift */; };
 		AA3BE5412A3D0A690040C7BD /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3BE5402A3D0A690040C7BD /* LocationManager.swift */; };
 		AA3BE5432A3EA32D0040C7BD /* Draft.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3BE5422A3EA32D0040C7BD /* Draft.swift */; };
 		AA6116632A4DD43300EBCC53 /* SavedPostRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6116622A4DD43300EBCC53 /* SavedPostRecord.swift */; };
@@ -124,6 +125,7 @@
 		AA1343F52A258CA500E92BB2 /* Taylor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Taylor.swift; sourceTree = "<group>"; };
 		AA17636E2A32EA2F00365439 /* ColorServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorServices.swift; sourceTree = "<group>"; };
 		AA1763702A33A23D00365439 /* Emoji.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emoji.swift; sourceTree = "<group>"; };
+		AA29042D2A7B024100B41541 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
 		AA3BE5402A3D0A690040C7BD /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		AA3BE5422A3EA32D0040C7BD /* Draft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Draft.swift; sourceTree = "<group>"; };
 		AA6116622A4DD43300EBCC53 /* SavedPostRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPostRecord.swift; sourceTree = "<group>"; };
@@ -283,6 +285,7 @@
 				AA1343DB2A255B2800E92BB2 /* Vote.swift */,
 				AA7EC71C2A3C0CAD00276C42 /* SavedLocation.swift */,
 				AA6116622A4DD43300EBCC53 /* SavedPostRecord.swift */,
+				AA29042D2A7B024100B41541 /* Address.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -492,6 +495,7 @@
 				AAF070A82A394FCC00DA2615 /* DynamicFont.swift in Sources */,
 				AA7EC71B2A3C096A00276C42 /* ScanLocationsView.swift in Sources */,
 				AA3BE5432A3EA32D0040C7BD /* Draft.swift in Sources */,
+				AA29042E2A7B024100B41541 /* Address.swift in Sources */,
 				AA1763712A33A23D00365439 /* Emoji.swift in Sources */,
 				AA1343DC2A255B2800E92BB2 /* Vote.swift in Sources */,
 				AA1343E52A255BB900E92BB2 /* Operation.swift in Sources */,

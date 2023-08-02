@@ -17,6 +17,7 @@ class User: Transportable, Equatable, ObservableObject {
     @Published var joinDate: Date
     @Published var locationMode: LocationMode
     @Published var savedLocations: [String : SavedLocation]
+    @Published var addresses: [Address]
     
     required init(UUID: String = Foundation.UUID.getTripleID(), emoji: String, color: Color, joinDate: Date, locationMode: LocationMode, savedLocations: [String : SavedLocation]) {
         self.UUID = UUID
@@ -25,6 +26,7 @@ class User: Transportable, Equatable, ObservableObject {
         self.joinDate = joinDate
         self.locationMode = locationMode
         self.savedLocations = savedLocations
+        self.addresses = addresses
     }
     
     static func == (lhs: User, rhs: User) -> Bool {
@@ -38,6 +40,7 @@ class User: Transportable, Equatable, ObservableObject {
         self.joinDate = user.joinDate
         self.locationMode = user.locationMode
         self.savedLocations = user.savedLocations
+        self.addresses = addresses
     }
     
     func dictify() -> [String : Any] {
@@ -53,6 +56,7 @@ class User: Transportable, Equatable, ObservableObject {
             "joinDate" : Timestamp(date: joinDate),
             "locationMode" : locationMode.toString(),
             "savedLocations" : savedLocations.mapValues({ $0.dictify() })
+            // TODO: NEXT: finish adding addys to this struct, then add the rolodex/addy book!
         ]
     }
     

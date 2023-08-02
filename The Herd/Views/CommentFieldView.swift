@@ -202,6 +202,7 @@ struct CommentFieldView: View {
                             postsCollection.document(post.commentLevel == 0 ? post.UUID : parentPost!.UUID).updateData([
                                 "comments" : newCommentsArray.map({ $0.dictify() }),
                                 "anonymousIdentifierTable" : newAnonTable
+                                
                             ]) { error in
                                 if let error = error {
                                     addComment.setError(message: error.localizedDescription)
