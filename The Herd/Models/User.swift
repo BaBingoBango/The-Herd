@@ -17,9 +17,9 @@ class User: Transportable, Equatable, ObservableObject {
     @Published var joinDate: Date
     @Published var locationMode: LocationMode
     @Published var savedLocations: [String : SavedLocation]
-    @Published var addresses: [Address]
+    @Published var addresses: [String : Address]
     
-    required init(UUID: String = Foundation.UUID.getTripleID(), emoji: String, color: Color, joinDate: Date, locationMode: LocationMode, savedLocations: [String : SavedLocation]) {
+    required init(UUID: String = Foundation.UUID.getTripleID(), emoji: String, color: Color, joinDate: Date, locationMode: LocationMode, savedLocations: [String : SavedLocation], addresses: [String : Address]) {
         self.UUID = UUID
         self.emoji = emoji
         self.color = color
@@ -55,8 +55,8 @@ class User: Transportable, Equatable, ObservableObject {
             ],
             "joinDate" : Timestamp(date: joinDate),
             "locationMode" : locationMode.toString(),
-            "savedLocations" : savedLocations.mapValues({ $0.dictify() })
-            // TODO: NEXT: finish adding addys to this struct, then add the rolodex/addy book!
+            "savedLocations" : savedLocations.mapValues({ $0.dictify() }),
+            "addresses" : addresses.mapValues({ $0.dictify() }),
         ]
     }
     
@@ -69,7 +69,9 @@ class User: Transportable, Equatable, ObservableObject {
         }(),
                     joinDate: Date.decodeDate(dictionary["joinDate"]!),
                     locationMode: LocationMode.fromString(dictionary["locationMode"] as! String),
-                    savedLocations: (dictionary["savedLocations"] as! [String : Any]).mapValues({ SavedLocation.dedictify($0 as! [String : Any]) }))
+                    savedLocations: (dictionary["savedLocations"] as! [String : Any]).mapValues({ SavedLocation.dedictify($0 as! [String : Any]) }),
+                    addresses: (dictionary["addresses"] as! [String : Any]).mapValues({ Address.dedictify($0 as! [String : Any]) })
+        )
     }
     
     func formatJoinDate() -> String {
@@ -90,7 +92,8 @@ class User: Transportable, Equatable, ObservableObject {
                                           color: User.iconColors.randomElement()!,
                                           joinDate: Date(),
                                           locationMode: .current,
-                                          savedLocations: [:])
+                                          savedLocations: [:],
+                                          addresses: [:])
                 
                 newUserProfile.transportToServer(path: usersCollection,
                                                  documentID: userID,
@@ -127,7 +130,7 @@ class User: Transportable, Equatable, ObservableObject {
                      color: User.iconColors.randomElement()!,
                      joinDate: Date(),
                      locationMode: .saved(locationID: "BEACH!!"),
-                     savedLocations: ["E1974DB9-5198-409C-9707-599C56AB84A7-D8C69522-5B0F-4106-9149-A4CA2420F027-3105478D-4B1E-4A08-8AD2-989E41EB2096" : .init(emoji: "🐳", nickname: "example!", latitude: 0, longitude: 0)])
+                     savedLocations: ["E1974DB9-5198-409C-9707-599C56AB84A7-D8C69522-5B0F-4106-9149-A4CA2420F027-3105478D-4B1E-4A08-8AD2-989E41EB2096" : .init(emoji: "🐳", nickname: "example!", latitude: 0, longitude: 0)], addresses: [:])
     }
     
     static var iconColors: [Color] = [

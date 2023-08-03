@@ -66,6 +66,8 @@
 		AAD70F7F2A462C9D00FE96AA /* FirebaseFunctionsCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = AAD70F7E2A462C9D00FE96AA /* FirebaseFunctionsCombine-Community */; };
 		AAE0D3F22A603C970093E9BB /* EmojiPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE0D3F12A603C970093E9BB /* EmojiPickerView.swift */; };
 		AAE0D3F42A603D870093E9BB /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE0D3F32A603D870093E9BB /* SearchBarView.swift */; };
+		AAE323B82A7B222F00020A52 /* AddressBookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE323B72A7B222F00020A52 /* AddressBookView.swift */; };
+		AAE323BA2A7B26F600020A52 /* AddressEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE323B92A7B26F600020A52 /* AddressEditorView.swift */; };
 		AAF038E52A3670A000FCF14A /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF038E42A3670A000FCF14A /* SignInView.swift */; };
 		AAF038EA2A36798000FCF14A /* PhoneSignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF038E92A36798000FCF14A /* PhoneSignInView.swift */; };
 		AAF038ED2A3679F200FCF14A /* iPhoneNumberField in Frameworks */ = {isa = PBXBuildFile; productRef = AAF038EC2A3679F200FCF14A /* iPhoneNumberField */; };
@@ -137,6 +139,8 @@
 		AACC89302A2CF68800B2E673 /* PostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailView.swift; sourceTree = "<group>"; };
 		AAE0D3F12A603C970093E9BB /* EmojiPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPickerView.swift; sourceTree = "<group>"; };
 		AAE0D3F32A603D870093E9BB /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarView.swift; sourceTree = "<group>"; };
+		AAE323B72A7B222F00020A52 /* AddressBookView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressBookView.swift; sourceTree = "<group>"; };
+		AAE323B92A7B26F600020A52 /* AddressEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressEditorView.swift; sourceTree = "<group>"; };
 		AAF038E32A3665A800FCF14A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AAF038E42A3670A000FCF14A /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		AAF038E72A36781B00FCF14A /* The Herd.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "The Herd.entitlements"; sourceTree = "<group>"; };
@@ -207,6 +211,8 @@
 				AA7EC71A2A3C096A00276C42 /* ScanLocationsView.swift */,
 				AA96D2E22A565E220004D2E5 /* SavedLocationEditorView.swift */,
 				AAE0D3F12A603C970093E9BB /* EmojiPickerView.swift */,
+				AAE323B72A7B222F00020A52 /* AddressBookView.swift */,
+				AAE323B92A7B26F600020A52 /* AddressEditorView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -477,6 +483,7 @@
 				AA1343F22A258B4F00E92BB2 /* IDServices.swift in Sources */,
 				AAF038FA2A36C33900FCF14A /* NewPostView.swift in Sources */,
 				AA95D3372A53652E0089A8D4 /* CommentFieldView.swift in Sources */,
+				AAE323BA2A7B26F600020A52 /* AddressEditorView.swift in Sources */,
 				AA96D2E32A565E220004D2E5 /* SavedLocationEditorView.swift in Sources */,
 				AA1343AA2A2559D700E92BB2 /* The_Herd.xcdatamodeld in Sources */,
 				AAF038EF2A36AE1800FCF14A /* DispatchView.swift in Sources */,
@@ -489,6 +496,7 @@
 				AAFC19792A427CDD0013D797 /* DismissalButton.swift in Sources */,
 				AA1343E12A255B8C00E92BB2 /* Transportable.swift in Sources */,
 				AA1343A72A2559D700E92BB2 /* Persistence.swift in Sources */,
+				AAE323B82A7B222F00020A52 /* AddressBookView.swift in Sources */,
 				AA1343EE2A255C9D00E92BB2 /* Post.swift in Sources */,
 				AA13439E2A2559D600E92BB2 /* The_HerdApp.swift in Sources */,
 				AA7EC71D2A3C0CAD00276C42 /* SavedLocation.swift in Sources */,

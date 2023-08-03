@@ -22,6 +22,7 @@ struct PostBrowserView: View {
     @State var postUpdate = Operation()
     @State var showingNewPostView = false
     @State var showingScanView = false
+    @State var showingRolodex = false
     
     // MARK: View Body
     var body: some View {
@@ -198,18 +199,41 @@ struct PostBrowserView: View {
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingNewPostView = true
-                    }) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 25))
-                            .fontWeight(.bold)
-                            .foregroundColor(.accentColor)
+                    HStack(spacing: 5) {
+                        Button(action: {
+                            showingRolodex = true
+                        }) {
+                            ZStack {
+                                Image(systemName: "circle.fill")
+                                    .font(.system(size: 25))
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.gray)
+                                    .opacity(0.15)
+                                
+                                Image(systemName: "text.book.closed.fill")
+                                    .font(.system(size: 12.5))
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.accentColor)
+                            }
+                        }
+                        .sheet(isPresented: $showingRolodex) {
+                            AddressBookView(currentUser: currentUser)
+                        }
+                        .disabled(!currentUserExists || currentUser.getLocation(locationManager) == nil)
+                        
+                        Button(action: {
+                            showingNewPostView = true
+                        }) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 25))
+                                .fontWeight(.bold)
+                                .foregroundColor(.accentColor)
+                        }
+                        .sheet(isPresented: $showingNewPostView) {
+                            ManagePostsView(currentUser: currentUser, locationManager: locationManager)
+                        }
+                        .disabled(!currentUserExists || currentUser.getLocation(locationManager) == nil)
                     }
-                    .sheet(isPresented: $showingNewPostView) {
-                        ManagePostsView(currentUser: currentUser, locationManager: locationManager)
-                    }
-                    .disabled(!currentUserExists || currentUser.getLocation(locationManager) == nil)
                 }
             })
         }

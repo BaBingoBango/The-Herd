@@ -277,6 +277,18 @@ struct PostMenuButton: View {
                 Label("Share...", systemImage: "square.and.arrow.up")
             }
             
+            // TODO: NEXT: add the add/remove to/from rolodex button
+            Button(action: {
+                
+            }) {
+                Label(!isPostSaved ? "Add to Rolodex" : "Remove from Rolodex", systemImage: !isPostSaved ? "person.crop.circle.badge.plus" : "person.crop.circle.badge.minus")
+            }
+//            .alert(isPresented: $savePost.isShowingErrorMessage) {
+//                Alert(title: Text("Couldn't Save Post"),
+//                      message: Text(savePost.errorMessage),
+//                      dismissButton: .default(Text("Close")))
+//            }
+            
             Button(action: {
                 savePost.status = .inProgress
                 
