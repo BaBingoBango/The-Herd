@@ -44,6 +44,8 @@ struct PostOptionView: View {
             return hasSpokenAnonymously || postingAnonymously
         }
     }
+    @State var rolodexUser = Operation()
+    @State var isUserInRolodex = false
     
     // MARK: View Body
     var body: some View {
@@ -72,7 +74,19 @@ struct PostOptionView: View {
                     Spacer()
                     
                     if !blockRecursion {
-                        PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: $deletePost, savePost: $savePost, isPostSaved: $isPostSaved)
+                        PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: $deletePost, savePost: $savePost, isPostSaved: $isPostSaved, rolodexUser: $rolodexUser, isUserInRolodex: $isUserInRolodex)
+                            .onAppear {
+                                postsCollection.document(post.UUID).collection("saved").document(currentUser.UUID).getDocument() { snapshot, error in
+                                    if error != nil {
+                                        return
+                                    } else if let snapshot = snapshot {
+                                        if snapshot.exists {
+                                            isPostSaved = true
+                                        }
+                                    }
+                                }
+                                isUserInRolodex = currentUser.addresses[post.authorUUID] != nil
+                            }
                     }
                 }
                 .padding(.horizontal)
@@ -194,19 +208,6 @@ struct PostOptionView: View {
         .padding(.bottom)
         .modifier(RectangleWrapper(color: post.authorColor, useGradient: true, opacity:  !blockRecursion ? 0.15 : 0.75, cornerRadius: cornerRadius, hideRectangle: !showText))
         .padding(.top, showTopBar ? 15 : 0)
-        
-        .onAppear {
-            // MARK: View Launch Code
-            postsCollection.document(post.UUID).collection("saved").document(currentUser.UUID).getDocument() { snapshot, error in
-                if error != nil {
-                    return
-                } else if let snapshot = snapshot {
-                    if snapshot.exists {
-                        isPostSaved = true
-                    }
-                }
-            }
-        }
     }
     
     // MARK: View Functions
@@ -267,6 +268,8 @@ struct PostMenuButton: View {
     @Binding var savePost: Operation
     @Binding var isPostSaved: Bool
     var makeBold = false
+    @Binding var rolodexUser: Operation
+    @Binding var isUserInRolodex: Bool
     
     var body: some View {
         Menu {
@@ -279,9 +282,40 @@ struct PostMenuButton: View {
             
             // TODO: NEXT: add the add/remove to/from rolodex button
             Button(action: {
+                rolodexUser.status = .inProgress
                 
+                if !isUserInRolodex {
+                    let newAddress = Address(userUUID: post.authorUUID, userEmoji: post.authorEmoji, userColor: post.authorColor, nickname: "Saved User", comment: "")
+                    var newAddresses = currentUser.addresses
+                    newAddresses[post.authorUUID] = newAddress
+                    usersCollection.document(currentUser.UUID).updateData([
+                        "addresses" : newAddresses.mapValues({ $0.dictify() })
+                    ]) { error in
+                        if let error = error {
+                            rolodexUser.setError(message: error.localizedDescription)
+                        } else {
+                            isUserInRolodex = true
+                            rolodexUser.status = .success
+                        }
+                    }
+                    
+                } else {
+                    let newAddress = Address(userUUID: post.authorUUID, userEmoji: post.authorEmoji, userColor: post.authorColor, nickname: "Saved User", comment: "")
+                    var newAddresses = currentUser.addresses
+                    newAddresses.removeValue(forKey: post.authorUUID)
+                    usersCollection.document(currentUser.UUID).updateData([
+                        "addresses" : newAddresses.mapValues({ $0.dictify() })
+                    ]) { error in
+                        if let error = error {
+                            rolodexUser.setError(message: error.localizedDescription)
+                        } else {
+                            isUserInRolodex = false
+                            rolodexUser.status = .success
+                        }
+                    }
+                }
             }) {
-                Label(!isPostSaved ? "Add to Rolodex" : "Remove from Rolodex", systemImage: !isPostSaved ? "person.crop.circle.badge.plus" : "person.crop.circle.badge.minus")
+                Label(!isUserInRolodex ? "Add User to Rolodex" : "Remove User from Rolodex", systemImage: !isUserInRolodex ? "person.crop.circle.badge.plus" : "person.crop.circle.badge.minus")
             }
 //            .alert(isPresented: $savePost.isShowingErrorMessage) {
 //                Alert(title: Text("Couldn't Save Post"),

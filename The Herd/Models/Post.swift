@@ -23,6 +23,7 @@ struct Post: Transportable {
     var timePosted: Date
     var latitude: Double
     var longitude: Double
+    var mentions: [String] // user UUIDs
     
     func getAnonymousNumber(_ userID: String) -> String? {
         if let number = anonymousIdentifierTable[userID] {
@@ -123,10 +124,11 @@ struct Post: Transportable {
                            text: Taylor.lyrics.randomElement()!,
                            votes: Vote.samples,
                            comments: [Post.sample],
-//                                   timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))),
+//                           timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))),
                            timePosted: Date(),
                            latitude: 10 * Double.random(in: 1...5),
-                           longitude: 10 * Double.random(in: 1...5))
+                           longitude: 10 * Double.random(in: 1...5),
+                           mentions: [])
         
         newPost.upload(operation: nil,
                        onError: { error in fatalError(error.localizedDescription) },
@@ -136,7 +138,7 @@ struct Post: Transportable {
     static func getSamples() -> [Post] {
         var posts: [Post] = []
         for eachLyric in Taylor.lyrics {
-            posts.append(.init(authorUUID: User.getSample().UUID, authorEmoji: User.getSample().emoji, authorColor: User.getSample().color, text: eachLyric, votes: Vote.samples, comments: [Post.sample], timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50))
+            posts.append(.init(authorUUID: User.getSample().UUID, authorEmoji: User.getSample().emoji, authorColor: User.getSample().color, text: eachLyric, votes: Vote.samples, comments: [Post.sample], timePosted: Date() - TimeInterval((60 * Int.random(in: 0...500))), latitude: 50, longitude: 50, mentions: []))
         }
         return posts
     }
@@ -159,7 +161,8 @@ struct Post: Transportable {
             "comments" : comments.map({ $0.dictify() }),
             "timePosted" : Timestamp(date: timePosted),
             "latitude" : latitude,
-            "longitude" : longitude
+            "longitude" : longitude,
+            "mentions": mentions
         ]
     }
     
@@ -178,7 +181,8 @@ struct Post: Transportable {
                     comments: (dictionary["comments"] as! [[String : Any]]).map { Post.dedictify($0) },
                     timePosted: Date.decodeDate(dictionary["timePosted"]!),
                     latitude: dictionary["latitude"] as! Double,
-                    longitude: dictionary["longitude"] as! Double
+                    longitude: dictionary["longitude"] as! Double,
+                    mentions: dictionary["mentions"] as! [String]
         )
     }
     
@@ -203,7 +207,7 @@ struct Post: Transportable {
                                                                comments: [],
                                                                timePosted: Date(),
                                                                latitude: 0,
-                                                               longitude: 0),
+                                                               longitude: 0, mentions: []),
                                                          .init(authorUUID: Foundation.UUID.getTripleID(),
                                                                           authorEmoji: Emoji.allEmojis.randomElement()!,
                                                                           authorColor: User.iconColors.randomElement()!,
@@ -213,11 +217,13 @@ struct Post: Transportable {
                                                                           comments: [],
                                                                           timePosted: Date(),
                                                                           latitude: 0,
-                                                                          longitude: 0)],
+                                                                          longitude: 0,
+                                                                          mentions: [])],
                                               
                                               timePosted: Date(),
                                               latitude: 0,
-                                              longitude: 0),
+                                              longitude: 0,
+                                              mentions: []),
                                         
                                         .init(authorUUID: Foundation.UUID.getTripleID(),
                                               authorEmoji: Emoji.allEmojis.randomElement()!,
@@ -227,8 +233,10 @@ struct Post: Transportable {
                                               comments: [],
                                               timePosted: Date(),
                                               latitude: 0,
-                                              longitude: 0)],
+                                              longitude: 0,
+                                              mentions: [])],
                              timePosted: Date(timeIntervalSinceNow: -6759),
                              latitude: 42.50807,
-                             longitude: 83.40217)
+                             longitude: 83.40217,
+                             mentions: [])
 }

@@ -40,7 +40,7 @@ class User: Transportable, Equatable, ObservableObject {
         self.joinDate = user.joinDate
         self.locationMode = user.locationMode
         self.savedLocations = user.savedLocations
-        self.addresses = addresses
+        self.addresses = user.addresses
     }
     
     func dictify() -> [String : Any] {

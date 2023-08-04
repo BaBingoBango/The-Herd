@@ -14,6 +14,8 @@ struct AddressBookView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @ObservedObject var currentUser: User
     @State var searchText = ""
+    var pickerMode = false
+    @Binding var mentions: [String]
     
     // MARK: View Body
     var body: some View {
@@ -48,32 +50,45 @@ struct AddressBookView: View {
                     }
                     
                     ForEach(filteredAddresses, id: \.UUID) { eachAddress in
-                        NavigationLink(destination: AddressEditorView(currentUser: currentUser, addressID: eachAddress.UUID, enteredNickname: eachAddress.nickname, enteredComment: eachAddress.comment)) {
-                            HStack {
-                                ZStack {
-                                    Circle()
-                                        .foregroundColor(eachAddress.userColor)
-                                        .frame(height: 50)
-                                        .padding(.leading, 10)
-                                    
-                                    Text(eachAddress.userEmoji)
-                                        .font(.system(size: 27.5))
-                                }
+                        let rowContent = HStack {
+                            ZStack {
+                                Circle()
+                                    .foregroundColor(eachAddress.userColor)
+                                    .frame(height: 50)
+                                    .padding(.leading, 10)
                                 
-                                VStack(alignment: .leading) {
-                                    Text(eachAddress.nickname)
-                                        .dynamicFont(.title3, fontDesign: .rounded, padding: 0)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.primary)
-                                    
-                                    Text(eachAddress.comment)
-                                        .dynamicFont(.body, minimumScaleFactor: 0.9, padding: 0)
-                                        .foregroundColor(.secondary)
-                                }
-                                
-                                Spacer()
+                                Text(eachAddress.userEmoji)
+                                    .font(.system(size: 27.5))
                             }
-                            .modifier(RectangleWrapper(fixedHeight: 75, color: eachAddress.userColor, opacity: 0.05))
+                            
+                            VStack(alignment: .leading) {
+                                Text(eachAddress.nickname)
+                                    .dynamicFont(.title3, fontDesign: .rounded, padding: 0)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.primary)
+                                
+                                Text(eachAddress.comment)
+                                    .dynamicFont(.body, minimumScaleFactor: 0.9, padding: 0)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                        }
+                        .modifier(RectangleWrapper(fixedHeight: 75, color: eachAddress.userColor, opacity: 0.05))
+                        
+                        if !pickerMode {
+                            NavigationLink(destination: AddressEditorView(currentUser: currentUser, addressID: eachAddress.userUUID, enteredNickname: eachAddress.nickname, enteredComment: eachAddress.comment)) {
+                                rowContent
+                            }
+                        } else {
+                            Button(action: {
+                                mentions.append(eachAddress.userUUID)
+                                presentationMode.wrappedValue.dismiss()
+                            }) {
+                                NavigationLink(destination: AddressEditorView(currentUser: currentUser, addressID: eachAddress.userUUID, enteredNickname: eachAddress.nickname, enteredComment: eachAddress.comment)) {
+                                    rowContent
+                                }
+                            }
                         }
                     }
                 }
@@ -81,13 +96,14 @@ struct AddressBookView: View {
             }
             
             // MARK: Navigation Settings
-            .navigationTitle("Rolodex")
+            .navigationTitle(!pickerMode ? "Rolodex" : "Mention from Rolodex")
+            .navigationBarTitleDisplayMode(!pickerMode ? .automatic : .inline)
             .toolbar(content: {
-                ToolbarItem(placement: .confirmationAction) {
+                ToolbarItem(placement: !pickerMode ? .confirmationAction : .cancellationAction) {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
-                        Text("Done")
+                        Text(!pickerMode ? "Done" : "Cancel")
                             .fontWeight(.bold)
                     }
                 }
@@ -102,7 +118,7 @@ struct AddressBookView: View {
 // MARK: View Preview
 struct AddressBookView_Previews: PreviewProvider {
     static var previews: some View {
-        AddressBookView(currentUser: .getSample())
+        AddressBookView(currentUser: .getSample(), mentions: .constant([]))
     }
 }
 

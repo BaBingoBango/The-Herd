@@ -17,6 +17,8 @@ struct NewPostView: View {
     var draftID: String?
     @AppStorage("postingAnonymously") var postingAnonymously = false
     @State var enteredText = ""
+    @State var enteredMentions: [String] = []
+    @State var showingRolodex = false
     @FocusState var focusedField: String?
     @State var uploadPost = Operation()
     @State var uploadingDraft = false
@@ -72,30 +74,72 @@ struct NewPostView: View {
                 }
                 
                 ZStack {
-                    VStack {
-                        HStack {
-                            Text("Write your post here!")
-                                .dynamicFont(.title2, lineLimit: 2, padding: 0)
-                                .fontWeight(.bold)
-                                .padding([.leading, .top], 6)
+                    ZStack {
+                        VStack {
+                            HStack {
+                                Text("Write your post here!")
+                                    .dynamicFont(.title2, lineLimit: 2, padding: 0)
+                                    .fontWeight(.bold)
+                                    .padding([.leading, .top], 6)
+                                
+                                Spacer()
+                            }
                             
                             Spacer()
                         }
                         
+                        TextEditor(text: $enteredText)
+                            .dynamicFont(.title2, padding: 0)
+                            .fontWeight(.bold)
+                            .opacity(enteredText.isEmpty ? 0.5 : 1)
+                            .focused($focusedField, equals: "editor")
+                    }
+                    .padding()
+                    .background(colorScheme == .dark ? Color.gray.opacity(0.5) : Color.white)
+                    .frame(height: 300)
+                    .cornerRadius(10)
+                    .shadow(color: .gray.opacity(0.3), radius: 10)
+                    
+                    HStack {
+                        VStack {
+                            HStack {
+                                ForEach(enteredMentions, id: \.self) { eachMention in // TODO: handle duplicate mentions
+                                    Button(action: {
+                                        showingRolodex = true
+                                    }) {
+                                        Text("@ \()")
+                                            .dynamicFont(.title2, fontDesign: .rounded, padding: 10)
+                                            .fontWeight(.heavy)
+                                            .foregroundColor(.secondary)
+                                            .modifier(RectangleWrapper(fixedHeight: 35, color: .gray, opacity: 0.15, cornerRadius: 10, enforceLayoutPriority: true))
+                                    }
+                                    .sheet(isPresented: $showingRolodex) {
+                                        AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $enteredMentions)
+                                    }
+                                }
+                                
+                                Button(action: {
+                                    showingRolodex = true
+                                }) {
+                                    Text("@ +")
+                                        .dynamicFont(.title2, fontDesign: .rounded, padding: 10)
+                                        .fontWeight(.heavy)
+                                        .foregroundColor(.secondary)
+                                        .modifier(RectangleWrapper(fixedHeight: 35, color: .gray, opacity: 0.15, cornerRadius: 10, enforceLayoutPriority: true))
+                                }
+                                .sheet(isPresented: $showingRolodex) {
+                                    AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $enteredMentions)
+                                }
+                            }
+                            
+                            Spacer()
+                        }
                         Spacer()
                     }
-                    
-                    TextEditor(text: $enteredText)
-                        .dynamicFont(.title2, padding: 0)
-                        .fontWeight(.bold)
-                        .opacity(enteredText.isEmpty ? 0.5 : 1)
-                        .focused($focusedField, equals: "editor")
+                    .padding(.leading, 12.5)
+                    .offset(y: -12)
                 }
-                .padding()
-                .background(colorScheme == .dark ? Color.gray.opacity(0.5) : Color.white)
-                .frame(height: 300)
-                .cornerRadius(10)
-                .shadow(color: .gray.opacity(0.3), radius: 10)
+                .padding(.top, 15)
                 
                 HStack {
                     Text("About Posting")
@@ -152,7 +196,8 @@ struct NewPostView: View {
                                    comments: [],
                                    timePosted: Date(),
                                    latitude: currentUser.getLocation(locationManager)!.0,
-                                   longitude: currentUser.getLocation(locationManager)!.1)
+                                   longitude: currentUser.getLocation(locationManager)!.1,
+                                   mentions: enteredMentions)
                 
                 // Transport the new post!
                 // FIXME: none of the transports in this view are working when its source is DraftsView!

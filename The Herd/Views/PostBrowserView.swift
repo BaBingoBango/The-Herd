@@ -217,7 +217,7 @@ struct PostBrowserView: View {
                             }
                         }
                         .sheet(isPresented: $showingRolodex) {
-                            AddressBookView(currentUser: currentUser)
+                            AddressBookView(currentUser: currentUser, mentions: .constant([]))
                         }
                         .disabled(!currentUserExists || currentUser.getLocation(locationManager) == nil)
                         

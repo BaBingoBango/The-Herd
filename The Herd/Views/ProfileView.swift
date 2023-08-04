@@ -98,7 +98,7 @@ struct ProfileView: View {
                                 Text("no saved posts!")
                             }
                             ForEach(savedPosts, id: \.UUID) { eachPost in
-                                PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager)
+                                PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost)
                             }
                             
                         case 2:
@@ -106,7 +106,7 @@ struct ProfileView: View {
                                 Text("no user posts!")
                             }
                             ForEach(userPosts, id: \.UUID) { eachPost in
-                                PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager)
+                                PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost)
                             }
                             
                         case 3:

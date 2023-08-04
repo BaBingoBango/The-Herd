@@ -180,7 +180,8 @@ struct CommentFieldView: View {
                                                   comments: [],
                                                   timePosted: Date(),
                                                   latitude: 0,
-                                                  longitude: 0)
+                                                  longitude: 0,
+                                                  mentions: [])
                             
                             var newCommentsArray = post.commentLevel == 0 ? post.comments : parentPost!.comments
                             if post.commentLevel == 0 {

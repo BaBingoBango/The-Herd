@@ -20,8 +20,12 @@ struct AddressEditorView: View {
     
     // MARK: View Body
     var body: some View {
-        NavigationStack {
-            Group {
+        Group {
+            if deleteAddress.status == .inProgress {
+                ProgressView()
+                    .controlSize(.large)
+                
+            } else {
                 Form {
                     HStack {
                         ZStack {
@@ -87,30 +91,30 @@ struct AddressEditorView: View {
                         }
                     }
                 }
-                
-                // MARK: Navigation Settings
-                .navigationTitle("Edit Entry")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar(content: {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button(action: {
-                            var newAddresses = currentUser.addresses
-                            newAddresses[addressID]!.nickname = enteredNickname
-                            newAddresses[addressID]!.comment = enteredComment
-                            usersCollection.document(currentUser.UUID).updateData([
-                                "addresses" : newAddresses.mapValues({ $0.dictify() })
-                            ]) { _ in }
-//
-                            presentationMode.wrappedValue.dismiss()
-                        }) {
-                            Text("Done")
-                                .fontWeight(.bold)
-                        }
-                        .disabled(deleteAddress.status == .inProgress)
-                    }
-                })
             }
         }
+        
+        // MARK: Navigation Settings
+        .navigationTitle("Edit Entry")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar(content: {
+            ToolbarItem(placement: .confirmationAction) {
+                Button(action: {
+                    var newAddresses = currentUser.addresses
+                    newAddresses[addressID]!.nickname = enteredNickname
+                    newAddresses[addressID]!.comment = enteredComment
+                    usersCollection.document(currentUser.UUID).updateData([
+                        "addresses" : newAddresses.mapValues({ $0.dictify() })
+                    ]) { _ in }
+//
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text("Done")
+                        .fontWeight(.bold)
+                }
+                .disabled(deleteAddress.status == .inProgress)
+            }
+        })
     }
     
     // MARK: View Functions
