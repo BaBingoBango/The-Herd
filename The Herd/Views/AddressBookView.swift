@@ -55,11 +55,11 @@ struct AddressBookView: View {
                                 Circle()
                                     .foregroundColor(eachAddress.userColor)
                                     .frame(height: 50)
-                                    .padding(.leading, 10)
                                 
                                 Text(eachAddress.userEmoji)
                                     .font(.system(size: 27.5))
                             }
+                            .padding(.leading, 10)
                             
                             VStack(alignment: .leading) {
                                 Text(eachAddress.nickname)
@@ -67,9 +67,11 @@ struct AddressBookView: View {
                                     .fontWeight(.bold)
                                     .foregroundColor(.primary)
                                 
-                                Text(eachAddress.comment)
-                                    .dynamicFont(.body, minimumScaleFactor: 0.9, padding: 0)
-                                    .foregroundColor(.secondary)
+                                if !eachAddress.comment.isEmpty {
+                                    Text(eachAddress.comment)
+                                        .dynamicFont(.body, minimumScaleFactor: 0.9, padding: 0)
+                                        .foregroundColor(.secondary)
+                                }
                             }
                             
                             Spacer()
@@ -85,11 +87,38 @@ struct AddressBookView: View {
                                 mentions.append(eachAddress.userUUID)
                                 presentationMode.wrappedValue.dismiss()
                             }) {
-                                NavigationLink(destination: AddressEditorView(currentUser: currentUser, addressID: eachAddress.userUUID, enteredNickname: eachAddress.nickname, enteredComment: eachAddress.comment)) {
-                                    rowContent
-                                }
+                                rowContent
                             }
                         }
+                    }
+                    
+                    if !filteredAddresses.isEmpty {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2.5) {
+                                Text("Some users may have changed their identity since you saved them.")
+                                    .dynamicFont(.body, lineLimit: 10, padding: 0)
+                                    .fontWeight(.bold)
+                                    .multilineTextAlignment(.leading)
+                                    .foregroundColor(.primary)
+                                
+                                HStack(spacing: 5) {
+                                    Text("Learn More")
+                                        .dynamicFont(.body, padding: 0)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.blue)
+                                        .multilineTextAlignment(.leading)
+                                    
+                                    Image(systemName: "chevron.right")
+                                        .dynamicFont(.body, padding: 0)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                            
+                            Spacer()
+                        }
+                        .padding()
+                        .modifier(RectangleWrapper(color: .gray, opacity: 0.25))
                     }
                 }
                 .padding([.leading, .bottom, .trailing])

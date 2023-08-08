@@ -103,20 +103,21 @@ struct NewPostView: View {
                     HStack {
                         VStack {
                             HStack {
-                                ForEach(enteredMentions, id: \.self) { eachMention in // TODO: handle duplicate mentions
-                                    Button(action: {
-                                        showingRolodex = true
-                                    }) {
-                                        Text("@ \()")
-                                            .dynamicFont(.title2, fontDesign: .rounded, padding: 10)
-                                            .fontWeight(.heavy)
-                                            .foregroundColor(.secondary)
-                                            .modifier(RectangleWrapper(fixedHeight: 35, color: .gray, opacity: 0.15, cornerRadius: 10, enforceLayoutPriority: true))
-                                    }
-                                    .sheet(isPresented: $showingRolodex) {
-                                        AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $enteredMentions)
-                                    }
-                                }
+//                                ForEach(enteredMentions, id: \.self) { eachMention in // TODO: handle duplicate mentions
+//                                    Button(action: {
+//                                        showingRolodex = true
+//                                    }) {
+//                                        Text("@ \()")
+//                                            .dynamicFont(.title2, fontDesign: .rounded, padding: 10)
+//                                            .fontWeight(.heavy)
+//                                            .foregroundColor(.secondary)
+//                                            .modifier(RectangleWrapper(fixedHeight: 35, color: .gray, opacity: 0.15, cornerRadius: 10, enforceLayoutPriority: true))
+//                                    }
+//                                    .sheet(isPresented: $showingRolodex) {
+//                                        AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $enteredMentions)
+//                                    }
+//                                }
+                                // TODO: add this back
                                 
                                 Button(action: {
                                     showingRolodex = true

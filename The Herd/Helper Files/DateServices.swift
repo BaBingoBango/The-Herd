@@ -16,4 +16,8 @@ extension Date {
             return formatter.date(from: firebaseDate as! String)!
         }()
     }
+    
+    static func randomBackdate() -> Date {
+        return Date() - TimeInterval((60 * Int.random(in: 0...500)))
+    }
 }

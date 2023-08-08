@@ -26,7 +26,7 @@ struct PostBrowserView: View {
     
     // MARK: View Body
     var body: some View {
-        NavigationStack {
+        let postBrowserView = NavigationStack {
             ScrollView {
                 VStack(spacing: 0) {
                     Button(action: {
@@ -273,6 +273,21 @@ struct PostBrowserView: View {
                     }
                 })
             }
+        }
+        
+        TabView {
+            postBrowserView
+                .tabItem {
+                    Label("Nearby", systemImage: "tray.and.arrow.down.fill")
+                }
+            ChatsView(currentUser: currentUser)
+                .tabItem {
+                    Label("Chats", systemImage: "tray.and.arrow.up.fill")
+                }
+            AddressBookView(currentUser: currentUser, mentions: .constant([]))
+                .tabItem {
+                    Label("Rolodex", systemImage: "person.crop.circle.fill")
+                }
         }
     }
     
