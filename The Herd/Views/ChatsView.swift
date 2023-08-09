@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 /// An app view written in SwiftUI!
 struct ChatsView: View {
@@ -14,8 +15,9 @@ struct ChatsView: View {
     @ObservedObject var currentUser: User
     @State var userChats: [Chat] = []
     @State var refreshChats = Operation()
+    @State var createChat = Operation()
     @State var showingRolodex = false
-    @State var mentions: [String] = []
+    @State var mentions: [ChatMember] = []
     
     // MARK: View Body
     var body: some View {
@@ -51,6 +53,7 @@ struct ChatsView: View {
                                 HStack {
                                     let isGroupChat = eachChat.members.count >= 3
                                     let nonUserMembers = eachChat.members.filter({ $0.UUID != currentUser.UUID })
+                                    // TODO: NEXT: fix the above variable to match the new structure
                                     
                                     ZStack {
                                         Image(systemName: "circle.fill")
@@ -106,6 +109,11 @@ struct ChatsView: View {
                 }
             }
         }
+        .alert(isPresented: $createChat.isShowingErrorMessage) {
+            Alert(title: Text("Couldn't Create Chat"),
+                  message: Text(createChat.errorMessage),
+                  dismissButton: .default(Text("Close")))
+        }
         .onChange(of: mentions) { _ in
             if !mentions.isEmpty {
                 createNewChat()
@@ -113,17 +121,24 @@ struct ChatsView: View {
         }
         .onAppear {
             // MARK: View Launch Code
-            // TODO: add a listener for the user chats query
+            // Set up a real-time listener for chats!
+//            chatsCollection.wh
         }
     }
     
     // MARK: View Functions
     func createNewChat() {
-        var chatMembers: [ChatMember] = []
-        for eachMention in mentions {
-            let newMember = ChatMember(userID: eachMention, emoji: <#T##String#>, color: <#T##Color#>)
-            // TODO: NEXT: change the mentions var to ChatMember and continue from here!
-        }
+        var chatMembers = mentions
+        chatMembers.append(.init(userID: currentUser.UUID, emoji: currentUser.emoji, color: currentUser.color))
+        let newChat = Chat(memberIDs: chatMembers.map({ $0.userID }),
+                           memberEmojis: chatMembers.map({ $0.emoji }),
+                           memberColorNames: chatMembers.map({ $0.color.toString() }),
+                           messages: [])
+        newChat.transportToServer(path: chatsCollection,
+                                  documentID: newChat.UUID,
+                                  operation: nil,
+                                  onError: { error in createChat.setError(message: error.localizedDescription) },
+                                  onSuccess: { createChat.status = .success })
     }
 }
 

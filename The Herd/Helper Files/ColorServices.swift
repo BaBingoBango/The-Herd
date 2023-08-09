@@ -36,4 +36,40 @@ extension Color: Codable {
         
         self = .init(red: red, green: green, blue: blue, opacity: opacity)
     }
+    
+    func toString() -> String {
+        switch self {
+        case .blue: return "blue"
+        case .brown: return "brown"
+        case .cyan: return "cyan"
+        case .green: return "green"
+        case .indigo: return "indigo"
+        case .mint: return "mint"
+        case .orange: return "orange"
+        case .pink: return "pink"
+        case .purple: return "purple"
+        case .red: return "red"
+        case .teal: return "teal"
+        case .yellow: return "yellow"
+        default: return "unknown"
+        }
+    }
+    
+    static func fromString(_ string: String) -> Color {
+        switch string {
+        case "blue": return .blue
+        case "brown": return .brown
+        case "cyan": return .cyan
+        case "green": return .green
+        case "indigo": return .indigo
+        case "mint": return .mint
+        case "orange": return .orange
+        case "pink": return .pink
+        case "purple": return .purple
+        case "red": return .red
+        case "teal": return .teal
+        case "yellow": return .yellow
+        default: return .blue
+        }
+    }
 }

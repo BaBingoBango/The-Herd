@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct ChatMember: Transportable {
+struct ChatMember: Transportable, Equatable {
     var UUID = Foundation.UUID.getTripleID()
     var userID: String
     var emoji: String
@@ -38,6 +38,10 @@ struct ChatMember: Transportable {
         }())
     }
     
+    static func == (lhs: ChatMember, rhs: ChatMember) -> Bool {
+        return lhs.UUID == rhs.UUID
+    }
+    
     static var samples: [ChatMember] = [
         .init(userID: "001", emoji: "😔", color: .blue),
         .init(userID: "002", emoji: "😅", color: .orange),
@@ -45,4 +49,8 @@ struct ChatMember: Transportable {
         .init(userID: "004", emoji: "🎀", color: .purple),
         .init(userID: "005", emoji: "🇸🇭", color: .yellow)
     ]
+    
+    static var sampleIDs = ["001", "002", "003", "004", "005"]
+    static var sampleEmojis = ["😔", "😅", "📨", "🎀", "🇸🇭"]
+    static var sampleColors = ["blue", "orange", "red", "purple", "yellow"]
 }

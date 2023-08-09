@@ -16,6 +16,8 @@ import GoogleSignIn
 var usersCollection = Firestore.firestore().collection("users")
 /// The Firestore path to the `posts` collection.
 var postsCollection = Firestore.firestore().collection("posts")
+/// The Firestore path to the `chats` collection.
+var chatsCollection = Firestore.firestore().collection("chats")
 
 @main
 struct The_HerdApp: App {

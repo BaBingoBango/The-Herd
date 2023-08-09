@@ -15,7 +15,7 @@ struct AddressBookView: View {
     @ObservedObject var currentUser: User
     @State var searchText = ""
     var pickerMode = false
-    @Binding var mentions: [String]
+    @Binding var mentions: [ChatMember]
     
     // MARK: View Body
     var body: some View {
@@ -84,7 +84,7 @@ struct AddressBookView: View {
                             }
                         } else {
                             Button(action: {
-                                mentions.append(eachAddress.userUUID)
+                                mentions.append(.init(userID: eachAddress.userUUID, emoji: eachAddress.userEmoji, color: eachAddress.userColor ))
                                 presentationMode.wrappedValue.dismiss()
                             }) {
                                 rowContent

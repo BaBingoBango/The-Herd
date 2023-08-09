@@ -23,7 +23,7 @@ struct Post: Transportable {
     var timePosted: Date
     var latitude: Double
     var longitude: Double
-    var mentions: [String] // user UUIDs
+    var mentions: [ChatMember]
     
     func getAnonymousNumber(_ userID: String) -> String? {
         if let number = anonymousIdentifierTable[userID] {
@@ -162,7 +162,7 @@ struct Post: Transportable {
             "timePosted" : Timestamp(date: timePosted),
             "latitude" : latitude,
             "longitude" : longitude,
-            "mentions": mentions
+            "mentions": mentions.map({ $0.dictify() })
         ]
     }
     
@@ -182,7 +182,7 @@ struct Post: Transportable {
                     timePosted: Date.decodeDate(dictionary["timePosted"]!),
                     latitude: dictionary["latitude"] as! Double,
                     longitude: dictionary["longitude"] as! Double,
-                    mentions: dictionary["mentions"] as! [String]
+                    mentions: (dictionary["mentions"] as! [[String : Any]]).map { ChatMember.dedictify($0) }
         )
     }
     

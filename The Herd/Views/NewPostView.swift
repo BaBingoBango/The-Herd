@@ -17,7 +17,7 @@ struct NewPostView: View {
     var draftID: String?
     @AppStorage("postingAnonymously") var postingAnonymously = false
     @State var enteredText = ""
-    @State var enteredMentions: [String] = []
+    @State var enteredMentions: [ChatMember] = []
     @State var showingRolodex = false
     @FocusState var focusedField: String?
     @State var uploadPost = Operation()
