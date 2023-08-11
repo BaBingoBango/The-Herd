@@ -11,9 +11,10 @@ import SwiftUI
 struct ChatDetailView: View {
     
     // MARK: View Variables
+    @ObservedObject var currentUser: User
     @State var chat: Chat
     var navigationTitle = "Chat"
-    @State var enteredMessage = "Message"
+    @State var enteredMessage: String? = nil
     
     // MARK: View Body
     var body: some View {
@@ -21,13 +22,19 @@ struct ChatDetailView: View {
             ScrollView {
                 ForEach(chat.messages.sorted(by: { $0.timeSent < $1.timeSent }), id: \.UUID) { eachMessage in
                     HStack {
-                        ZStack {
-                            Image(systemName: "circle.fill")
-                                .font(.system(size: 40))
-                                .foregroundColor(eachMessage.sender.color)
-                            
-                            Text(eachMessage.sender.emoji)
-                                .font(.system(size: 22))
+                        if eachMessage.sender.userID == currentUser.UUID {
+                            Spacer()
+                        }
+                        
+                        if eachMessage.sender.userID != currentUser.UUID {
+                            ZStack {
+                                Image(systemName: "circle.fill")
+                                    .font(.system(size: 40))
+                                    .foregroundColor(eachMessage.sender.color)
+                                
+                                Text(eachMessage.sender.emoji)
+                                    .font(.system(size: 22))
+                            }
                         }
                         
                         Text(eachMessage.text)
@@ -35,18 +42,39 @@ struct ChatDetailView: View {
                             .padding()
                             .modifier(RectangleWrapper(color: .gray, opacity: 0.1, cornerRadius: 30, enforceLayoutPriority: true))
                         
-                        Spacer()
+                        if eachMessage.sender.userID == currentUser.UUID {
+                            ZStack {
+                                Image(systemName: "circle.fill")
+                                    .font(.system(size: 40))
+                                    .foregroundColor(eachMessage.sender.color)
+                                
+                                Text(eachMessage.sender.emoji)
+                                    .font(.system(size: 22))
+                            }
+                        }
+                        
+                        if eachMessage.sender.userID != currentUser.UUID {
+                            Spacer()
+                        }
                     }
                 }
             }
+            .scrollPosition(initialAnchor: .bottom)
             
             Spacer()
             
             HStack {
-                TextEditorApproachView()
+                TextEditorApproachView(textBinding: $enteredMessage)
                 
                 Button(action: {
-                    
+                    if let unwrappedEnteredMessage = enteredMessage {
+                        var newMessages = chat.messages
+                        newMessages.append(.init(sender: .init(userID: currentUser.UUID, emoji: currentUser.emoji, color: currentUser.color), text: unwrappedEnteredMessage, timeSent: Date()))
+                        enteredMessage = nil
+                        chatsCollection.document(chat.UUID).updateData([
+                            "messages" : newMessages.map({ $0.dictify() })
+                        ])
+                    }
                 }) {
                     Image(systemName: "arrow.up.square.fill")
                         .font(.system(size: 40))
@@ -60,6 +88,16 @@ struct ChatDetailView: View {
         // MARK: Navigation Settings
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
+        
+        // MARK: View Launch Code
+        .onAppear {
+            // Add a real-time listener for this chat!
+            chatsCollection.document(chat.UUID).addSnapshotListener({ snapshot, error in
+                if let snapshot = snapshot {
+                    chat = Chat.dedictify(snapshot.data()!)
+                }
+            })
+        }
     }
     
     // MARK: View Functions
@@ -70,7 +108,7 @@ struct ChatDetailView: View {
 struct ChatDetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            ChatDetailView(chat: Chat.samples.randomElement()!)
+            ChatDetailView(currentUser: .getSample(), chat: Chat.samples.randomElement()!)
         }
     }
 }
@@ -79,12 +117,13 @@ struct ChatDetailView_Previews: PreviewProvider {
 /// From https://medium.com/nerd-for-tech/create-an-automatically-expanding-texteditor-with-a-placeholder-in-swiftui-6f4792c1ba19
 struct TextEditorApproachView: View {
     
-    @State private var text: String?
+    var text: Binding<String?>
     
     let placeholder = "Enter Text Here"
     
-    init() {
+    init(textBinding: Binding<String?>) {
         UITextView.appearance().backgroundColor = .clear
+        text = textBinding
     }
     
     var body: some View {
@@ -95,11 +134,11 @@ struct TextEditorApproachView: View {
                         .opacity(0.3)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                     
-                    Text(text ?? placeholder)
+                    Text(text.wrappedValue ?? placeholder)
                         .padding()
-                        .opacity(text == nil ? 1 : 0)
+                        .opacity(text.wrappedValue == nil ? 1 : 0)
                     
-                    TextEditor(text: Binding($text, replacingNilWith: ""))
+                    TextEditor(text: Binding(text, replacingNilWith: ""))
                         .frame(minHeight: 30, alignment: .leading)
                         .cornerRadius(6.0)
                         .multilineTextAlignment(.leading)

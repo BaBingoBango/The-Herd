@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct Message: Transportable {
+struct Message: Transportable, Hashable {
     var UUID = Foundation.UUID.getTripleID()
     var sender: ChatMember
     var text: String
@@ -29,5 +29,9 @@ struct Message: Transportable {
                        text: dictionary["text"] as! String,
                        timeSent: Date.decodeDate(dictionary["timeSent"]!)
         )
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(UUID)
     }
 }

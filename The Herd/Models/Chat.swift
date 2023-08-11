@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct Chat: Transportable {
     var UUID = Foundation.UUID.getTripleID()
@@ -13,6 +14,15 @@ struct Chat: Transportable {
     var memberEmojis: [String]
     var memberColorNames: [String]
     var messages: [Message]
+    
+    func getEmoji(_ forID: String) -> String {
+        return memberEmojis[memberIDs.firstIndex(of: forID) ?? 0]
+    }
+    
+    func getColor(_ forID: String) -> Color {
+        let colorName = memberColorNames[memberIDs.firstIndex(of: forID) ?? 0]
+        return Color.fromString(colorName)
+    }
     
     static var samples: [Chat] = [
         .init(memberIDs: ChatMember.sampleIDs, memberEmojis: ChatMember.sampleEmojis, memberColorNames: ChatMember.sampleColors, messages: [

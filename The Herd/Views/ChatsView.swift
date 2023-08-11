@@ -49,23 +49,22 @@ struct ChatsView: View {
                 } else {
                     List {
                         ForEach(userChats, id: \.UUID) { eachChat in
-                            NavigationLink(destination: ChatDetailView(chat: eachChat, navigationTitle: "Chat with Someone")) {
+                            NavigationLink(destination: ChatDetailView(currentUser: currentUser, chat: eachChat, navigationTitle: "Chat with Someone")) {
                                 HStack {
-                                    let isGroupChat = eachChat.members.count >= 3
-                                    let nonUserMembers = eachChat.members.filter({ $0.UUID != currentUser.UUID })
-                                    // TODO: NEXT: fix the above variable to match the new structure
+                                    let isGroupChat = eachChat.memberIDs.count >= 3
+                                    let nonUserIDs = eachChat.memberIDs.filter({ $0 == currentUser.UUID })
                                     
                                     ZStack {
                                         Image(systemName: "circle.fill")
                                             .font(.system(size: 50))
-                                            .foregroundColor(isGroupChat ? .gray : nonUserMembers.first!.color)
-                                        
+                                            .foregroundColor(isGroupChat ? .gray : eachChat.getColor(nonUserIDs.first!))
+
                                         if isGroupChat {
                                             Image(systemName: "person.2.fill")
                                                 .font(.system(size: 22.5))
                                                 .foregroundColor(.white)
                                         } else {
-                                            Text(nonUserMembers.first!.emoji)
+                                            Text(eachChat.getEmoji(nonUserIDs.first!))
                                                 .font(.system(size: 25))
                                         }
                                     }
@@ -122,7 +121,11 @@ struct ChatsView: View {
         .onAppear {
             // MARK: View Launch Code
             // Set up a real-time listener for chats!
-//            chatsCollection.wh
+            chatsCollection.whereField("memberIDs", arrayContains: currentUser.UUID).addSnapshotListener({ snapshot, error in
+                if let snapshot = snapshot {
+                    userChats = snapshot.documents.map({ Chat.dedictify($0.data()) })
+                }
+            })
         }
     }
     

@@ -69,7 +69,7 @@ extension Color: Codable {
         case "red": return .red
         case "teal": return .teal
         case "yellow": return .yellow
-        default: return .blue
+        default: return .clear
         }
     }
 }
