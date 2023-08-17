@@ -59,7 +59,7 @@ struct ChatDetailView: View {
                     }
                 }
             }
-            .scrollPosition(initialAnchor: .bottom)
+            .scrollPosition(initialAnchor: .bottom) // TODO: NEXT: lol
             
             Spacer()
             
