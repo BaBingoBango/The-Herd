@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import FirebaseFirestore
 
 /// An app view written in SwiftUI!
 struct PostOptionView: View {
@@ -138,16 +137,32 @@ struct PostOptionView: View {
                 Button(action: {
                     if activateNavigation { showingPostDetail = true }
                 }) {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 0) {
                         if showText {
-                            Text(post.text)
-                                .dynamicFont(.title2, lineLimit: 100, padding: 0)
-                                .fontWeight(.medium)
-                                .foregroundColor(.primary)
-                                .multilineTextAlignment(.leading)
-                                .padding(.bottom, 15)
-                                .padding(.top, showTopBar ? 5 : 20)
+                            VStack(alignment: .leading, spacing: 0) {
+                                LazyVGrid(columns: Array(repeating: .init(.flexible()), count: showTopBar ? 4 : 5), alignment: .leading) {
+                                    ForEach(post.mentions, id: \.UUID) { eachMention in
+                                        Text("@ \(eachMention.emoji)")
+                                            .dynamicFont(.title3, fontDesign: .rounded, padding: 0)
+                                            .padding(.horizontal, 10)
+                                            .fontWeight(.heavy)
+                                            .foregroundColor(eachMention.color)
+                                            .modifier(RectangleWrapper(fixedHeight: 35, color: eachMention.color, opacity: 0.15, cornerRadius: 15, enforceLayoutPriority: true))
+                                            .padding(.top, 5)
+                                    }
+                                }
                                 .padding(.horizontal)
+                                .padding(.top, showTopBar ? 5 : 12.5)
+                                
+                                Text(post.text)
+                                    .dynamicFont(.title2, lineLimit: 100, padding: 0)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.primary)
+                                    .multilineTextAlignment(.leading)
+                                    .padding(.bottom, 15)
+                                    .padding(.top, showTopBar ? 5 : 20)
+                                    .padding(.horizontal)
+                            }
                         }
                         
                         HStack {
@@ -251,7 +266,7 @@ struct PostOptionView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             ScrollView {
-                PostOptionView(activateNavigation: true)
+                PostOptionView(activateNavigation: true, blockRecursion: true)
                     .padding()
             }
         }

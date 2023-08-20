@@ -73,6 +73,37 @@ struct NewPostView: View {
                     .modifier(RectangleWrapper(color: postingAnonymously ? .gray : currentUser.color, opacity: 0.25))
                 }
                 
+                ScrollView(.horizontal) {
+                    HStack {
+                        Button(action: {
+                            showingRolodex = true
+                        }) {
+                            Text("@ +")
+                                .dynamicFont(.title2, fontDesign: .rounded, padding: 10)
+                                .fontWeight(.heavy)
+                                .foregroundColor(.secondary)
+                                .padding(.vertical, 5)
+                                .modifier(RectangleWrapper(fixedHeight: 35, color: .gray, opacity: 0.15, cornerRadius: 15, enforceLayoutPriority: true))
+                        }
+                        .sheet(isPresented: $showingRolodex) {
+                            AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $enteredMentions, excludedUserIDs: enteredMentions.map({ $0.userID }))
+                        }
+                        
+                        ForEach(enteredMentions, id: \.UUID) { eachMention in
+                            Button(action: {
+                                // TODO: erase mention
+                            }) {
+                                Text("@ \(eachMention.emoji)")
+                                    .dynamicFont(.title2, fontDesign: .rounded, padding: 10)
+                                    .fontWeight(.heavy)
+                                    .foregroundColor(eachMention.color)
+                                    .padding(.vertical, 5)
+                                    .modifier(RectangleWrapper(fixedHeight: 35, color: eachMention.color, opacity: 0.15, cornerRadius: 15, enforceLayoutPriority: true))
+                            }
+                        }
+                    }
+                }
+                
                 ZStack {
                     ZStack {
                         VStack {
@@ -99,48 +130,7 @@ struct NewPostView: View {
                     .frame(height: 300)
                     .cornerRadius(10)
                     .shadow(color: .gray.opacity(0.3), radius: 10)
-                    
-                    HStack {
-                        VStack {
-                            HStack {
-//                                ForEach(enteredMentions, id: \.self) { eachMention in // TODO: handle duplicate mentions
-//                                    Button(action: {
-//                                        showingRolodex = true
-//                                    }) {
-//                                        Text("@ \()")
-//                                            .dynamicFont(.title2, fontDesign: .rounded, padding: 10)
-//                                            .fontWeight(.heavy)
-//                                            .foregroundColor(.secondary)
-//                                            .modifier(RectangleWrapper(fixedHeight: 35, color: .gray, opacity: 0.15, cornerRadius: 10, enforceLayoutPriority: true))
-//                                    }
-//                                    .sheet(isPresented: $showingRolodex) {
-//                                        AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $enteredMentions)
-//                                    }
-//                                }
-                                // TODO: add this back
-                                
-                                Button(action: {
-                                    showingRolodex = true
-                                }) {
-                                    Text("@ +")
-                                        .dynamicFont(.title2, fontDesign: .rounded, padding: 10)
-                                        .fontWeight(.heavy)
-                                        .foregroundColor(.secondary)
-                                        .modifier(RectangleWrapper(fixedHeight: 35, color: .gray, opacity: 0.15, cornerRadius: 10, enforceLayoutPriority: true))
-                                }
-                                .sheet(isPresented: $showingRolodex) {
-                                    AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $enteredMentions, excludedUserIDs: [])
-                                }
-                            }
-                            
-                            Spacer()
-                        }
-                        Spacer()
-                    }
-                    .padding(.leading, 12.5)
-                    .offset(y: -12)
                 }
-                .padding(.top, 15)
                 
                 HStack {
                     Text("About Posting")
