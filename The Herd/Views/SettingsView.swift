@@ -131,33 +131,29 @@ struct ProfileOptionView: View {
     var percentComplete: String?
     
     var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.white)
+        HStack {
+            ZStack {
+                Rectangle()
+                    .fill(color.gradient)
+                    .aspectRatio(1, contentMode: .fit)
+                    .cornerRadius(6)
+                
+                Image(systemName: iconName)
+                    .font(.system(size: 14))
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .aspectRatio(contentMode: .fit)
+            }
+            .frame(width: 30)
             
-            HStack {
-                ZStack {
-                    Rectangle()
-                        .fill(color.gradient)
-                        .aspectRatio(1, contentMode: .fit)
-                        .cornerRadius(6)
-                    
-                    Image(systemName: iconName)
-                        .fontWeight(.bold)
-                        .aspectRatio(contentMode: .fit)
-                        .foregroundColor(.white)
-                }
-                .frame(width: 30)
-                
-                Text(text)
-                    .foregroundColor(.primary)
-                
-                Spacer()
-                
-                if percentComplete != nil {
-                    Text(percentComplete!)
-                        .foregroundColor(.secondary)
-                }
+            Text(text)
+                .foregroundColor(.primary)
+            
+            Spacer()
+            
+            if percentComplete != nil {
+                Text(percentComplete!)
+                    .foregroundColor(.secondary)
             }
         }
     }

@@ -17,6 +17,7 @@ struct ProfileView: View {
     @ObservedObject var currentUser: User = .getSample()
     var locationManager = LocationManager()
     @State var loadActivity = Operation()
+    @State var karmaScore = 0
     @State var savedPosts: [Post] = []
     @State var userPosts: [Post] = []
     @State var selectedActivityView = 1
@@ -39,7 +40,7 @@ struct ProfileView: View {
                         
                         VStack(alignment: .leading, spacing: 5) {
                             HStack(spacing: 10) {
-                                Label(loadActivity.status == .success ? "???" : "---", systemImage: "hand.thumbsup.fill")
+                                Label(loadActivity.status == .success ? String(karmaScore) : "---", systemImage: "hand.thumbsup.fill")
                                     .dynamicFont(.title2, fontDesign: .rounded, padding: 0)
                                     .fontWeight(.bold)
                                     .foregroundColor(.green)
@@ -57,7 +58,7 @@ struct ProfileView: View {
                                     .fontWeight(.bold)
                                 
                                 Text("Since \(currentUser.formatJoinDate())")
-                                    .dynamicFont(.title2, fontDesign: .rounded, padding: 0)
+                                    .dynamicFont(.title3, fontDesign: .rounded, padding: 0)
                                     .foregroundColor(.secondary)
                                     .fontWeight(.bold)
                                 
@@ -76,26 +77,26 @@ struct ProfileView: View {
                         Text("error: \(loadActivity.errorMessage)")
                         
                     case .success:
-                        HStack {
-                            Text("Activity")
-                                .dynamicFont(.title, padding: 0)
-                                .fontWeight(.bold)
-                            Spacer()
-                        }
-                        .padding(.top, 5)
+//                        HStack {
+//                            Text("Activity")
+//                                .dynamicFont(.title, padding: 0)
+//                                .fontWeight(.bold)
+//                            Spacer()
+//                        }
+//                        .padding(.top, 5)
                         
                         Picker(selection: $selectedActivityView, label: Text("")) {
-                            Text("Saved").tag(1)
-                            Text("Posts").tag(2)
-                            Text("Comments").tag(3)
-                            Text("Votes").tag(4)
+                            Text("Saved Posts").tag(1)
+                            Text("Your Posts").tag(2)
+//                            Text("Comments").tag(3)
+//                            Text("Votes").tag(4)
                         }
                         .pickerStyle(SegmentedPickerStyle())
                         
                         switch selectedActivityView {
                         case 1:
                             if savedPosts.isEmpty {
-                                Text("no saved posts!")
+                                EmptyCollectionView(iconName: "bookmark.slash.fill", heading: "No Saved Posts", text: "")
                             }
                             ForEach(savedPosts, id: \.UUID) { eachPost in
                                 PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost)
@@ -103,7 +104,7 @@ struct ProfileView: View {
                             
                         case 2:
                             if userPosts.isEmpty {
-                                Text("no user posts!")
+                                EmptyCollectionView(iconName: "ellipsis.bubble.fill", heading: "No Posts", text: "")
                             }
                             ForEach(userPosts, id: \.UUID) { eachPost in
                                 PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost)
@@ -172,7 +173,22 @@ struct ProfileView: View {
                                     for eachDocument in snapshots!.documents {
                                         userPosts.append(Post.dedictify(eachDocument.data()))
                                     }
-                                    loadActivity.status = .success
+                                    
+                                    postsCollection.whereFilter(.orFilter([
+                                        .whereField("associatedUserIDs", arrayContains: currentUser.UUID),
+                                        .whereField("authorUUID", isEqualTo: currentUser.UUID)
+                                    ])).getDocuments() { snapshots, error in
+                                        if let error = error {
+                                            loadActivity.setError(message: error.localizedDescription)
+                                            
+                                        } else {
+                                            for eachDocument in snapshots!.documents {
+                                                let post = Post.dedictify(eachDocument.data())
+                                                karmaScore += post.getUserKarma(currentUser.UUID)
+                                            }
+                                            loadActivity.status = .success
+                                        }
+                                    }
                                 }
                             }
                         }

@@ -199,10 +199,13 @@ struct CommentFieldView: View {
                             if commentingAnonymously && parentPost!.getAnonymousNumber(currentUser.UUID) == nil {
                                 newAnonTable[currentUser.UUID] = parentPost!.anonymousIdentifierTable[parentPost!.authorUUID] != nil ? newAnonTable.count : newAnonTable.count + 1
                             }
+                            var newAssociationList = parentPost!.associatedUserIDs
+                            newAssociationList.append(currentUser.UUID)
                             
                             postsCollection.document(post.commentLevel == 0 ? post.UUID : parentPost!.UUID).updateData([
                                 "comments" : newCommentsArray.map({ $0.dictify() }),
-                                "anonymousIdentifierTable" : newAnonTable
+                                "anonymousIdentifierTable" : newAnonTable,
+                                "associatedUserIDs" : newAssociationList
                                 
                             ]) { error in
                                 if let error = error {

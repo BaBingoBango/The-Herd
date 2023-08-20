@@ -24,6 +24,7 @@ struct Post: Transportable {
     var latitude: Double
     var longitude: Double
     var mentions: [ChatMember]
+    var associatedUserIDs: [String] = []
     
     func getAnonymousNumber(_ userID: String) -> String? {
         if let number = anonymousIdentifierTable[userID] {
@@ -96,6 +97,27 @@ struct Post: Transportable {
         return "\(Int(milesAway.rounded())) mi"
     }
     
+    func getUserKarma(_ userID: String) -> Int {
+        var answer = 0
+        if authorUUID == userID {
+            answer += score
+        }
+        
+        for eachComment in comments {
+            if eachComment.authorUUID == userID {
+                answer += eachComment.score
+            }
+            
+            for eachSecondLevelComment in eachComment.comments {
+                if eachSecondLevelComment.authorUUID == userID {
+                    answer += eachSecondLevelComment.score
+                }
+            }
+        }
+        
+        return answer
+    }
+    
     static func countComments(_ commentsToCount: [Post]) -> Int {
         var count = 0
         for eachComment in commentsToCount {
@@ -162,7 +184,8 @@ struct Post: Transportable {
             "timePosted" : Timestamp(date: timePosted),
             "latitude" : latitude,
             "longitude" : longitude,
-            "mentions": mentions.map({ $0.dictify() })
+            "mentions": mentions.map({ $0.dictify() }),
+            "associatedUserIDs" : associatedUserIDs
         ]
     }
     
@@ -182,7 +205,8 @@ struct Post: Transportable {
                     timePosted: Date.decodeDate(dictionary["timePosted"]!),
                     latitude: dictionary["latitude"] as! Double,
                     longitude: dictionary["longitude"] as! Double,
-                    mentions: (dictionary["mentions"] as! [[String : Any]]).map { ChatMember.dedictify($0) }
+                    mentions: (dictionary["mentions"] as! [[String : Any]]).map { ChatMember.dedictify($0) },
+                    associatedUserIDs: dictionary["associatedUserIDs"] as! [String]
         )
     }
     
