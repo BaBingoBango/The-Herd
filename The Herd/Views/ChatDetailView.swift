@@ -15,51 +15,60 @@ struct ChatDetailView: View {
     @State var chat: Chat
     var navigationTitle = "Chat"
     @State var enteredMessage: String? = nil
+    @State var showingEditor = false
     
     // MARK: View Body
     var body: some View {
         VStack(alignment: .leading) {
             ScrollView {
-                ForEach(chat.messages.sorted(by: { $0.timeSent < $1.timeSent }), id: \.UUID) { eachMessage in
-                    HStack {
-                        if eachMessage.sender.userID == currentUser.UUID {
-                            Spacer()
-                        }
-                        
-                        if eachMessage.sender.userID != currentUser.UUID {
-                            ZStack {
-                                Image(systemName: "circle.fill")
-                                    .font(.system(size: 40))
-                                    .foregroundColor(eachMessage.sender.color)
-                                
-                                Text(eachMessage.sender.emoji)
-                                    .font(.system(size: 22))
+                ScrollViewReader { scrollReader in
+                    ForEach(chat.messages.sorted(by: { $0.timeSent < $1.timeSent })) { eachMessage in
+                        HStack {
+                            if eachMessage.sender.userID == currentUser.UUID {
+                                Spacer()
+                            }
+                            
+                            if eachMessage.sender.userID != currentUser.UUID {
+                                ZStack {
+                                    Image(systemName: "circle.fill")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(eachMessage.sender.color)
+                                    
+                                    Text(eachMessage.sender.emoji)
+                                        .font(.system(size: 22))
+                                }
+                            }
+                            
+                            Text(eachMessage.text)
+                                .fontWeight(.semibold)
+                                .padding()
+                                .modifier(RectangleWrapper(color: .gray, opacity: 0.1, cornerRadius: 30, enforceLayoutPriority: true))
+                            
+                            if eachMessage.sender.userID == currentUser.UUID {
+                                ZStack {
+                                    Image(systemName: "circle.fill")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(eachMessage.sender.color)
+                                    
+                                    Text(eachMessage.sender.emoji)
+                                        .font(.system(size: 22))
+                                }
+                            }
+                            
+                            if eachMessage.sender.userID != currentUser.UUID {
+                                Spacer()
                             }
                         }
-                        
-                        Text(eachMessage.text)
-                            .fontWeight(.semibold)
-                            .padding()
-                            .modifier(RectangleWrapper(color: .gray, opacity: 0.1, cornerRadius: 30, enforceLayoutPriority: true))
-                        
-                        if eachMessage.sender.userID == currentUser.UUID {
-                            ZStack {
-                                Image(systemName: "circle.fill")
-                                    .font(.system(size: 40))
-                                    .foregroundColor(eachMessage.sender.color)
-                                
-                                Text(eachMessage.sender.emoji)
-                                    .font(.system(size: 22))
-                            }
-                        }
-                        
-                        if eachMessage.sender.userID != currentUser.UUID {
-                            Spacer()
-                        }
+                        .id(eachMessage.UUID)
+                    }
+                    .onAppear {
+                        scrollReader.scrollTo(chat.messages.last?.UUID, anchor: .bottom)
+                    }
+                    .onChange(of: chat.messages) { _ in
+                        scrollReader.scrollTo(chat.messages.last?.UUID, anchor: .bottom)
                     }
                 }
             }
-            .scrollPosition(initialAnchor: .bottom) // TODO: NEXT: lol
             
             Spacer()
             
@@ -88,6 +97,20 @@ struct ChatDetailView: View {
         // MARK: Navigation Settings
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(content: {
+            ToolbarItem(placement: .confirmationAction) {
+                Button(action: {
+                    showingEditor = true
+                }) {
+                    Image(systemName: "info.circle")
+                        .fontWeight(.semibold)
+                        .foregroundColor(.accentColor)
+                }
+                .sheet(isPresented: $showingEditor) {
+                    ChatEditorView(currentUser: currentUser, chat: chat)
+                }
+            }
+        })
         
         // MARK: View Launch Code
         .onAppear {

@@ -129,7 +129,7 @@ struct NewPostView: View {
                                         .modifier(RectangleWrapper(fixedHeight: 35, color: .gray, opacity: 0.15, cornerRadius: 10, enforceLayoutPriority: true))
                                 }
                                 .sheet(isPresented: $showingRolodex) {
-                                    AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $enteredMentions)
+                                    AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $enteredMentions, excludedUserIDs: [])
                                 }
                             }
                             

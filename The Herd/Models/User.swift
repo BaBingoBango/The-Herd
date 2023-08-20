@@ -18,8 +18,9 @@ class User: Transportable, Equatable, ObservableObject {
     @Published var locationMode: LocationMode
     @Published var savedLocations: [String : SavedLocation]
     @Published var addresses: [String : Address]
+    @Published var hiddenChatIDs: [String]
     
-    required init(UUID: String = Foundation.UUID.getTripleID(), emoji: String, color: Color, joinDate: Date, locationMode: LocationMode, savedLocations: [String : SavedLocation], addresses: [String : Address]) {
+    required init(UUID: String = Foundation.UUID.getTripleID(), emoji: String, color: Color, joinDate: Date, locationMode: LocationMode, savedLocations: [String : SavedLocation], addresses: [String : Address], hiddenChatIDs: [String]) {
         self.UUID = UUID
         self.emoji = emoji
         self.color = color
@@ -27,6 +28,7 @@ class User: Transportable, Equatable, ObservableObject {
         self.locationMode = locationMode
         self.savedLocations = savedLocations
         self.addresses = addresses
+        self.hiddenChatIDs = hiddenChatIDs
     }
     
     static func == (lhs: User, rhs: User) -> Bool {
@@ -41,6 +43,7 @@ class User: Transportable, Equatable, ObservableObject {
         self.locationMode = user.locationMode
         self.savedLocations = user.savedLocations
         self.addresses = user.addresses
+        self.hiddenChatIDs = user.hiddenChatIDs
     }
     
     func dictify() -> [String : Any] {
@@ -57,6 +60,7 @@ class User: Transportable, Equatable, ObservableObject {
             "locationMode" : locationMode.toString(),
             "savedLocations" : savedLocations.mapValues({ $0.dictify() }),
             "addresses" : addresses.mapValues({ $0.dictify() }),
+            "hiddenChatIDs" : hiddenChatIDs
         ]
     }
     
@@ -70,7 +74,8 @@ class User: Transportable, Equatable, ObservableObject {
                     joinDate: Date.decodeDate(dictionary["joinDate"]!),
                     locationMode: LocationMode.fromString(dictionary["locationMode"] as! String),
                     savedLocations: (dictionary["savedLocations"] as! [String : Any]).mapValues({ SavedLocation.dedictify($0 as! [String : Any]) }),
-                    addresses: (dictionary["addresses"] as! [String : Any]).mapValues({ Address.dedictify($0 as! [String : Any]) })
+                    addresses: (dictionary["addresses"] as! [String : Any]).mapValues({ Address.dedictify($0 as! [String : Any]) }),
+                    hiddenChatIDs: dictionary["hiddenChatIDs"] as! [String]
         )
     }
     
@@ -93,7 +98,8 @@ class User: Transportable, Equatable, ObservableObject {
                                           joinDate: Date(),
                                           locationMode: .current,
                                           savedLocations: [:],
-                                          addresses: [:])
+                                          addresses: [:],
+                                          hiddenChatIDs: [])
                 
                 newUserProfile.transportToServer(path: usersCollection,
                                                  documentID: userID,
@@ -130,7 +136,7 @@ class User: Transportable, Equatable, ObservableObject {
                      color: User.iconColors.randomElement()!,
                      joinDate: Date(),
                      locationMode: .saved(locationID: "BEACH!!"),
-                     savedLocations: ["E1974DB9-5198-409C-9707-599C56AB84A7-D8C69522-5B0F-4106-9149-A4CA2420F027-3105478D-4B1E-4A08-8AD2-989E41EB2096" : .init(emoji: "🐳", nickname: "example!", latitude: 0, longitude: 0)], addresses: [:])
+                     savedLocations: ["E1974DB9-5198-409C-9707-599C56AB84A7-D8C69522-5B0F-4106-9149-A4CA2420F027-3105478D-4B1E-4A08-8AD2-989E41EB2096" : .init(emoji: "🐳", nickname: "example!", latitude: 0, longitude: 0)], addresses: [:], hiddenChatIDs: [])
     }
     
     static var iconColors: [Color] = [

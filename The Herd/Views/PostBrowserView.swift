@@ -199,41 +199,18 @@ struct PostBrowserView: View {
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    HStack(spacing: 5) {
-                        Button(action: {
-                            showingRolodex = true
-                        }) {
-                            ZStack {
-                                Image(systemName: "circle.fill")
-                                    .font(.system(size: 25))
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.gray)
-                                    .opacity(0.15)
-                                
-                                Image(systemName: "text.book.closed.fill")
-                                    .font(.system(size: 12.5))
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.accentColor)
-                            }
-                        }
-                        .sheet(isPresented: $showingRolodex) {
-                            AddressBookView(currentUser: currentUser, mentions: .constant([]))
-                        }
-                        .disabled(!currentUserExists || currentUser.getLocation(locationManager) == nil)
-                        
-                        Button(action: {
-                            showingNewPostView = true
-                        }) {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.system(size: 25))
-                                .fontWeight(.bold)
-                                .foregroundColor(.accentColor)
-                        }
-                        .sheet(isPresented: $showingNewPostView) {
-                            ManagePostsView(currentUser: currentUser, locationManager: locationManager)
-                        }
-                        .disabled(!currentUserExists || currentUser.getLocation(locationManager) == nil)
+                    Button(action: {
+                        showingNewPostView = true
+                    }) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 25))
+                            .fontWeight(.bold)
+                            .foregroundColor(.accentColor)
                     }
+                    .sheet(isPresented: $showingNewPostView) {
+                        ManagePostsView(currentUser: currentUser, locationManager: locationManager)
+                    }
+                    .disabled(!currentUserExists || currentUser.getLocation(locationManager) == nil)
                 }
             })
         }
@@ -284,7 +261,7 @@ struct PostBrowserView: View {
                 .tabItem {
                     Label("Chats", systemImage: "tray.and.arrow.up.fill")
                 }
-            AddressBookView(currentUser: currentUser, mentions: .constant([]))
+            AddressBookView(currentUser: currentUser, mentions: .constant([]), excludedUserIDs: [])
                 .tabItem {
                     Label("Rolodex", systemImage: "person.crop.circle.fill")
                 }

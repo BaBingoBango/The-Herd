@@ -18,81 +18,73 @@ struct ChatsView: View {
     @State var createChat = Operation()
     @State var showingRolodex = false
     @State var mentions: [ChatMember] = []
+    var hiddenChatsMode = false
     
     // MARK: View Body
     var body: some View {
-        NavigationView {
-            Group {
-                if refreshChats.status == .inProgress {
-                    ProgressView()
-                        .controlSize(.large)
+        let viewBody = Group {
+            if refreshChats.status == .inProgress {
+                ProgressView()
+                    .controlSize(.large)
+                
+            } else if userChats.isEmpty {
+                VStack {
+                    Image(systemName: "ellipsis.bubble.fill")
+                        .font(.system(size: 40))
+                        .foregroundColor(.secondary)
+                        .padding(.top)
+                        .padding(.bottom, 1)
                     
-                } else if userChats.isEmpty {
-                    VStack {
-                        Image(systemName: "ellipsis.bubble.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(.secondary)
-                            .padding(.top)
-                            .padding(.bottom, 1)
-                        
-                        Text("No Chats")
-                            .dynamicFont(.title)
-                            .fontWeight(.bold)
-                            .foregroundColor(.secondary)
-                            .padding(.bottom, 1)
-                        
-                        Text("Start a chat with another user to exchange messages here!")
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
+                    Text("No Chats")
+                        .dynamicFont(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(.secondary)
+                        .padding(.bottom, 1)
                     
-                } else {
-                    List {
-                        ForEach(userChats, id: \.UUID) { eachChat in
-                            NavigationLink(destination: ChatDetailView(currentUser: currentUser, chat: eachChat, navigationTitle: "Chat with Someone")) {
-                                HStack {
-                                    let isGroupChat = eachChat.memberIDs.count >= 3
-                                    let nonUserIDs = eachChat.memberIDs.filter({ $0 == currentUser.UUID })
-                                    
-                                    ZStack {
-                                        Image(systemName: "circle.fill")
-                                            .font(.system(size: 50))
-                                            .foregroundColor(isGroupChat ? .gray : eachChat.getColor(nonUserIDs.first!))
-
-                                        if isGroupChat {
-                                            Image(systemName: "person.2.fill")
-                                                .font(.system(size: 22.5))
-                                                .foregroundColor(.white)
-                                        } else {
-                                            Text(eachChat.getEmoji(nonUserIDs.first!))
-                                                .font(.system(size: 25))
-                                        }
-                                    }
-                                    .shadow(color: .gray, radius: 5)
-                                    
-                                    VStack(alignment: .leading) {
-                                        Text("Chat with Someone")
-                                            .dynamicFont(.title3, fontDesign: .rounded, padding: 0)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.primary)
-                                        
-                                        if let lastMessage = eachChat.messages.sorted(by: { $0.timeSent < $1.timeSent }).last {
-                                            Text(lastMessage.text)
-                                                .dynamicFont(.body, minimumScaleFactor: 0.9, padding: 0)
-                                                .foregroundColor(.secondary)
-                                        }
-                                    }
-                                }
-                            }
+                    Text("Start a chat with another user to exchange messages here!")
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                
+            } else {
+                List {
+                    ForEach(userChats.filter({ !hiddenChatsMode ? !currentUser.hiddenChatIDs.contains($0.UUID) : currentUser.hiddenChatIDs.contains($0.UUID) }).sorted(by: {
+                        let firstChatLastUpdate = $0.messages.last?.timeSent ?? $0.dateCreated
+                        let secondChatLastUpdate = $1.messages.last?.timeSent ?? $1.dateCreated
+                        return firstChatLastUpdate > secondChatLastUpdate
+                        
+                    }), id: \.UUID) { eachChat in
+                        let isGroupChat = eachChat.memberIDs.count >= 3
+                        let nonUserIDs = eachChat.memberIDs.filter({ $0 != currentUser.UUID })
+                        
+                        NavigationLink(destination: ChatDetailView(currentUser: currentUser, chat: eachChat, navigationTitle: !isGroupChat ? "Chat with \(eachChat.getEmoji(nonUserIDs.first!))" : "Chat with \(nonUserIDs.count) People")) {
+                            
+                            ChatOptionView(color: isGroupChat ? .gray : eachChat.getColor(nonUserIDs.first!),
+                                           isGroupChat: isGroupChat,
+                                           emoji: eachChat.getEmoji(nonUserIDs.first!),
+                                           text: eachChat.messages.last?.text ?? "No Messages Yet!")
                         }
                     }
-                    .listStyle(PlainListStyle())
+                    
+                    if !currentUser.hiddenChatIDs.isEmpty && !hiddenChatsMode {
+                        NavigationLink(destination: ChatsView(currentUser: currentUser, hiddenChatsMode: true)) {
+                            ChatOptionView(color: .gray,
+                                           isGroupChat: true,
+                                           emoji: "",
+                                           text: "\(currentUser.hiddenChatIDs.count) Hidden Chat\(currentUser.hiddenChatIDs.count == 1 ? "" : "s")",
+                                           grayIconName: "eye.slash")
+                        }
+                    }
                 }
+                .listStyle(PlainListStyle())
             }
-            
-            // MARK: Navigation Settings
-            .navigationTitle("Chats")
-            .toolbar {
+        }
+        
+        // MARK: Navigation Settings
+        .navigationTitle(!hiddenChatsMode ? "Chats" : "Hidden Chats")
+        .navigationBarTitleDisplayMode(!hiddenChatsMode ? .automatic : .inline)
+        .toolbar {
+            if !hiddenChatsMode {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(action: {
                         showingRolodex = true
@@ -103,39 +95,49 @@ struct ChatsView: View {
                             .foregroundColor(.accentColor)
                     }
                     .sheet(isPresented: $showingRolodex) {
-                        AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $mentions)
+                        AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $mentions, pickerAction: "Chat", excludedUserIDs: [])
                     }
                 }
-            }
-        }
-        .alert(isPresented: $createChat.isShowingErrorMessage) {
-            Alert(title: Text("Couldn't Create Chat"),
-                  message: Text(createChat.errorMessage),
-                  dismissButton: .default(Text("Close")))
-        }
-        .onChange(of: mentions) { _ in
-            if !mentions.isEmpty {
-                createNewChat()
             }
         }
         .onAppear {
             // MARK: View Launch Code
             // Set up a real-time listener for chats!
+            // TODO: update this to check color and emoji as well
             chatsCollection.whereField("memberIDs", arrayContains: currentUser.UUID).addSnapshotListener({ snapshot, error in
                 if let snapshot = snapshot {
                     userChats = snapshot.documents.map({ Chat.dedictify($0.data()) })
                 }
             })
         }
+        
+        if !hiddenChatsMode {
+            NavigationView {
+                viewBody
+            }
+            .alert(isPresented: $createChat.isShowingErrorMessage) {
+                Alert(title: Text("Couldn't Create Chat"),
+                      message: Text(createChat.errorMessage),
+                      dismissButton: .default(Text("Close")))
+            }
+            .onChange(of: mentions) { _ in
+                if !mentions.isEmpty {
+                    createNewChat()
+                }
+            }
+        } else {
+            viewBody
+        }
     }
     
     // MARK: View Functions
     func createNewChat() {
         var chatMembers = mentions
+        mentions = []
         chatMembers.append(.init(userID: currentUser.UUID, emoji: currentUser.emoji, color: currentUser.color))
         let newChat = Chat(memberIDs: chatMembers.map({ $0.userID }),
                            memberEmojis: chatMembers.map({ $0.emoji }),
-                           memberColorNames: chatMembers.map({ $0.color.toString() }),
+                           memberColors: chatMembers.map({ $0.color }),
                            messages: [])
         newChat.transportToServer(path: chatsCollection,
                                   documentID: newChat.UUID,
@@ -153,4 +155,35 @@ struct ChatsView_Previews: PreviewProvider {
 }
 
 // MARK: Support Views
-// Support views go here! :)
+struct ChatOptionView: View {
+    
+    var color: Color
+    var isGroupChat: Bool
+    var emoji: String
+    var text: String
+    var grayIconName = "person.2.fill"
+    
+    var body: some View {
+        HStack {
+            ZStack {
+                Image(systemName: "circle.fill")
+                    .font(.system(size: 40))
+                    .foregroundColor(color)
+                
+                if isGroupChat {
+                    Image(systemName: grayIconName)
+                        .font(.system(size: 20))
+                        .foregroundColor(.white)
+                } else {
+                    Text(emoji)
+                        .font(.system(size: 22.5))
+                }
+            }
+            .shadow(color: .gray, radius: 5)
+            
+            Text(text)
+                .dynamicFont(.body, lineLimit: 2, minimumScaleFactor: 0.9, padding: 0)
+                .foregroundColor(.primary)
+        }
+    }
+}

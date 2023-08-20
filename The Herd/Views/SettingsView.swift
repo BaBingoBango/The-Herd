@@ -40,20 +40,6 @@ struct SettingsView: View {
                     ProfileOptionView(text: "Sign Out...", color: .red, iconName: "arrow.left")
                 }
                 .buttonStyle(PlainButtonStyle())
-                .alert(isPresented: $showingSignOutConfirmation) {
-                    Alert(title: Text("Sign Out?"),
-                          message: Text("You'll need to sign back in again to access your data, but nothing will be deleted."),
-                          primaryButton: .default(Text("Cancel")),
-                          secondaryButton: .destructive(Text("Sign Out")) {
-
-                        signOut.status = .inProgress
-                        do {
-                            try Auth.auth().signOut()
-                        } catch {
-                            signOut.setError(message: error.localizedDescription)
-                        }
-                    })
-                }
                 
                 NavigationLink(destination: EmptyView()) {
                     ProfileOptionView(text: "Delete Account", color: .red, iconName: "trash.fill")
@@ -104,6 +90,20 @@ struct SettingsView: View {
             }
             .headerProminence(.increased)
         }
+        .alert(isPresented: $showingSignOutConfirmation) {
+            Alert(title: Text("Sign Out?"),
+                  message: Text("You'll need to sign back in again to access your data, but nothing will be deleted."),
+                  primaryButton: .default(Text("Cancel")),
+                  secondaryButton: .destructive(Text("Sign Out")) {
+
+                signOut.status = .inProgress
+                do {
+                    try Auth.auth().signOut()
+                } catch {
+                    signOut.setError(message: error.localizedDescription)
+                }
+            })
+        }
         
         // MARK: Navigation Settings
         .navigationTitle("Settings")
@@ -131,28 +131,33 @@ struct ProfileOptionView: View {
     var percentComplete: String?
     
     var body: some View {
-        HStack {
-            ZStack {
-                Rectangle()
-                    .fill(color.gradient)
-                    .aspectRatio(1, contentMode: .fit)
-                    .frame(width: 25)
-                    .cornerRadius(6)
+        ZStack {
+            Rectangle()
+                .foregroundColor(.white)
+            
+            HStack {
+                ZStack {
+                    Rectangle()
+                        .fill(color.gradient)
+                        .aspectRatio(1, contentMode: .fit)
+                        .cornerRadius(6)
+                    
+                    Image(systemName: iconName)
+                        .fontWeight(.bold)
+                        .aspectRatio(contentMode: .fit)
+                        .foregroundColor(.white)
+                }
+                .frame(width: 30)
                 
-                Image(systemName: iconName)
-                    .aspectRatio(contentMode: .fit)
-                    .foregroundColor(.white)
-                    .scaleEffect(0.75)
-            }
-            
-            Text(text)
-                .foregroundColor(.primary)
-            
-            Spacer()
-            
-            if percentComplete != nil {
-                Text(percentComplete!)
-                    .foregroundColor(.secondary)
+                Text(text)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                if percentComplete != nil {
+                    Text(percentComplete!)
+                        .foregroundColor(.secondary)
+                }
             }
         }
     }

@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-extension Color: Codable {
+extension Color: Codable, Transportable {
     
     enum CodingKeys: CodingKey {
         case red
@@ -35,6 +35,19 @@ extension Color: Codable {
         let opacity = try values.decode(Double.self, forKey: .opacity)
         
         self = .init(red: red, green: green, blue: blue, opacity: opacity)
+    }
+    
+    func dictify() -> [String : Any] {
+        return [
+            "red" : Double(UIColor(self).cgColor.components![0]),
+            "green" : Double(UIColor(self).cgColor.components![1]),
+            "blue" : Double(UIColor(self).cgColor.components![2]),
+            "alpha" : Double(UIColor(self).cgColor.components![3])
+        ]
+    }
+    
+    static func dedictify(_ dictionary: [String : Any]) -> Self {
+        return Color(cgColor: .init(red: dictionary["red"] as! Double, green: dictionary["green"] as! Double, blue: dictionary["blue"] as! Double, alpha: dictionary["alpha"] as! Double))
     }
     
     func toString() -> String {

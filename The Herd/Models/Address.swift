@@ -16,6 +16,29 @@ struct Address: Transportable {
     var nickname: String
     var comment: String
     
+    static var defaultAdjectives = [
+        "Local",
+        "Mysterious",
+        "Wandering",
+        "Charming",
+        "Curious",
+        "Friendly",
+        "Playful",
+        "Dreamy",
+        "Daring",
+        "Clever",
+        "Creative",
+        "Adventurous",
+        "Energetic",
+        "Lively",
+        "Cheerful",
+        "Relaxed",
+        "Imaginative",
+        "Crafty",
+        "Determined",
+        "Spirited"
+    ]
+    
     func dictify() -> [String : Any] {
         return [
             "UUID" : UUID,

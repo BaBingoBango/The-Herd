@@ -285,7 +285,7 @@ struct PostMenuButton: View {
                 rolodexUser.status = .inProgress
                 
                 if !isUserInRolodex {
-                    let newAddress = Address(userUUID: post.authorUUID, userEmoji: post.authorEmoji, userColor: post.authorColor, nickname: "Saved User", comment: "")
+                    let newAddress = Address(userUUID: post.authorUUID, userEmoji: post.authorEmoji, userColor: post.authorColor, nickname: "\(Address.defaultAdjectives.randomElement()!) \(post.authorEmoji)", comment: "")
                     var newAddresses = currentUser.addresses
                     newAddresses[post.authorUUID] = newAddress
                     usersCollection.document(currentUser.UUID).updateData([
@@ -300,7 +300,6 @@ struct PostMenuButton: View {
                     }
                     
                 } else {
-                    let newAddress = Address(userUUID: post.authorUUID, userEmoji: post.authorEmoji, userColor: post.authorColor, nickname: "Saved User", comment: "")
                     var newAddresses = currentUser.addresses
                     newAddresses.removeValue(forKey: post.authorUUID)
                     usersCollection.document(currentUser.UUID).updateData([

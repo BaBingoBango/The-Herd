@@ -52,5 +52,6 @@ struct ChatMember: Transportable, Equatable {
     
     static var sampleIDs = ["001", "002", "003", "004", "005"]
     static var sampleEmojis = ["😔", "😅", "📨", "🎀", "🇸🇭"]
-    static var sampleColors = ["blue", "orange", "red", "purple", "yellow"]
+    static var sampleColors: [Color] = [.blue, .orange, .red, .purple, .yellow]
+    static var sampleColorNames = ["blue", "orange", "red", "purple", "yellow"]
 }

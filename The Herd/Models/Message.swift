@@ -8,8 +8,8 @@
 import Foundation
 import FirebaseFirestore
 
-struct Message: Transportable, Hashable {
-    var UUID = Foundation.UUID.getTripleID()
+struct Message: Transportable, Hashable, Identifiable {
+    var UUID = Foundation.UUID.getTripleID(); var id: String { UUID }
     var sender: ChatMember
     var text: String
     var timeSent: Date
