@@ -215,16 +215,7 @@ struct PostBrowserView: View {
             })
         }
         .refreshable {
-            await getLatestPosts()
-        }
-        .onChange(of: showingNewPostView) { newValue in
-            if !newValue { Task { await getLatestPosts() } }
-        }
-        .onChange(of: showingScanView) { newValue in
-            if !newValue { Task { await getLatestPosts() } }
-        }
-        .onChange(of: currentUser.locationMode) { _ in
-            Task { await getLatestPosts() }
+//            await getLatestPosts()
         }
         .onAppear {
             // MARK: View Launch Code
@@ -241,7 +232,7 @@ struct PostBrowserView: View {
             if let userID = Auth.auth().currentUser?.uid {
                 User.transportUserFromServer(userID,
                                              onError: { error in fatalError(error.localizedDescription) },
-                                             onSuccess: { user in currentUser.replaceFields(user) })
+                                             onSuccess: { user in currentUser.replaceFields(user); Task { await getLatestPosts() } })
                 
                 // Set up a real-time listener for the user's profile!
                 usersCollection.document(userID).addSnapshotListener({ snapshot, error in
@@ -255,15 +246,15 @@ struct PostBrowserView: View {
         TabView {
             postBrowserView
                 .tabItem {
-                    Label("Nearby", systemImage: "tray.and.arrow.down.fill")
+                    Label("Nearby", systemImage: "location.fill")
                 }
-            ChatsView(currentUser: currentUser)
+            ChatsView(currentUser: currentUser, locationManager: locationManager)
                 .tabItem {
-                    Label("Chats", systemImage: "tray.and.arrow.up.fill")
+                    Label("Chats", systemImage: "bubble.left.and.bubble.right.fill")
                 }
-            AddressBookView(currentUser: currentUser, mentions: .constant([]), excludedUserIDs: [])
+            AddressBookView(currentUser: currentUser, mentions: .constant([]), excludedUserIDs: [], locationManager: locationManager)
                 .tabItem {
-                    Label("Rolodex", systemImage: "person.crop.circle.fill")
+                    Label("Rolodex", systemImage: "person.text.rectangle.fill")
                 }
         }
     }

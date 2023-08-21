@@ -109,7 +109,7 @@ struct NewPostView: View {
                         VStack {
                             HStack {
                                 Text("Write your post here!")
-                                    .dynamicFont(.title2, lineLimit: 2, padding: 0)
+                                    .dynamicFont(.title2, fontDesign: currentUser.fontPreference.toFontDesign(), lineLimit: 2, padding: 0)
                                     .fontWeight(.bold)
                                     .padding([.leading, .top], 6)
                                 
@@ -120,7 +120,7 @@ struct NewPostView: View {
                         }
                         
                         TextEditor(text: $enteredText)
-                            .dynamicFont(.title2, padding: 0)
+                            .dynamicFont(.title2, fontDesign: currentUser.fontPreference.toFontDesign(), padding: 0)
                             .fontWeight(.bold)
                             .opacity(enteredText.isEmpty ? 0.5 : 1)
                             .focused($focusedField, equals: "editor")

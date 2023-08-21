@@ -117,7 +117,7 @@ struct CommentFieldView: View {
                         VStack {
                             HStack {
                                 Text("Write your comment here!")
-                                    .dynamicFont(.title2, lineLimit: 2, padding: 0)
+                                    .dynamicFont(.title2, fontDesign: currentUser.fontPreference.toFontDesign(), lineLimit: 2, padding: 0)
                                     .foregroundColor(.primary)
                                     .fontWeight(.bold)
                                     .padding([.leading, .top], 10)
@@ -129,7 +129,7 @@ struct CommentFieldView: View {
                         }
                         
                         TextEditor(text: $enteredComment)
-                            .dynamicFont(.title2, padding: 5)
+                            .dynamicFont(.title2, fontDesign: currentUser.fontPreference.toFontDesign(), padding: 5)
                             .fontWeight(.bold)
                             .multilineTextAlignment(.leading)
                             .opacity(enteredComment.isEmpty ? 0.5 : 1)

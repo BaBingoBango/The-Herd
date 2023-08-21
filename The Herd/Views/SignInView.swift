@@ -47,7 +47,7 @@ struct SignInView: View {
                         AuthenticationOptionView(emoji: "📞", text: "Continue with Phone")
                     }
                     .sheet(isPresented: $showingPhoneSignInView) {
-                        PhoneSignInView()
+                        PhoneSignInView(phoneAuthCredential: .constant(nil))
                     }
                     
                     Button(action: {

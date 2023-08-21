@@ -18,6 +18,8 @@ struct AddressBookView: View {
     @Binding var mentions: [ChatMember]
     var pickerAction = "Mention"
     var excludedUserIDs: [String]
+    var locationManager = LocationManager()
+    @State var showingProfileView = false
     
     // MARK: View Body
     var body: some View {
@@ -131,6 +133,24 @@ struct AddressBookView: View {
         .navigationTitle(!pickerMode ? "Rolodex" : "\(pickerAction) from Rolodex")
         .navigationBarTitleDisplayMode(!pickerMode ? .automatic : .inline)
         .toolbar(content: {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    showingProfileView = true
+                }) {
+                    ZStack {
+                        Image(systemName: "circle.fill")
+                            .font(.system(size: 30))
+                            .foregroundColor(currentUser.color)
+
+                        Text(currentUser.emoji)
+                            .font(.system(size: 20))
+                    }
+                }
+                .sheet(isPresented: $showingProfileView) {
+                    ProfileView(currentUser: currentUser, locationManager: locationManager)
+                }
+            }
+            
             if pickerMode {
                 ToolbarItem(placement: !pickerMode ? .confirmationAction : .cancellationAction) {
                     Button(action: {

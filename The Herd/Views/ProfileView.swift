@@ -130,8 +130,17 @@ struct ProfileView: View {
             .navigationTitle("Profile")
             .toolbar(content: {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: SettingsView()) {
+                    NavigationLink(destination: SettingsView(currentUser: currentUser)) {
                         Image(systemName: "gear")
+                            .fontWeight(.bold)
+                    }
+                }
+                
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Text("Done")
                             .fontWeight(.bold)
                     }
                 }

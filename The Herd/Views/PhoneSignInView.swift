@@ -20,6 +20,8 @@ struct PhoneSignInView: View {
     @AppStorage("phoneSignInVerificationID") var phoneSignInVerificationID: String = ""
     @State var enteredVerificationCode = ""
     @State var verify = Operation()
+    @Binding var phoneAuthCredential: PhoneAuthCredential?
+    var hideStartOverButton = false
     
     // MARK: View Body
     var body: some View {
@@ -62,8 +64,8 @@ struct PhoneSignInView: View {
                     
                     HStack {
                         Text(phoneSignInVerificationID.isEmpty ?
-                             "Standard carrier rates apply for SMS verification messages.\n\nYour phone number will be sent and stored by Google to improve their spam and abuse prevention. For more information, return to the previous screen and tap Sign-in Security and Privacy." :
-                             "Enter the 6-digit code you received at the phone number you entered on the previous screen.\n\nIf you didn't get a code or misentered your number, tap Start Over.")
+                             "Standard carrier rates apply for SMS verification messages.\(hideStartOverButton ? "" : "\n\nYour phone number will be sent and stored by Google to improve their spam and abuse prevention. For more information, return to the previous screen and tap Sign-in Security and Privacy.")" :
+                                (hideStartOverButton ? "" : "Enter the 6-digit code you received at the phone number you entered on the previous screen.\n\nIf you didn't get a code or misentered your number, tap Start Over."))
                             .font(.system(size: 16))
                             .foregroundColor(.secondary)
                             .fontWeight(.bold)
@@ -113,6 +115,11 @@ struct PhoneSignInView: View {
                             sendCode.setError(message: error.localizedDescription)
                             
                         } else {
+                            if hideStartOverButton {
+                                phoneAuthCredential = credential
+                                presentationMode.wrappedValue.dismiss()
+                                phoneSignInVerificationID = ""
+                            }
                             phoneSignInVerificationID = ""
                             verify.status = .success
                         }
@@ -133,7 +140,7 @@ struct PhoneSignInView: View {
             .padding(.horizontal)
             .padding(.bottom, phoneSignInVerificationID.isEmpty ? 15 : 5)
             
-            if !phoneSignInVerificationID.isEmpty {
+            if !phoneSignInVerificationID.isEmpty && !hideStartOverButton {
                 Button(action: {
                     phoneSignInVerificationID = ""
                 }) {
@@ -160,7 +167,7 @@ struct PhoneSignInView: View {
 // MARK: View Preview
 struct PhoneSignInView_Previews: PreviewProvider {
     static var previews: some View {
-        PhoneSignInView()
+        PhoneSignInView(phoneAuthCredential: .constant(nil))
     }
 }
 

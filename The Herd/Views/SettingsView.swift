@@ -12,6 +12,7 @@ import FirebaseAuth
 struct SettingsView: View {
     
     // MARK: View Variables
+    @ObservedObject var currentUser: User
     @State var showingSignOutConfirmation = false
     @State var signOut = Operation()
     
@@ -19,7 +20,7 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section(header: Text("Appearance").font(.title3).fontWeight(.bold)) {
-                NavigationLink(destination: EmptyView()) {
+                NavigationLink(destination: FontPickerView(currentUser: currentUser)) {
                     ProfileOptionView(text: "Text Style", color: .cyan, iconName: "textformat")
                 }
                 
@@ -31,17 +32,34 @@ struct SettingsView: View {
             
             Section(header: Text("Account").font(.title3).fontWeight(.bold)) {
                 NavigationLink(destination: EmptyView()) {
-                    ProfileOptionView(text: "Blocked Users", color: .red, iconName: "eye.slash.fill")
+                    ProfileOptionView(text: "??????", color: .orange, iconName: "questionmark")
+                }
+            }
+            .headerProminence(.increased)
+            
+            Section(header: Text("Privacy").font(.title3).fontWeight(.bold)) {
+                NavigationLink(destination: DataSharingView()) {
+                    ProfileOptionView(text: "Data Sharing & Access", color: .blue, iconName: "person.2.fill")
                 }
                 
-                Button(action: {
+                NavigationLink(destination: DataDownloaderView(currentUser: currentUser)) {
+                    ProfileOptionView(text: "Download Data", color: .blue, iconName: "square.and.arrow.down.fill")
+                }
+                
+                NavigationLink(destination: EmptyView()) {
+                    ProfileOptionView(text: "Privacy Policy", color: .blue, iconName: "hand.raised.fill")
+                }
+            }
+            .headerProminence(.increased)
+            
+            Section(header: Text("Danger Zone!").font(.title3).fontWeight(.bold)) {Button(action: {
                     showingSignOutConfirmation = true
                 }) {
                     ProfileOptionView(text: "Sign Out...", color: .red, iconName: "arrow.left")
                 }
                 .buttonStyle(PlainButtonStyle())
                 
-                NavigationLink(destination: EmptyView()) {
+                NavigationLink(destination: DeleteAccountView(currentUser: currentUser)) {
                     ProfileOptionView(text: "Delete Account", color: .red, iconName: "trash.fill")
                 }
             }
@@ -51,21 +69,6 @@ struct SettingsView: View {
                       message: Text(signOut.errorMessage),
                       dismissButton: .default(Text("Close")))
             }
-            
-            Section(header: Text("Privacy").font(.title3).fontWeight(.bold)) {
-                NavigationLink(destination: EmptyView()) {
-                    ProfileOptionView(text: "Data Sharing & Access", color: .blue, iconName: "person.2.fill")
-                }
-                
-                NavigationLink(destination: EmptyView()) {
-                    ProfileOptionView(text: "Download Data", color: .blue, iconName: "square.and.arrow.down.fill")
-                }
-                
-                NavigationLink(destination: EmptyView()) {
-                    ProfileOptionView(text: "Privacy Policy", color: .blue, iconName: "hand.raised.fill")
-                }
-            }
-            .headerProminence(.increased)
             
             Section(header: Text("About").font(.title3).fontWeight(.bold)) {
                 NavigationLink(destination: EmptyView()) {
@@ -117,7 +120,7 @@ struct SettingsView: View {
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            SettingsView()
+            SettingsView(currentUser: .getSample())
         }
     }
 }

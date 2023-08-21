@@ -141,6 +141,7 @@ struct PostOptionView: View {
                         if showText {
                             VStack(alignment: .leading, spacing: 0) {
                                 LazyVGrid(columns: Array(repeating: .init(.flexible()), count: showTopBar ? 4 : 5), alignment: .leading) {
+                                    
                                     ForEach(post.mentions, id: \.UUID) { eachMention in
                                         Text("@ \(eachMention.emoji)")
                                             .dynamicFont(.title3, fontDesign: .rounded, padding: 0)
@@ -155,7 +156,7 @@ struct PostOptionView: View {
                                 .padding(.top, showTopBar ? 5 : 12.5)
                                 
                                 Text(post.text)
-                                    .dynamicFont(.title2, lineLimit: 100, padding: 0)
+                                    .dynamicFont(.title2, fontDesign: currentUser.fontPreference.toFontDesign(), lineLimit: 100, padding: 0)
                                     .fontWeight(.medium)
                                     .foregroundColor(.primary)
                                     .multilineTextAlignment(.leading)
@@ -228,7 +229,7 @@ struct PostOptionView: View {
     // MARK: View Functions
     func changeVote(newValue: Int) {
         let newVote = Vote(voterUUID: currentUser.UUID, value: newValue, timePosted: Date())
-        var newVotesList = post.votes
+        var newVotesList = post.commentLevel == 0 ? post.votes : parentPost!.votes
         var newCommentsArray = post.commentLevel == 0 ? post.comments : parentPost!.comments
         
         if post.commentLevel == 0 {

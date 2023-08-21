@@ -19,6 +19,8 @@ struct ChatsView: View {
     @State var showingRolodex = false
     @State var mentions: [ChatMember] = []
     var hiddenChatsMode = false
+    var locationManager = LocationManager()
+    @State var showingProfileView = false
     
     // MARK: View Body
     var body: some View {
@@ -84,6 +86,24 @@ struct ChatsView: View {
         .navigationTitle(!hiddenChatsMode ? "Chats" : "Hidden Chats")
         .navigationBarTitleDisplayMode(!hiddenChatsMode ? .automatic : .inline)
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    showingProfileView = true
+                }) {
+                    ZStack {
+                        Image(systemName: "circle.fill")
+                            .font(.system(size: 30))
+                            .foregroundColor(currentUser.color)
+
+                        Text(currentUser.emoji)
+                            .font(.system(size: 20))
+                    }
+                }
+                .sheet(isPresented: $showingProfileView) {
+                    ProfileView(currentUser: currentUser, locationManager: locationManager)
+                }
+            }
+            
             if !hiddenChatsMode {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(action: {

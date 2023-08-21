@@ -18,6 +18,8 @@ var usersCollection = Firestore.firestore().collection("users")
 var postsCollection = Firestore.firestore().collection("posts")
 /// The Firestore path to the `chats` collection.
 var chatsCollection = Firestore.firestore().collection("chats")
+/// The Firestore path to the `system` collection.
+var systemCollection = Firestore.firestore().collection("system")
 
 @main
 struct The_HerdApp: App {
