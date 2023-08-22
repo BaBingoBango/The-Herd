@@ -31,8 +31,12 @@ struct SettingsView: View {
             .headerProminence(.increased)
             
             Section(header: Text("Account").font(.title3).fontWeight(.bold)) {
+                NavigationLink(destination: ChangeIdentityView(currentUser: currentUser)) {
+                    ProfileOptionView(text: "Change Emoji & Color", color: .orange, iconName: "arrow.triangle.2.circlepath")
+                }
+                
                 NavigationLink(destination: EmptyView()) {
-                    ProfileOptionView(text: "??????", color: .orange, iconName: "questionmark")
+                    ProfileOptionView(text: "Blocked Users", color: .orange, iconName: "questionmark")
                 }
             }
             .headerProminence(.increased)
@@ -52,15 +56,20 @@ struct SettingsView: View {
             }
             .headerProminence(.increased)
             
-            Section(header: Text("Danger Zone!").font(.title3).fontWeight(.bold)) {Button(action: {
+            Section(header: Text("Danger Zone!").font(.title3).fontWeight(.bold)) {
+                Button(action: {
                     showingSignOutConfirmation = true
                 }) {
                     ProfileOptionView(text: "Sign Out...", color: .red, iconName: "arrow.left")
                 }
                 .buttonStyle(PlainButtonStyle())
                 
+                NavigationLink(destination: DeleteContentView(currentUser: currentUser)) {
+                    ProfileOptionView(text: "Delete Content", color: .red, iconName: "trash.fill")
+                }
+                
                 NavigationLink(destination: DeleteAccountView(currentUser: currentUser)) {
-                    ProfileOptionView(text: "Delete Account", color: .red, iconName: "trash.fill")
+                    ProfileOptionView(text: "Delete Account", color: .red, iconName: "person.fill.xmark")
                 }
             }
             .headerProminence(.increased)
@@ -110,6 +119,7 @@ struct SettingsView: View {
         
         // MARK: Navigation Settings
         .navigationTitle("Settings")
+        .navigationBarTitleDisplayMode(.inline)
     }
     
     // MARK: View Functions

@@ -25,13 +25,13 @@ struct EmptyCollectionView: View {
                 .padding(.bottom, 1)
             
             Text(heading)
-                .dynamicFont(.title2)
+                .dynamicFont(.title2, lineLimit: 5)
                 .fontWeight(.semibold)
                 .foregroundColor(.secondary)
                 .padding(.bottom, 1)
             
             Text(text)
-                .dynamicFont(.title2)
+                .dynamicFont(.title2, lineLimit: 10)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }

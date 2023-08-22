@@ -24,21 +24,16 @@ struct NewPostView: View {
     @State var uploadingDraft = false
     @ObservedObject var currentUser: User = .getSample()
     var locationManager: LocationManager
+    var repost: Post?
     
     var withinCharacterLimits: Bool {
-        return enteredText.count >= 1 && enteredText.count <= 500
+        return enteredText.count >= 1 && enteredText.count <= 250
     }
     
     // MARK: View Body
     var body: some View {
         ScrollView {
-            VStack {
-//                Text("New post time?")
-//                    .dynamicFont(.largeTitle, lineLimit: 2)
-//                    .fontWeight(.bold)
-//                    .multilineTextAlignment(.center)
-//                    .padding(.top, 12.5)
-                
+            VStack(alignment: .leading) {
                 Button(action: {
                     postingAnonymously.toggle()
                 }) {
@@ -73,6 +68,37 @@ struct NewPostView: View {
                     .modifier(RectangleWrapper(color: postingAnonymously ? .gray : currentUser.color, opacity: 0.25))
                 }
                 
+                if let repost = repost {
+                    HStack {
+                        ZStack {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(repost.getAnonymousNumber(repost.authorUUID) != nil ? .gray : repost.authorColor)
+
+                            Text(repost.getAnonymousNumber(repost.authorUUID) ?? repost.authorEmoji)
+                                .font(.system(size: 12.5))
+                                .fontDesign(.monospaced)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                        }
+                        
+                        VStack(alignment: .leading) {
+                            Text("Reposting")
+                                .dynamicFont(.callout, padding: 0)
+                                .fontWeight(.bold)
+                                .foregroundColor(.secondary)
+                            
+                            Text(repost.text)
+                                .dynamicFont(.headline, lineLimit: 15, padding: 0)
+                                .multilineTextAlignment(.leading)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                        }
+                    }
+                    .padding(10)
+                    .modifier(RectangleWrapper(color: repost.getAnonymousNumber(repost.authorUUID) != nil ? .gray : repost.authorColor, opacity: 0.1, enforceLayoutPriority: true))
+                }
+                
                 ScrollView(.horizontal) {
                     HStack {
                         Button(action: {
@@ -105,32 +131,38 @@ struct NewPostView: View {
                 }
                 
                 ZStack {
-                    ZStack {
-                        VStack {
-                            HStack {
-                                Text("Write your post here!")
-                                    .dynamicFont(.title2, fontDesign: currentUser.fontPreference.toFontDesign(), lineLimit: 2, padding: 0)
-                                    .fontWeight(.bold)
-                                    .padding([.leading, .top], 6)
-                                
+                    // Background color view
+                    (colorScheme == .dark ? Color.gray.opacity(0.2) : Color.white)
+                        .frame(height: 300)
+                        .cornerRadius(10)
+                    
+                    TextEditor(text: $enteredText)
+                        .dynamicFont(.title2, fontDesign: currentUser.fontPreference.toFontDesign(), padding: 0)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.calculateRatioColor(count: enteredText.count, maximum: 250))
+                        .opacity(1)
+                        .focused($focusedField, equals: "editor")
+                        .overlay(
+                            VStack {
+                                HStack {
+                                    if enteredText.isEmpty {
+                                        Text("Write your post here!")
+                                            .dynamicFont(.title2, fontDesign: currentUser.fontPreference.toFontDesign(), lineLimit: 2, padding: 0)
+                                            .fontWeight(.bold)
+                                            .padding([.leading, .top], 6)
+                                            .foregroundColor(Color.gray.opacity(0.5))
+                                    }
+                                    Spacer()
+                                }
                                 Spacer()
                             }
-                            
-                            Spacer()
-                        }
-                        
-                        TextEditor(text: $enteredText)
-                            .dynamicFont(.title2, fontDesign: currentUser.fontPreference.toFontDesign(), padding: 0)
-                            .fontWeight(.bold)
-                            .opacity(enteredText.isEmpty ? 0.5 : 1)
-                            .focused($focusedField, equals: "editor")
-                    }
-                    .padding()
-                    .background(colorScheme == .dark ? Color.gray.opacity(0.5) : Color.white)
-                    .frame(height: 300)
-                    .cornerRadius(10)
-                    .shadow(color: .gray.opacity(0.3), radius: 10)
+                        )
+                        .background(Color.clear) // Clear background for TextEditor
                 }
+                .padding()
+                .frame(height: 300)
+                .cornerRadius(10)
+                .shadow(color: .gray.opacity(0.3), radius: 10)
                 
                 HStack {
                     Text("About Posting")
@@ -188,7 +220,8 @@ struct NewPostView: View {
                                    timePosted: Date(),
                                    latitude: currentUser.getLocation(locationManager)!.0,
                                    longitude: currentUser.getLocation(locationManager)!.1,
-                                   mentions: enteredMentions)
+                                   mentions: enteredMentions,
+                                   repost: repost != nil ? [repost!] : [])
                 
                 // Transport the new post!
                 // FIXME: none of the transports in this view are working when its source is DraftsView!
@@ -230,7 +263,7 @@ struct NewPostView: View {
             Button(action: {
                 // Transport the draft!
                 uploadingDraft = true
-                var newDraft = Draft(text: enteredText, dateCreated: Date())
+                var newDraft = Draft(text: enteredText, dateCreated: Date(), userUUID: currentUser.UUID, repost: { if let repost = repost { return [repost] } else { return [] } }(), mentions: enteredMentions)
                 if let draftID = draftID { newDraft.UUID = draftID }
                 newDraft.transportToServer(path: usersCollection.document(currentUser.UUID).collection("drafts"),
                                            documentID: newDraft.UUID,
@@ -259,7 +292,14 @@ struct NewPostView: View {
                   message: Text(uploadPost.errorMessage),
                   dismissButton: .default(Text("Close")))
         }
-        
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Text("\(250 - enteredText.count)")
+                    .dynamicFont(.body, fontDesign: .monospaced, padding: 0)
+                    .fontWeight(.bold)
+                    .foregroundColor(Color.calculateRatioColor(count: enteredText.count, maximum: 250))
+            }
+        }
         .onAppear {
             // MARK: View Launch Code
             focusedField = "editor"
@@ -280,8 +320,10 @@ struct NewPostView: View {
 // MARK: View Preview
 struct NewPostView_Previews: PreviewProvider {
     static var previews: some View {
-        VStack {
-            NewPostView(locationManager: LocationManager())
+        NavigationView {
+            VStack {
+                NewPostView(locationManager: LocationManager())
+            }
         }
     }
 }

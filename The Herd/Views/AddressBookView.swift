@@ -20,6 +20,7 @@ struct AddressBookView: View {
     var excludedUserIDs: [String]
     var locationManager = LocationManager()
     @State var showingProfileView = false
+    @State var showingInfoView = false
     
     // MARK: View Body
     var body: some View {
@@ -99,25 +100,32 @@ struct AddressBookView: View {
                 
                 if !filteredAddresses.isEmpty {
                     HStack {
-                        VStack(alignment: .leading, spacing: 2.5) {
-                            Text("Some users may have changed their identity since you saved them.")
-                                .dynamicFont(.body, lineLimit: 10, padding: 0)
-                                .fontWeight(.bold)
-                                .multilineTextAlignment(.leading)
-                                .foregroundColor(.primary)
-                            
-                            HStack(spacing: 5) {
-                                Text("Learn More")
-                                    .dynamicFont(.body, padding: 0)
+                        Button(action: {
+                            showingInfoView = true
+                        }) {
+                            VStack(alignment: .leading, spacing: 2.5) {
+                                Text("Some users may have changed their identity since you saved them.")
+                                    .dynamicFont(.body, lineLimit: 10, padding: 0)
                                     .fontWeight(.bold)
-                                    .foregroundColor(.blue)
                                     .multilineTextAlignment(.leading)
+                                    .foregroundColor(.primary)
                                 
-                                Image(systemName: "chevron.right")
-                                    .dynamicFont(.body, padding: 0)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.blue)
+                                HStack(spacing: 5) {
+                                    Text("Learn More")
+                                        .dynamicFont(.body, padding: 0)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.blue)
+                                        .multilineTextAlignment(.leading)
+                                    
+                                    Image(systemName: "chevron.right")
+                                        .dynamicFont(.body, padding: 0)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.blue)
+                                }
                             }
+                        }
+                        .sheet(isPresented: $showingInfoView) {
+                            AddressBookInfoView()
                         }
                         
                         Spacer()
@@ -133,21 +141,23 @@ struct AddressBookView: View {
         .navigationTitle(!pickerMode ? "Rolodex" : "\(pickerAction) from Rolodex")
         .navigationBarTitleDisplayMode(!pickerMode ? .automatic : .inline)
         .toolbar(content: {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: {
-                    showingProfileView = true
-                }) {
-                    ZStack {
-                        Image(systemName: "circle.fill")
-                            .font(.system(size: 30))
-                            .foregroundColor(currentUser.color)
+            if !pickerMode {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        showingProfileView = true
+                    }) {
+                        ZStack {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(currentUser.color)
 
-                        Text(currentUser.emoji)
-                            .font(.system(size: 20))
+                            Text(currentUser.emoji)
+                                .font(.system(size: 20))
+                        }
                     }
-                }
-                .sheet(isPresented: $showingProfileView) {
-                    ProfileView(currentUser: currentUser, locationManager: locationManager)
+                    .sheet(isPresented: $showingProfileView) {
+                        ProfileView(currentUser: currentUser, locationManager: locationManager)
+                    }
                 }
             }
             
@@ -186,4 +196,52 @@ struct AddressBookView_Previews: PreviewProvider {
 }
 
 // MARK: Support Views
-// Support views go here! :)
+struct AddressBookInfoView: View {
+    
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                Image(systemName: "person.2.crop.square.stack")
+                    .fontWeight(.semibold)
+                    .font(.system(size: 40))
+                    .foregroundColor(.accentColor)
+                    .padding(.top)
+                
+                Text("Rolodex and Privacy")
+                    .dynamicFont(.title)
+                    .fontWeight(.bold)
+                    .padding(.top, 5)
+                    .padding(.bottom)
+                
+                InformationalRowView(iconName: "person.text.rectangle.fill", text: "The Rolodex stores copies of users' emoji, color, and private ID, allowing you to mention or message specific users.", color: .accentColor)
+                    .padding(.bottom)
+                
+                InformationalRowView(iconName: "arrow.triangle.2.circlepath", text: "To protect changed identities, Rolodex entries won't be modified or removed if someone changes their emoji or color.", color: .accentColor)
+                    .padding(.bottom)
+                
+                InformationalRowView(iconName: "exclamationmark.bubble.fill", text: "If a user changes their emoji or color, messages or mentions sent to their old identity won't be received.", color: .accentColor)
+                
+                Spacer()
+            }
+            .padding(.horizontal)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar(content: {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Text("Done")
+                            .fontWeight(.bold)
+                    }
+                }
+            })
+        }
+    }
+}
+struct AddressBookInfoView_Previews: PreviewProvider {
+    static var previews: some View {
+        AddressBookInfoView()
+    }
+}

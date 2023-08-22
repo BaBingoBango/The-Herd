@@ -10,6 +10,11 @@ import SwiftUI
 
 extension Color: Codable, Transportable {
     
+    static func calculateRatioColor(count: Int, maximum: Double) -> Color {
+        let ratio = min(Double(count) / maximum, 1.0)
+        return Color(hue: ratio * 0.82, saturation: 1, brightness: 1)
+    }
+    
     enum CodingKeys: CodingKey {
         case red
         case green

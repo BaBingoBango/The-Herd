@@ -25,6 +25,7 @@ struct Post: Transportable {
     var longitude: Double
     var mentions: [ChatMember]
     var associatedUserIDs: [String] = []
+    var repost: [Post] = []
     
     func getAnonymousNumber(_ userID: String) -> String? {
         if let number = anonymousIdentifierTable[userID] {
@@ -127,6 +128,37 @@ struct Post: Transportable {
         return count
     }
     
+    func countComments(_ userUUID: String) -> Int {
+        var count = 0
+
+        for eachFirstLevelComment in comments {
+            if eachFirstLevelComment.authorUUID == userUUID {
+                count += 1
+            }
+            
+            for eachSecondLevelComment in eachFirstLevelComment.comments {
+                if eachSecondLevelComment.authorUUID == userUUID {
+                    count += 1
+                }
+            }
+        }
+        return count
+    }
+    
+    func isUserCommenter(_ userUUID: String) -> Bool {
+        return countComments(userUUID) >= 1
+    }
+    
+    func removeUserComments(_ userUUID: String) -> [Post] {
+        var commentsList = comments.filter { $0.authorUUID != userUUID }
+        
+        for (index, eachFirstLevelComment) in commentsList.enumerated() {
+            commentsList[index].comments = eachFirstLevelComment.comments.filter { $0.authorUUID != userUUID }
+        }
+        
+        return commentsList
+    }
+    
     static func hasUserCommented(_ commentsToCheck: [Post], userUUID: String) -> Bool {
         for eachComment in commentsToCheck {
             if eachComment.authorUUID == userUUID { return true }
@@ -185,7 +217,8 @@ struct Post: Transportable {
             "latitude" : latitude,
             "longitude" : longitude,
             "mentions": mentions.map({ $0.dictify() }),
-            "associatedUserIDs" : associatedUserIDs
+            "associatedUserIDs" : associatedUserIDs,
+            "repost" : repost.map({ $0.dictify() })
         ]
     }
     
@@ -206,7 +239,8 @@ struct Post: Transportable {
                     latitude: dictionary["latitude"] as! Double,
                     longitude: dictionary["longitude"] as! Double,
                     mentions: (dictionary["mentions"] as! [[String : Any]]).map { ChatMember.dedictify($0) },
-                    associatedUserIDs: dictionary["associatedUserIDs"] as! [String]
+                    associatedUserIDs: dictionary["associatedUserIDs"] as! [String],
+                    repost: (dictionary["repost"] as! [[String : Any]]).map { Post.dedictify($0) }
         )
     }
     

@@ -23,7 +23,8 @@ struct DataDownloaderView: View {
                 .padding(.top)
             
             Text("Download Your Data")
-                .dynamicFont(.title)
+                .dynamicFont(.title, lineLimit: 5)
+                .multilineTextAlignment(.center)
                 .fontWeight(.bold)
                 .padding(.top, 5)
             

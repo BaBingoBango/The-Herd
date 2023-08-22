@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AA0468652A93C99D00A09DB3 /* ChangeIdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0468642A93C99D00A09DB3 /* ChangeIdentityView.swift */; };
 		AA04EDED2A2BCB140062F66A /* DateServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04EDEC2A2BCB140062F66A /* DateServices.swift */; };
 		AA04EDEF2A2BCBA90062F66A /* PostBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04EDEE2A2BCBA90062F66A /* PostBrowserView.swift */; };
 		AA04EDF22A2BCC050062F66A /* RectangleWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04EDF12A2BCC050062F66A /* RectangleWrapper.swift */; };
@@ -59,6 +60,8 @@
 		AA53EE1E2A92740100D7041B /* DeleteAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA53EE1D2A92740100D7041B /* DeleteAccountView.swift */; };
 		AA53EE212A92B1C700D7041B /* DataDownloaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA53EE202A92B1C700D7041B /* DataDownloaderView.swift */; };
 		AA53EE232A92E99900D7041B /* DataSharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA53EE222A92E99900D7041B /* DataSharingView.swift */; };
+		AA53EE252A938F0600D7041B /* Chunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA53EE242A938F0600D7041B /* Chunker.swift */; };
+		AA53EE272A93B63D00D7041B /* DeleteContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA53EE262A93B63D00D7041B /* DeleteContentView.swift */; };
 		AA6116632A4DD43300EBCC53 /* SavedPostRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6116622A4DD43300EBCC53 /* SavedPostRecord.swift */; };
 		AA7EC71B2A3C096A00276C42 /* ScanLocationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7EC71A2A3C096A00276C42 /* ScanLocationsView.swift */; };
 		AA7EC71D2A3C0CAD00276C42 /* SavedLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7EC71C2A3C0CAD00276C42 /* SavedLocation.swift */; };
@@ -113,6 +116,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AA0468642A93C99D00A09DB3 /* ChangeIdentityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeIdentityView.swift; sourceTree = "<group>"; };
 		AA04EDEC2A2BCB140062F66A /* DateServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateServices.swift; sourceTree = "<group>"; };
 		AA04EDEE2A2BCBA90062F66A /* PostBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostBrowserView.swift; sourceTree = "<group>"; };
 		AA04EDF12A2BCC050062F66A /* RectangleWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RectangleWrapper.swift; sourceTree = "<group>"; };
@@ -154,6 +158,8 @@
 		AA53EE1D2A92740100D7041B /* DeleteAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountView.swift; sourceTree = "<group>"; };
 		AA53EE202A92B1C700D7041B /* DataDownloaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataDownloaderView.swift; sourceTree = "<group>"; };
 		AA53EE222A92E99900D7041B /* DataSharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSharingView.swift; sourceTree = "<group>"; };
+		AA53EE242A938F0600D7041B /* Chunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunker.swift; sourceTree = "<group>"; };
+		AA53EE262A93B63D00D7041B /* DeleteContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteContentView.swift; sourceTree = "<group>"; };
 		AA6116622A4DD43300EBCC53 /* SavedPostRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPostRecord.swift; sourceTree = "<group>"; };
 		AA7EC71A2A3C096A00276C42 /* ScanLocationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanLocationsView.swift; sourceTree = "<group>"; };
 		AA7EC71C2A3C0CAD00276C42 /* SavedLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLocation.swift; sourceTree = "<group>"; };
@@ -345,6 +351,7 @@
 				AAFC19782A427CDD0013D797 /* DismissalButton.swift */,
 				AAE0D3F32A603D870093E9BB /* SearchBarView.swift */,
 				AA53EE172A91C5C900D7041B /* EmptyCollectionView.swift */,
+				AA53EE242A938F0600D7041B /* Chunker.swift */,
 			);
 			path = "Helper Files";
 			sourceTree = "<group>";
@@ -353,8 +360,10 @@
 			isa = PBXGroup;
 			children = (
 				AA53EE1B2A9269D100D7041B /* FontPickerView.swift */,
+				AA0468642A93C99D00A09DB3 /* ChangeIdentityView.swift */,
 				AA53EE222A92E99900D7041B /* DataSharingView.swift */,
 				AA53EE202A92B1C700D7041B /* DataDownloaderView.swift */,
+				AA53EE262A93B63D00D7041B /* DeleteContentView.swift */,
 				AA53EE1D2A92740100D7041B /* DeleteAccountView.swift */,
 			);
 			path = "Settings Views";
@@ -525,6 +534,7 @@
 				AAF070A52A37A62800DA2615 /* SettingsView.swift in Sources */,
 				AA2DC2872A807EA700C1031E /* ChatMember.swift in Sources */,
 				AA1343F62A258CA500E92BB2 /* Taylor.swift in Sources */,
+				AA0468652A93C99D00A09DB3 /* ChangeIdentityView.swift in Sources */,
 				AA1343F22A258B4F00E92BB2 /* IDServices.swift in Sources */,
 				AA53EE1C2A9269D100D7041B /* FontPickerView.swift in Sources */,
 				AA53EE1A2A92698300D7041B /* FontPreference.swift in Sources */,
@@ -532,6 +542,7 @@
 				AAF038FA2A36C33900FCF14A /* NewPostView.swift in Sources */,
 				AA95D3372A53652E0089A8D4 /* CommentFieldView.swift in Sources */,
 				AAE323BA2A7B26F600020A52 /* AddressEditorView.swift in Sources */,
+				AA53EE272A93B63D00D7041B /* DeleteContentView.swift in Sources */,
 				AA53EE142A8E616900D7041B /* ChatEditorView.swift in Sources */,
 				AA96D2E32A565E220004D2E5 /* SavedLocationEditorView.swift in Sources */,
 				AA1343AA2A2559D700E92BB2 /* The_Herd.xcdatamodeld in Sources */,
@@ -558,6 +569,7 @@
 				AA29042E2A7B024100B41541 /* Address.swift in Sources */,
 				AA1763712A33A23D00365439 /* Emoji.swift in Sources */,
 				AA1343DC2A255B2800E92BB2 /* Vote.swift in Sources */,
+				AA53EE252A938F0600D7041B /* Chunker.swift in Sources */,
 				AA53EE212A92B1C700D7041B /* DataDownloaderView.swift in Sources */,
 				AA1343E52A255BB900E92BB2 /* Operation.swift in Sources */,
 				AA1343EA2A255C3600E92BB2 /* User.swift in Sources */,

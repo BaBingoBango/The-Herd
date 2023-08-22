@@ -154,7 +154,7 @@ struct CommentsView: View {
                 
                 HStack {
                     Text(eachComment.text)
-                        .dynamicFont(.title3, fontDesign: currentUser.fontPreference.toFontDesign(), padding: 0)
+                        .dynamicFont(.title3, fontDesign: currentUser.fontPreference.toFontDesign(), lineLimit: 15, padding: 0)
                         .fontWeight(.medium)
                         .padding(.leading, 7.5)
                         .padding(.bottom)

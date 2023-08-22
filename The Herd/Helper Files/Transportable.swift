@@ -75,7 +75,7 @@ extension Transportable {
     ///   - operation: An `Operation` object which is keeping track of the transport.
     ///   - onError: Code to execute if the transport fails.
     ///   - onSuccess: Code to execute if the transport succeeds.
-    static func transportFromServer(path: DocumentReference, operation: Binding<Operation>?, onError: ((Error) -> ())?, onSuccess: ((Self) -> ())?) {
+    static func transportFromServer(path: DocumentReference, operation: Binding<Operation>?, onError: ((Error) -> ())?, onSuccess: ((Self, DocumentSnapshot) -> ())?) {
         
         // Declare the operation in-progress, if there is one!
         operation?.wrappedValue.status = .inProgress
@@ -90,7 +90,7 @@ extension Transportable {
             } else if let document = document, document.exists {
                 // If we succeed, report on the operation and call the callback!
                 operation?.wrappedValue.status = .success
-                onSuccess?(Self.dedictify(document.data()!))
+                onSuccess?(Self.dedictify(document.data()!), document)
                 
             } else {
                 // If the document doesn't exist, report on the operation and call the callback!

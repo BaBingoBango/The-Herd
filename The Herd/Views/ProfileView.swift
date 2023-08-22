@@ -26,8 +26,8 @@ struct ProfileView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 15) {
-                    HStack {
+                VStack(spacing: 2.5) {
+                    HStack(alignment: .center) {
                         ZStack {
                             Image(systemName: "circle.fill")
                                 .font(.system(size: 75))
@@ -41,12 +41,12 @@ struct ProfileView: View {
                         VStack(alignment: .leading, spacing: 5) {
                             HStack(spacing: 10) {
                                 Label(loadActivity.status == .success ? String(karmaScore) : "---", systemImage: "hand.thumbsup.fill")
-                                    .dynamicFont(.title2, fontDesign: .rounded, padding: 0)
+                                    .dynamicFont(.title3, fontDesign: .rounded, padding: 0)
                                     .fontWeight(.bold)
                                     .foregroundColor(.green)
                                 
                                 Label(loadActivity.status == .success ? String(userPosts.count) : "---", systemImage: "bubble.left.fill")
-                                    .dynamicFont(.title2, fontDesign: .rounded, padding: 0)
+                                    .dynamicFont(.title3, fontDesign: .rounded, padding: 0)
                                     .fontWeight(.bold)
                                     .foregroundColor(.blue)
                             }
@@ -71,10 +71,11 @@ struct ProfileView: View {
                         
                         Spacer()
                     }
+                    .padding(.bottom, 10)
                     
                     switch loadActivity.status {
                     case .failure:
-                        Text("error: \(loadActivity.errorMessage)")
+                        EmptyCollectionView(iconName: "person.crop.circle.fill", heading: "Couldn't Load Profile", text: loadActivity.errorMessage)
                         
                     case .success:
 //                        HStack {
@@ -86,27 +87,28 @@ struct ProfileView: View {
 //                        .padding(.top, 5)
                         
                         Picker(selection: $selectedActivityView, label: Text("")) {
-                            Text("Saved Posts").tag(1)
-                            Text("Your Posts").tag(2)
+                            Text("Your Posts").tag(1)
+                            Text("Saved Posts").tag(2)
 //                            Text("Comments").tag(3)
 //                            Text("Votes").tag(4)
                         }
                         .pickerStyle(SegmentedPickerStyle())
+                        .padding(.bottom, 5)
                         
                         switch selectedActivityView {
                         case 1:
-                            if savedPosts.isEmpty {
-                                EmptyCollectionView(iconName: "bookmark.slash.fill", heading: "No Saved Posts", text: "")
-                            }
-                            ForEach(savedPosts, id: \.UUID) { eachPost in
-                                PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost)
-                            }
-                            
-                        case 2:
                             if userPosts.isEmpty {
                                 EmptyCollectionView(iconName: "ellipsis.bubble.fill", heading: "No Posts", text: "")
                             }
                             ForEach(userPosts, id: \.UUID) { eachPost in
+                                PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost)
+                            }
+                            
+                        case 2:
+                            if savedPosts.isEmpty {
+                                EmptyCollectionView(iconName: "bookmark.slash.fill", heading: "No Saved Posts", text: "")
+                            }
+                            ForEach(savedPosts, id: \.UUID) { eachPost in
                                 PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost)
                             }
                             
@@ -123,7 +125,7 @@ struct ProfileView: View {
                             .padding(.top, 10)
                     }
                 }
-                .padding(.horizontal)
+                .padding([.horizontal, .bottom])
             }
             
             // MARK: Navigation Settings

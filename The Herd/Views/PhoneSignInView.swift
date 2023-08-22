@@ -108,20 +108,22 @@ struct PhoneSignInView: View {
                     
                     let credential = PhoneAuthProvider.provider().credential(withVerificationID: phoneSignInVerificationID, verificationCode: enteredVerificationCode)
                     
-                    Auth.auth().signIn(with: credential) { authResult, error in
+                    if hideStartOverButton {
+                        phoneAuthCredential = credential
+                        presentationMode.wrappedValue.dismiss()
+                        phoneSignInVerificationID = ""
                         
-                        if let error = error {
-                            verify.setError(message: error.localizedDescription)
-                            sendCode.setError(message: error.localizedDescription)
+                    } else {
+                        Auth.auth().signIn(with: credential) { authResult, error in
                             
-                        } else {
-                            if hideStartOverButton {
-                                phoneAuthCredential = credential
-                                presentationMode.wrappedValue.dismiss()
+                            if let error = error {
+                                verify.setError(message: error.localizedDescription)
+                                sendCode.setError(message: error.localizedDescription)
+                                
+                            } else {
                                 phoneSignInVerificationID = ""
+                                verify.status = .success
                             }
-                            phoneSignInVerificationID = ""
-                            verify.status = .success
                         }
                     }
                 }

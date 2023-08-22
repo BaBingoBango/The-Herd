@@ -26,13 +26,14 @@ struct DeleteAccountView: View {
     // MARK: View Body
     var body: some View {
         VStack {
-            Image(systemName: "trash.fill")
+            Image(systemName: "person.fill.xmark")
                 .font(.system(size: 40))
                 .foregroundColor(.red)
                 .padding(.top)
             
             Text("Confirm Account Deletion")
-                .dynamicFont(.title)
+                .dynamicFont(.title, lineLimit: 5)
+                .multilineTextAlignment(.center)
                 .fontWeight(.bold)
                 .padding(.top, 5)
             
@@ -252,12 +253,12 @@ struct InformationalRowView: View {
             VStack(alignment: .leading) {
                 if let headingText = headingText {
                     Text(headingText)
-                        .dynamicFont(.body, lineLimit: 5, minimumScaleFactor: 0.1, padding: 0)
+                        .dynamicFont(.body, lineLimit: 15, minimumScaleFactor: 0.1, padding: 0)
                         .fontWeight(.bold)
                 }
                 
                 Text(text)
-                    .dynamicFont(.body, lineLimit: 5, minimumScaleFactor: 0.1, padding: 0)
+                    .dynamicFont(.body, lineLimit: 15, minimumScaleFactor: 0.1, padding: 0)
             }
             
             Spacer()

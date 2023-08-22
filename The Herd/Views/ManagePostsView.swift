@@ -15,6 +15,7 @@ struct ManagePostsView: View {
     @State var showingDrafts = 0
     @ObservedObject var currentUser: User = .getSample()
     var locationManager: LocationManager
+    var repost: Post?
     
     // MARK: View Body
     var body: some View {
@@ -28,7 +29,7 @@ struct ManagePostsView: View {
                 .padding(.horizontal)
                 
                 if showingDrafts == 0 {
-                    NewPostView(currentUser: currentUser, locationManager: locationManager)
+                    NewPostView(currentUser: currentUser, locationManager: locationManager, repost: repost)
                 } else {
                     DraftsView(currentUser: currentUser, locationManager: locationManager)
                 }

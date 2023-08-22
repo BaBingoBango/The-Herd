@@ -33,6 +33,9 @@ struct CommentFieldView: View {
     var locationManager: LocationManager
     var parentPost: Post?
     @FocusState var focusedField: String?
+    var withinCharacterLimits: Bool {
+        return enteredComment.count >= 1 && enteredComment.count <= 250
+    }
     
     // MARK: View Body
     var body: some View {
@@ -103,7 +106,7 @@ struct CommentFieldView: View {
                                 .foregroundColor(.secondary)
                             
                             Text(post.text)
-                                .dynamicFont(.headline, lineLimit: 10, padding: 0)
+                                .dynamicFont(.headline, lineLimit: 15, padding: 0)
                                 .multilineTextAlignment(.leading)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.primary)
@@ -131,6 +134,7 @@ struct CommentFieldView: View {
                         TextEditor(text: $enteredComment)
                             .dynamicFont(.title2, fontDesign: currentUser.fontPreference.toFontDesign(), padding: 5)
                             .fontWeight(.bold)
+                            .foregroundColor(Color.calculateRatioColor(count: enteredComment.count, maximum: 250))
                             .multilineTextAlignment(.leading)
                             .opacity(enteredComment.isEmpty ? 0.5 : 1)
                             .focused($focusedField, equals: "editor")
@@ -150,7 +154,6 @@ struct CommentFieldView: View {
                       dismissButton: .default(Text("Close")))
             }
             
-            .navigationTitle("Add Comment")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(content: {
                 ToolbarItem(placement: .cancellationAction) {
@@ -161,6 +164,13 @@ struct CommentFieldView: View {
                             .fontWeight(.bold)
                     }
                     .disabled(addComment.status == .inProgress)
+                }
+                
+                ToolbarItem(placement: .principal) {
+                    Text("\(250 - enteredComment.count)")
+                        .dynamicFont(.body, fontDesign: .monospaced, padding: 0)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.calculateRatioColor(count: enteredComment.count, maximum: 250))
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
@@ -219,7 +229,7 @@ struct CommentFieldView: View {
                             Text("Post!")
                                 .fontWeight(.bold)
                         }
-                        .disabled(enteredComment.isEmpty)
+                        .disabled(!withinCharacterLimits)
                     }
                 }
             })

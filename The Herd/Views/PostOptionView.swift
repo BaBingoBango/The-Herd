@@ -35,14 +35,6 @@ struct PostOptionView: View {
         Post.hasUserCommented(post.comments, userUUID: currentUser.UUID)
     }
     @AppStorage("postingAnonymously") var postingAnonymously = false
-    var commentingAnonymously: Bool {
-        let hasSpokenAnonymously = parentPost!.anonymousIdentifierTable.contains(where: { $0.key == currentUser.UUID })
-        if parentPost!.authorUUID == currentUser.UUID {
-            return hasSpokenAnonymously
-        } else {
-            return hasSpokenAnonymously || postingAnonymously
-        }
-    }
     @State var rolodexUser = Operation()
     @State var isUserInRolodex = false
     
@@ -52,12 +44,12 @@ struct PostOptionView: View {
             if showTopBar {
                 HStack {
                     ZStack {
-                        Image(systemName: "circle.fill")
-                            .font(.system(size: 37.5))
+                        Circle()
                             .foregroundColor(parentPost!.getAnonymousNumber(post.authorUUID) != nil ? .gray : post.authorColor)
+                            .frame(width: 40, height: 40)
 
                         Text(parentPost!.getAnonymousNumber(post.authorUUID) ?? post.authorEmoji)
-                            .font(.system(size: 25))
+                            .aspectRatio(contentMode: .fit)
                             .fontDesign(.monospaced)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
@@ -94,7 +86,7 @@ struct PostOptionView: View {
                     .offset(y: -8)
             }
             
-            NavigationLink(destination: PostDetailView(post: $post, currentUser: currentUser, locationManager: locationManager, commentingAnonymously: commentingAnonymously), isActive: $showingPostDetail) { EmptyView() }
+            NavigationLink(destination: PostDetailView(post: $post, currentUser: currentUser, locationManager: locationManager, commentingAnonymously: commentingAnonymously()), isActive: $showingPostDetail) { EmptyView() }
             
             switch deletePost.status {
             case .inProgress:
@@ -140,29 +132,64 @@ struct PostOptionView: View {
                     VStack(alignment: .leading, spacing: 0) {
                         if showText {
                             VStack(alignment: .leading, spacing: 0) {
-                                LazyVGrid(columns: Array(repeating: .init(.flexible()), count: showTopBar ? 4 : 5), alignment: .leading) {
-                                    
-                                    ForEach(post.mentions, id: \.UUID) { eachMention in
-                                        Text("@ \(eachMention.emoji)")
-                                            .dynamicFont(.title3, fontDesign: .rounded, padding: 0)
-                                            .padding(.horizontal, 10)
-                                            .fontWeight(.heavy)
-                                            .foregroundColor(eachMention.color)
-                                            .modifier(RectangleWrapper(fixedHeight: 35, color: eachMention.color, opacity: 0.15, cornerRadius: 15, enforceLayoutPriority: true))
-                                            .padding(.top, 5)
+                                VStack(alignment: .leading) {
+                                    ForEach(post.mentions.chunked(into: showTopBar ? 4 : 5).indices, id: \.self) { index in
+                                        let row = post.mentions.chunked(into: showTopBar ? 4 : 5)[index]
+                                        HStack {
+                                            ForEach(row, id: \.UUID) { eachMention in
+                                                Text("@ \(eachMention.emoji)")
+                                                    .dynamicFont(.title3, fontDesign: .rounded, padding: 0)
+                                                    .padding(.horizontal, 10)
+                                                    .fontWeight(.heavy)
+                                                    .foregroundColor(eachMention.color)
+                                                    .modifier(RectangleWrapper(fixedHeight: 35, color: eachMention.color, opacity: 0.15, cornerRadius: 15, enforceLayoutPriority: true))
+                                                    .padding(.top, 5)
+                                            }
+                                        }
                                     }
                                 }
                                 .padding(.horizontal)
                                 .padding(.top, showTopBar ? 5 : 12.5)
                                 
                                 Text(post.text)
-                                    .dynamicFont(.title2, fontDesign: currentUser.fontPreference.toFontDesign(), lineLimit: 100, padding: 0)
+                                    .dynamicFont(post.text.count <= 5 ? .largeTitle : .title2, fontDesign: currentUser.fontPreference.toFontDesign(), lineLimit: 100, padding: 0)
                                     .fontWeight(.medium)
                                     .foregroundColor(.primary)
                                     .multilineTextAlignment(.leading)
-                                    .padding(.bottom, 15)
-                                    .padding(.top, showTopBar ? 5 : 20)
+                                    .padding(.bottom, 10)
+                                    .padding(.top, showTopBar ? 0 : 10)
                                     .padding(.horizontal)
+                                
+                                if let repost = post.repost.first {
+                                    NavigationLink(destination: PostDetailView(post: $post.repost.first!, currentUser: currentUser, locationManager: locationManager, commentingAnonymously: commentingAnonymously(true))) {
+                                        HStack {
+                                            ZStack {
+                                                Image(systemName: "circle.fill")
+                                                    .font(.system(size: 30))
+                                                    .foregroundColor(repost.getAnonymousNumber(repost.authorUUID) != nil ? .gray : repost.authorColor)
+
+                                                Text(repost.getAnonymousNumber(repost.authorUUID) ?? repost.authorEmoji)
+                                                    .font(.system(size: 12.5))
+                                                    .fontDesign(.monospaced)
+                                                    .fontWeight(.bold)
+                                                    .foregroundColor(.white)
+                                            }
+                                            
+                                            HStack {
+                                                Text(repost.text)
+                                                    .dynamicFont(.body, lineLimit: 15, padding: 0)
+                                                    .multilineTextAlignment(.leading)
+                                                    .fontWeight(.semibold)
+                                                    .foregroundColor(.primary)
+                                                
+                                                Spacer()
+                                            }
+                                        }
+                                        .padding(10)
+                                        .modifier(RectangleWrapper(color: repost.getAnonymousNumber(repost.authorUUID) != nil ? .gray : repost.authorColor, opacity: 0.1, enforceLayoutPriority: true))
+                                        .padding([.horizontal, .bottom])
+                                    }
+                                }
                             }
                         }
                         
@@ -171,14 +198,22 @@ struct PostOptionView: View {
                                 Button(action: {
                                     showingCommentField = true
                                 }) {
-                                    Label(post.commentLevel == 0 ? "\(Post.countComments(post.comments))" : "Reply", systemImage: hasUserCommented ? "bubble.left.fill" : "bubble.left")
-                                        .dynamicFont(bottomBarFont, padding: 0)
-                                        .fontWeight(.semibold)
-                                        .foregroundColor(hasUserCommented ? (parentPost!.getAnonymousNumber(post.authorUUID) != nil ? .gray : post.authorColor): .secondary)
-                                        .padding(.trailing, seperateControls ? 0 : 15)
+                                    HStack(spacing: 7.5) {
+                                        Image(systemName: hasUserCommented ? "bubble.left.fill" : "bubble.left")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 20)
+                                            .foregroundColor(hasUserCommented ? (parentPost!.getAnonymousNumber(post.authorUUID) != nil ? .gray : post.authorColor): .secondary)
+                                        
+                                        Text(post.commentLevel == 0 ? "\(Post.countComments(post.comments))" : "Reply")
+                                            .dynamicFont(bottomBarFont, padding: 0)
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(hasUserCommented ? (parentPost!.getAnonymousNumber(post.authorUUID) != nil ? .gray : post.authorColor): .secondary)
+                                    }
+                                    .padding(.trailing, seperateControls ? 0 : 15)
                                 }
                                 .sheet(isPresented: $showingCommentField) {
-                                    CommentFieldView(commentingAnonymously: commentingAnonymously, post: $post, currentUser: currentUser, locationManager: locationManager, parentPost: post.commentLevel == 0 ? post : parentPost)
+                                    CommentFieldView(commentingAnonymously: commentingAnonymously(), post: $post, currentUser: currentUser, locationManager: locationManager, parentPost: post.commentLevel == 0 ? post : parentPost)
                                         .presentationDetents([.medium, .large], selection: $commentFieldDetent)
                                 }
                                 
@@ -191,7 +226,9 @@ struct PostOptionView: View {
                                 changeVote(newValue: voteValue == 1 ? 0 : 1)
                             }) {
                                 Image(systemName: voteValue == 1 ? "hand.thumbsup.fill" : "hand.thumbsup")
-                                    .dynamicFont(bottomBarFont, padding: 0)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 20)
                                     .fontWeight(.semibold)
                                     .foregroundColor(voteValue == 1 ? .green : .secondary)
                             }
@@ -211,7 +248,9 @@ struct PostOptionView: View {
                                 changeVote(newValue: voteValue == -1 ? 0 : -1)
                             }) {
                                 Image(systemName: voteValue == -1 ? "hand.thumbsdown.fill" : "hand.thumbsdown")
-                                    .dynamicFont(bottomBarFont, padding: 0)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 20)
                                     .fontWeight(.semibold)
                                     .foregroundColor(voteValue == -1 ? .red : .secondary)
                             }
@@ -227,6 +266,23 @@ struct PostOptionView: View {
     }
     
     // MARK: View Functions
+    func commentingAnonymously(_ useRepost: Bool = false) -> Bool {
+        if !useRepost {
+            let hasSpokenAnonymously = parentPost!.anonymousIdentifierTable.contains(where: { $0.key == currentUser.UUID })
+            if parentPost!.authorUUID == currentUser.UUID {
+                return hasSpokenAnonymously
+            } else {
+                return hasSpokenAnonymously || postingAnonymously
+            }
+        } else {
+            let hasSpokenAnonymously = post.repost.first!.anonymousIdentifierTable.contains(where: { $0.key == currentUser.UUID })
+            if post.repost.first!.authorUUID == currentUser.UUID {
+                return hasSpokenAnonymously
+            } else {
+                return hasSpokenAnonymously || postingAnonymously
+            }
+        }
+    }
     func changeVote(newValue: Int) {
         let newVote = Vote(voterUUID: currentUser.UUID, value: newValue, timePosted: Date())
         var newVotesList = post.commentLevel == 0 ? post.votes : parentPost!.votes
@@ -286,9 +342,16 @@ struct PostMenuButton: View {
     var makeBold = false
     @Binding var rolodexUser: Operation
     @Binding var isUserInRolodex: Bool
+    @State var showingRepostView = false
     
     var body: some View {
         Menu {
+            Button(action: {
+                showingRepostView = true
+            }) {
+                Label("Repost...", systemImage: "arrowshape.turn.up.forward")
+            }
+            
             let viewCopy = PostOptionView(post: post, currentUser: currentUser, locationManager: locationManager, blockRecursion: true, parentPost: post).frame(width: 500)
             let viewImage = Image(uiImage: ImageRenderer(content: viewCopy).uiImage!)
             
@@ -296,41 +359,46 @@ struct PostMenuButton: View {
                 Label("Share...", systemImage: "square.and.arrow.up")
             }
             
-            // TODO: NEXT: add the add/remove to/from rolodex button
-            Button(action: {
-                rolodexUser.status = .inProgress
-                
-                if !isUserInRolodex {
-                    let newAddress = Address(userUUID: post.authorUUID, userEmoji: post.authorEmoji, userColor: post.authorColor, nickname: "\(Address.defaultAdjectives.randomElement()!) \(post.authorEmoji)", comment: "")
-                    var newAddresses = currentUser.addresses
-                    newAddresses[post.authorUUID] = newAddress
-                    usersCollection.document(currentUser.UUID).updateData([
-                        "addresses" : newAddresses.mapValues({ $0.dictify() })
-                    ]) { error in
-                        if let error = error {
-                            rolodexUser.setError(message: error.localizedDescription)
-                        } else {
-                            isUserInRolodex = true
-                            rolodexUser.status = .success
-                        }
-                    }
+            if currentUser.UUID != post.authorUUID && post.getAnonymousNumber(post.authorUUID) == nil {
+                Button(action: {
+                    rolodexUser.status = .inProgress
                     
-                } else {
-                    var newAddresses = currentUser.addresses
-                    newAddresses.removeValue(forKey: post.authorUUID)
-                    usersCollection.document(currentUser.UUID).updateData([
-                        "addresses" : newAddresses.mapValues({ $0.dictify() })
-                    ]) { error in
-                        if let error = error {
-                            rolodexUser.setError(message: error.localizedDescription)
-                        } else {
-                            isUserInRolodex = false
-                            rolodexUser.status = .success
+                    if !isUserInRolodex {
+                        let newAddress = Address(userUUID: post.authorUUID,
+                                                 userEmoji: post.authorEmoji,
+                                                 userColor: post.authorColor,
+                                                 nickname: "\(Address.defaultAdjectives.randomElement()!) \(Address.defaultNouns.randomElement()!)",
+                                                 comment: "")
+                        var newAddresses = currentUser.addresses
+                        newAddresses[post.authorUUID] = newAddress
+                        usersCollection.document(currentUser.UUID).updateData([
+                            "addresses" : newAddresses.mapValues({ $0.dictify() })
+                        ]) { error in
+                            if let error = error {
+                                rolodexUser.setError(message: error.localizedDescription)
+                            } else {
+                                isUserInRolodex = true
+                                rolodexUser.status = .success
+                            }
+                        }
+                        
+                    } else {
+                        var newAddresses = currentUser.addresses
+                        newAddresses.removeValue(forKey: post.authorUUID)
+                        usersCollection.document(currentUser.UUID).updateData([
+                            "addresses" : newAddresses.mapValues({ $0.dictify() })
+                        ]) { error in
+                            if let error = error {
+                                rolodexUser.setError(message: error.localizedDescription)
+                            } else {
+                                isUserInRolodex = false
+                                rolodexUser.status = .success
+                            }
                         }
                     }
+                }) {
+                    Label(!isUserInRolodex ? "Add User to Rolodex" : "Remove User from Rolodex", systemImage: !isUserInRolodex ? "person.crop.circle.badge.plus" : "person.crop.circle.badge.minus")
                 }
-            }) {
-                Label(!isUserInRolodex ? "Add User to Rolodex" : "Remove User from Rolodex", systemImage: !isUserInRolodex ? "person.crop.circle.badge.plus" : "person.crop.circle.badge.minus")
             }
 //            .alert(isPresented: $savePost.isShowingErrorMessage) {
 //                Alert(title: Text("Couldn't Save Post"),
@@ -370,32 +438,39 @@ struct PostMenuButton: View {
             
             Divider()
             
-            Button(role: .destructive, action: {
-                deletePost.status = .inProgress
-                
-                postsCollection.document(post.UUID).delete() { error in
-                    if let error = error {
-                        deletePost.setError(message: error.localizedDescription)
-                    } else {
-                        deletePost.status = .success
+            if currentUser.UUID == post.authorUUID {
+                Button(role: .destructive, action: {
+                    deletePost.status = .inProgress
+                    
+                    postsCollection.document(post.UUID).delete() { error in
+                        if let error = error {
+                            deletePost.setError(message: error.localizedDescription)
+                        } else {
+                            deletePost.status = .success
+                        }
                     }
+                }) {
+                    Label("Delete Post", systemImage: "trash")
                 }
-            }) {
-                Label("Delete Post", systemImage: "trash")
-            }
-            .alert(isPresented: $deletePost.isShowingErrorMessage) {
-                Alert(title: Text("Couldn't Delete Post"),
-                      message: Text(deletePost.errorMessage),
-                      dismissButton: .default(Text("Close")))
+                .alert(isPresented: $deletePost.isShowingErrorMessage) {
+                    Alert(title: Text("Couldn't Delete Post"),
+                          message: Text(deletePost.errorMessage),
+                          dismissButton: .default(Text("Close")))
+                }
             }
             
         } label: {
             Image(systemName: "ellipsis.circle")
-                .font(.system(size: 20))
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 20)
                 .fontWeight(makeBold ? .bold : .regular)
                 .foregroundColor(makeBold ? .white : .secondary)
         }
         .offset(y: -5)
+        .sheet(isPresented: $showingRepostView) {
+            ManagePostsView(currentUser: currentUser, locationManager: locationManager, repost: post)
+        }
     }
 }
 

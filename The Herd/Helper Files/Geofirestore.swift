@@ -225,6 +225,15 @@ public class GFSQuery {
      */
     public var searchLimit: Int?
     
+    /// The document to start the query after.
+    public var startAfterPoint: DocumentSnapshot?
+    
+    /// The field to order results by.
+    public var orderField: String?
+    
+    /// The direction to order results in.
+    public var orderDescending: Bool?
+    
     internal var locationInfos = [String: GFSQueryLocationInfo]()
     internal var queries = Set<GFGeoHashQuery>()
     internal var handles = [GFGeoHashQuery: GFSGeoHashQueryListener]()
@@ -249,6 +258,12 @@ public class GFSQuery {
         var query = self.geoFirestore.collectionRef.order(by: "g").whereField("g", isGreaterThanOrEqualTo: query.startValue).whereField("g", isLessThanOrEqualTo: query.endValue)
         if let limit = self.searchLimit {
             query = query.limit(to: limit)
+        }
+        if let orderField = orderField, let orderDescending = orderDescending {
+            query = query.order(by: orderField, descending: orderDescending)
+        }
+        if let startAfterPoint = self.startAfterPoint {
+            query = query.start(afterDocument: startAfterPoint)
         }
         return query
     }

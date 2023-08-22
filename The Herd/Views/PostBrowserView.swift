@@ -23,12 +23,14 @@ struct PostBrowserView: View {
     @State var showingNewPostView = false
     @State var showingScanView = false
     @State var showingRolodex = false
+    @State var searchLimit = 5
+    @State var areMorePosts = false
     
     // MARK: View Body
     var body: some View {
         let postBrowserView = NavigationStack {
             ScrollView {
-                VStack(spacing: 0) {
+                LazyVStack(spacing: 0) {
                     Button(action: {
                         showingScanView = true
                     }) {
@@ -158,6 +160,13 @@ struct PostBrowserView: View {
                                 if currentUserExists {
                                     ForEach(posts, id: \.UUID) { eachPost in
                                         PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost)
+                                            .onAppear {
+                                                
+                                                // If we reach the bottom, load more posts from the server unless there are no more to load
+                                                if eachPost.UUID == posts.last!.UUID && postUpdate.status != .inProgress {
+                                                    Task { await getLatestPosts() }
+                                                }
+                                            }
                                     }
                                 }
                                 
@@ -215,6 +224,7 @@ struct PostBrowserView: View {
             })
         }
         .refreshable {
+//            searchLimit = 5
 //            await getLatestPosts()
         }
         .onAppear {
@@ -285,24 +295,27 @@ struct PostBrowserView: View {
         
         // 5 miles = 8,046.72 m = 8.04672 km
         let scanQuery = GeoFirestore(collectionRef: postsCollection).query(withCenter: scanLocation, radius: 8.04672)
+        scanQuery.searchLimit = searchLimit + 1
+        scanQuery.orderField = "timePosted"; scanQuery.orderDescending = true
+        
         let _ = scanQuery.observe(.documentEntered, with: { documentID, _ in
             if let documentID = documentID {
                 
                 postsInRange += 1
-                
                 Post.transportFromServer(path: postsCollection.document(documentID),
                                          operation: nil,
-                                         onError: { error in postUpdate.setError(message: error.localizedDescription) },
-                                         onSuccess: { post in
+                                         onError: { error in postUpdate.setError(message: error.localizedDescription); return },
+                                         onSuccess: { post, snapshot in
                     
                     posts.append(post)
-                    if posts.count == postsInRange {
-                        posts.sort(by: { $0.timePosted > $1.timePosted }) // TODO: fix this! (querying literally every post is that the issue? lol i think so)
+                    if posts.count >= postsInRange - 1 {
+                        
+                        posts.sort(by: { $0.timePosted > $1.timePosted })
                         postUpdate.status = .success
                     }
                 })
             } else {
-                postUpdate.setError(message: "TODO: add error message!")
+                postUpdate.setError(message: "TODO: add error message!"); return
             }
         })
         let _ = scanQuery.observeReady {

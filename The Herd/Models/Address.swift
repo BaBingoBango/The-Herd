@@ -39,6 +39,29 @@ struct Address: Transportable {
         "Spirited"
     ]
     
+    static var defaultNouns = [
+        "Person",
+        "Character",
+        "Individual",
+        "Being",
+        "Figure",
+        "Entity",
+        "Stranger",
+        "Friend",
+        "Companion",
+        "Traveler",
+        "Thinker",
+        "Creator",
+        "Adventurer",
+        "Explorer",
+        "Wanderer",
+        "Innovator",
+        "Dreamer",
+        "Visionary",
+        "Leader",
+        "Champion"
+    ]
+    
     func dictify() -> [String : Any] {
         return [
             "UUID" : UUID,

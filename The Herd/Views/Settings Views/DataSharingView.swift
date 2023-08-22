@@ -24,7 +24,8 @@ struct DataSharingView: View {
                 .padding(.top)
             
             Text("Data Sharing & Access")
-                .dynamicFont(.title)
+                .dynamicFont(.title, lineLimit: 5)
+                .multilineTextAlignment(.center)
                 .fontWeight(.bold)
                 .padding(.top, 5)
                 .padding(.bottom)
