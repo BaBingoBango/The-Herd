@@ -22,6 +22,7 @@ struct PostDetailView: View {
     @State var deletePost = Operation()
     @State var savePost = Operation()
     @State var isPostSaved = false
+    @Binding var newlyCreatedPost: Post
     
     // MARK: View Body
     var body: some View {
@@ -30,9 +31,9 @@ struct PostDetailView: View {
                 VStack(alignment: .leading) {
                     // FIXME: the comment count dosen't update when new comments are added bc this is static and not a state pass-in to POV
                     // FIX? make an optional state version? probs not...acc maybe with an on change?
-                    PostOptionView(post: post, currentUser: currentUser, showTopBar: false, cornerRadius: 0, parentPost: post)
+                    PostOptionView(post: $post, currentUser: currentUser, showTopBar: false, cornerRadius: 0, parentPost: post, newlyCreatedPost: $newlyCreatedPost)
                     
-                    CommentsView(currentUser: currentUser, comments: post.comments, post: post, parentPost: post, commentingAnonymously: commentingAnonymously)
+                    CommentsView(currentUser: currentUser, comments: post.comments, post: $post, parentPost: post, commentingAnonymously: commentingAnonymously, newlyCreatedPost: $newlyCreatedPost)
                         .padding(.horizontal)
                 }
                 
@@ -42,7 +43,7 @@ struct PostDetailView: View {
                     ToolbarItem(placement: .principal) {
                         VStack {
                             Text(post.authorEmoji)
-                                .font(.system(size: 25))
+                                .font(.system(size: 12.5))
                                 .padding(.top, 10)
                             
                             Text("\(post.distanceFromNow) · \(post.calculateDistanceFromLocation(latitude: currentUser.getLocation(locationManager)!.0, longitude: currentUser.getLocation(locationManager)!.1)) away")
@@ -54,8 +55,7 @@ struct PostDetailView: View {
                     }
                     
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        // FIXME: post already is a binding - why would it let us use $post?
-    //                    PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: $deletePost, savePost: $savePost, isPostSaved: $isPostSaved, makeBold: true)
+                        PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: .constant(Operation()), savePost: .constant(Operation()), isPostSaved: .constant(Operation()), rolodexUser: .constant(Operation()), isUserInRolodex: .constant(<#T##value: Bool##Bool#>), newlyCreatedPost: <#T##Binding<Post>#>)
                     }
                     
                     ToolbarItemGroup(placement: .bottomBar) {
@@ -95,15 +95,6 @@ struct PostDetailView: View {
                 .toolbarColorScheme(.dark, for: .navigationBar)
                 .toolbar(.visible, for: .bottomBar)
             }
-            .onAppear {
-                // MARK: View Launch Code
-                // Set up a real-time listener for this post!
-                postsCollection.document(post.UUID).addSnapshotListener({ snapshot, error in
-                    if let snapshot = snapshot {
-                        if let snapshotData = snapshot.data() { post = Post.dedictify(snapshotData) }
-                    }
-                })
-            }
         }
     }
     
@@ -115,7 +106,7 @@ struct PostDetailView: View {
 struct PostDetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            PostDetailView(post: .constant(Post.sample), commentingAnonymously: false)
+            PostDetailView(post: .constant(Post.sample), commentingAnonymously: false, newlyCreatedPost: .constant(.sample))
         }
     }
 }
@@ -125,13 +116,14 @@ struct CommentsView: View {
     
     var currentUser = User.getSample()
     var comments: [Post]
-    var post: Post
+    @Binding var post: Post
     var barColor: Color = .clear
     var parentPost: Post?
     var commentingAnonymously: Bool
+    @Binding var newlyCreatedPost: Post
     
     var body: some View {
-        ForEach(comments, id: \.UUID) { eachComment in
+        ForEach(Array(comments.enumerated()), id: \.offset) { eachIndex, eachComment in
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     ZStack {
@@ -162,7 +154,7 @@ struct CommentsView: View {
                     Spacer()
                 }
                 
-                PostOptionView(post: eachComment, currentUser: currentUser, showTopBar: false, showText: false, seperateControls: false, cornerRadius: 0, bottomBarFont: .body, parentPost: parentPost ?? post)
+                PostOptionView(post: $post.comments[eachIndex], currentUser: currentUser, showTopBar: false, showText: false, seperateControls: false, cornerRadius: 0, bottomBarFont: .body, parentPost: parentPost ?? post, newlyCreatedPost: $newlyCreatedPost)
                 
                 if !eachComment.comments.isEmpty {
                     HStack {
@@ -172,7 +164,7 @@ struct CommentsView: View {
                             .foregroundColor(parentPost!.getAnonymousNumber(eachComment.authorUUID) != nil ? .gray : eachComment.authorColor)
                         
                         VStack {
-                            CommentsView(currentUser: currentUser, comments: eachComment.comments, post: post, barColor: eachComment.authorColor, parentPost: post, commentingAnonymously: commentingAnonymously)
+                            CommentsView(currentUser: currentUser, comments: eachComment.comments, post: $post, barColor: eachComment.authorColor, parentPost: post, commentingAnonymously: commentingAnonymously, newlyCreatedPost: $newlyCreatedPost)
                                 .fixedSize(horizontal: false, vertical: true)
                                 .padding(.leading, 1)
                         }

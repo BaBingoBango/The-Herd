@@ -18,13 +18,16 @@ struct PostBrowserView: View {
     @ObservedObject var currentUser: User = .getSample()
     @StateObject var locationManager = LocationManager()
     @State var showingProfileView = false
-    @State var posts: [Post] = []
+    @StateObject var posts = PostListViewModel()
     @State var postUpdate = Operation()
     @State var showingNewPostView = false
     @State var showingScanView = false
     @State var showingRolodex = false
-    @State var searchLimit = 5
     @State var areMorePosts = false
+    var batchSize = 100
+    @State var scannedSnapshots: [DocumentSnapshot] = []
+    @State var startAfterPoint: DocumentSnapshot? = nil
+    @State var newlyCreatedPost: Post = .sample
     
     // MARK: View Body
     var body: some View {
@@ -63,6 +66,11 @@ struct PostBrowserView: View {
                             }
                             
                             VStack(alignment: .leading) {
+                                Text(verbatim: "are more posts? \(areMorePosts)")
+                                Text(verbatim: "batch size:  \(batchSize)")
+                                Text(verbatim: "scanned snapshots: \(scannedSnapshots.count)")
+                                Text(verbatim: "start after point: \(startAfterPoint?.data()?["text"] ?? "nil")")
+                                
                                 Text("Scan Location")
                                     .dynamicFont(.callout, fontDesign: .rounded, lineLimit: 4, padding: 0)
                                     .foregroundColor(.secondary)
@@ -150,35 +158,47 @@ struct PostBrowserView: View {
                         } else {
                             switch postUpdate.status {
                             case .failure:
-                                Text("error: \(postUpdate.errorMessage)")
+                                EmptyCollectionView(iconName: "wifi.slash", heading: "Couldn't Update Posts", text: postUpdate.errorMessage)
                                 
-                            case .success:
-                                if posts.isEmpty {
-                                    Text("no posts!")
+                            case .success, .inProgress:
+                                if posts.posts.isEmpty && postUpdate.status != .inProgress {
+                                    EmptyCollectionView(iconName: "face.dashed", heading: "No Posts Yet", text: "Looks like you're the first one here!")
                                 }
                                 
                                 if currentUserExists {
-                                    ForEach(posts, id: \.UUID) { eachPost in
-                                        PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost)
+                                    ForEach(Array(posts.posts.enumerated()), id: \.offset) { index, eachPost in
+                                        PostOptionView(post: $posts.posts[index], activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost, newlyCreatedPost: $newlyCreatedPost)
+//                                            .onAppear {
+//                                                // Set up a real-time listener for this post!
+//                                                postsCollection.document(posts.posts[index].UUID).addSnapshotListener({ snapshot, error in
+//                                                    if let snapshot = snapshot {
+//                                                        if let snapshotData = snapshot.data() {
+////                                                            posts.posts[index] = Post.dedictify(snapshotData)
+//                                                            posts.posts[posts.posts.firstIndex(where: { $0.UUID == eachPost.UUID })!].replaceFields(Post.dedictify(snapshotData)) }
+//                                                    }
+//                                                })
+//                                            }
+                                    }
+                                    
+                                    if postUpdate.status != .inProgress && areMorePosts {
+                                        ProgressView()
                                             .onAppear {
-                                                
-                                                // If we reach the bottom, load more posts from the server unless there are no more to load
-                                                if eachPost.UUID == posts.last!.UUID && postUpdate.status != .inProgress {
-                                                    Task { await getLatestPosts() }
-                                                }
+                                                Task { await getLatestPosts() }
                                             }
                                     }
                                 }
-                                
                             default:
-                                ProgressView()
-                                    .controlSize(.large)
-                                    .padding(.top, 30)
+                                EmptyView()
                             }
                         }
                     }
                 }
                 .padding([.leading, .bottom, .trailing])
+            }
+            .onChange(of: newlyCreatedPost) { _ in
+                if newlyCreatedPost.UUID != Post.sample.UUID {
+                    posts.posts.insert(newlyCreatedPost, at: 0)
+                }
             }
             
             // MARK: Navigation Settings
@@ -202,7 +222,7 @@ struct PostBrowserView: View {
                         }
                     }
                     .sheet(isPresented: $showingProfileView) {
-                        ProfileView(currentUser: currentUser, locationManager: locationManager)
+                        ProfileView(currentUser: currentUser, locationManager: locationManager, newlyCreatedPost: $newlyCreatedPost)
                     }
                     .disabled(!currentUserExists || currentUser.getLocation(locationManager) == nil)
                 }
@@ -217,21 +237,22 @@ struct PostBrowserView: View {
                             .foregroundColor(.accentColor)
                     }
                     .sheet(isPresented: $showingNewPostView) {
-                        ManagePostsView(currentUser: currentUser, locationManager: locationManager)
+                        ManagePostsView(currentUser: currentUser, locationManager: locationManager, newlyCreatedPost: $newlyCreatedPost)
                     }
                     .disabled(!currentUserExists || currentUser.getLocation(locationManager) == nil)
                 }
             })
         }
         .refreshable {
-//            searchLimit = 5
-//            await getLatestPosts()
+            posts.posts.removeAll()
+            startAfterPoint = nil
+            await getLatestPosts()
         }
         .onAppear {
             // MARK: View Launch Code
             // Add preview data!
             if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
-                posts = Post.getSamples()
+                posts.posts = Post.getSamples()
                 currentUser.replaceFields(.getSample())
                 currentUserExists = true
                 postUpdate.status = .success
@@ -258,11 +279,11 @@ struct PostBrowserView: View {
                 .tabItem {
                     Label("Nearby", systemImage: "location.fill")
                 }
-            ChatsView(currentUser: currentUser, locationManager: locationManager)
+            ChatsView(currentUser: currentUser, locationManager: locationManager, newlyCreatedPost: $newlyCreatedPost)
                 .tabItem {
                     Label("Chats", systemImage: "bubble.left.and.bubble.right.fill")
                 }
-            AddressBookView(currentUser: currentUser, mentions: .constant([]), excludedUserIDs: [], locationManager: locationManager)
+            AddressBookView(currentUser: currentUser, mentions: .constant([]), excludedUserIDs: [], locationManager: locationManager, newlyCreatedPost: $newlyCreatedPost)
                 .tabItem {
                     Label("Rolodex", systemImage: "person.text.rectangle.fill")
                 }
@@ -272,7 +293,7 @@ struct PostBrowserView: View {
     // MARK: View Functions
     func getLatestPosts() async {
         postUpdate.status = .inProgress
-        posts.removeAll()
+        areMorePosts = false
         var postsInRange = 0
         
         var scanLocation = CLLocation()
@@ -295,9 +316,11 @@ struct PostBrowserView: View {
         
         // 5 miles = 8,046.72 m = 8.04672 km
         let scanQuery = GeoFirestore(collectionRef: postsCollection).query(withCenter: scanLocation, radius: 8.04672)
-        scanQuery.searchLimit = searchLimit + 1
+        scanQuery.searchLimit = batchSize + 1
         scanQuery.orderField = "timePosted"; scanQuery.orderDescending = true
+        scanQuery.startAfterPoint = startAfterPoint
         
+        var postsTransported = 0
         let _ = scanQuery.observe(.documentEntered, with: { documentID, _ in
             if let documentID = documentID {
                 
@@ -307,10 +330,23 @@ struct PostBrowserView: View {
                                          onError: { error in postUpdate.setError(message: error.localizedDescription); return },
                                          onSuccess: { post, snapshot in
                     
-                    posts.append(post)
-                    if posts.count >= postsInRange - 1 {
+                    posts.posts.append(post)
+                    scannedSnapshots.append(snapshot)
+                    postsTransported += 1
+                    
+                    if postsTransported == postsInRange { // FIXME: not guaranteed that detection numbers stay ahead of tramsport numbers; e.g. posts in range is calculated as we go, instead of divined in advance
+                        posts.posts.sort(by: { $0.timePosted > $1.timePosted })
+                        scannedSnapshots.sort(by: { Post.dedictify($0.data()!).timePosted > Post.dedictify($1.data()!).timePosted })
+                        startAfterPoint = scannedSnapshots.last!
                         
-                        posts.sort(by: { $0.timePosted > $1.timePosted })
+                        if postsTransported == batchSize + 1 {
+                            areMorePosts = true
+                            posts.posts.removeLast()
+                            scannedSnapshots.removeLast()
+                            startAfterPoint = scannedSnapshots.last!
+                        }
+                        scannedSnapshots.removeAll()
+                        scanQuery.removeAllObservers()
                         postUpdate.status = .success
                     }
                 })

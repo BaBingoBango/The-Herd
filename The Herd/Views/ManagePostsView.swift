@@ -16,6 +16,7 @@ struct ManagePostsView: View {
     @ObservedObject var currentUser: User = .getSample()
     var locationManager: LocationManager
     var repost: Post?
+    @Binding var newlyCreatedPost: Post
     
     // MARK: View Body
     var body: some View {
@@ -29,9 +30,9 @@ struct ManagePostsView: View {
                 .padding(.horizontal)
                 
                 if showingDrafts == 0 {
-                    NewPostView(currentUser: currentUser, locationManager: locationManager, repost: repost)
+                    NewPostView(currentUser: currentUser, locationManager: locationManager, repost: repost, newlyCreatedPost: $newlyCreatedPost)
                 } else {
-                    DraftsView(currentUser: currentUser, locationManager: locationManager)
+                    DraftsView(currentUser: currentUser, locationManager: locationManager, newlyCreatedPost: $newlyCreatedPost)
                 }
             }
             
@@ -56,7 +57,7 @@ struct ManagePostsView: View {
 // MARK: View Preview
 struct ManagePostsView_Previews: PreviewProvider {
     static var previews: some View {
-        ManagePostsView(locationManager: LocationManager())
+        ManagePostsView(locationManager: LocationManager(), newlyCreatedPost: .constant(.sample))
     }
 }
 

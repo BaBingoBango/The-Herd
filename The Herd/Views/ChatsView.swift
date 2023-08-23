@@ -21,6 +21,7 @@ struct ChatsView: View {
     var hiddenChatsMode = false
     var locationManager = LocationManager()
     @State var showingProfileView = false
+    @Binding var newlyCreatedPost: Post
     
     // MARK: View Body
     var body: some View {
@@ -59,7 +60,7 @@ struct ChatsView: View {
                         let isGroupChat = eachChat.memberIDs.count >= 3
                         let nonUserIDs = eachChat.memberIDs.filter({ $0 != currentUser.UUID })
                         
-                        NavigationLink(destination: ChatDetailView(currentUser: currentUser, chat: eachChat, navigationTitle: !isGroupChat ? "Chat with \(eachChat.getEmoji(nonUserIDs.first!))" : "Chat with \(nonUserIDs.count) People")) {
+                        NavigationLink(destination: ChatDetailView(currentUser: currentUser, chat: eachChat, navigationTitle: !isGroupChat ? "Chat with \(eachChat.getEmoji(nonUserIDs.first!))" : "Chat with \(nonUserIDs.count) People", newlyCreatedPost: $newlyCreatedPost)) {
                             
                             ChatOptionView(color: isGroupChat ? .gray : eachChat.getColor(nonUserIDs.first!),
                                            isGroupChat: isGroupChat,
@@ -69,7 +70,7 @@ struct ChatsView: View {
                     }
                     
                     if !currentUser.hiddenChatIDs.isEmpty && !hiddenChatsMode {
-                        NavigationLink(destination: ChatsView(currentUser: currentUser, hiddenChatsMode: true)) {
+                        NavigationLink(destination: ChatsView(currentUser: currentUser, hiddenChatsMode: true, newlyCreatedPost: $newlyCreatedPost)) {
                             ChatOptionView(color: .gray,
                                            isGroupChat: true,
                                            emoji: "",
@@ -100,7 +101,7 @@ struct ChatsView: View {
                     }
                 }
                 .sheet(isPresented: $showingProfileView) {
-                    ProfileView(currentUser: currentUser, locationManager: locationManager)
+                    ProfileView(currentUser: currentUser, locationManager: locationManager, newlyCreatedPost: $newlyCreatedPost)
                 }
             }
             
@@ -115,7 +116,7 @@ struct ChatsView: View {
                             .foregroundColor(.accentColor)
                     }
                     .sheet(isPresented: $showingRolodex) {
-                        AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $mentions, pickerAction: "Chat", excludedUserIDs: [])
+                        AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $mentions, pickerAction: "Chat", excludedUserIDs: [], newlyCreatedPost: $newlyCreatedPost)
                     }
                 }
             }
@@ -170,7 +171,7 @@ struct ChatsView: View {
 // MARK: View Preview
 struct ChatsView_Previews: PreviewProvider {
     static var previews: some View {
-        ChatsView(currentUser: .getSample(), userChats: Chat.samples)
+        ChatsView(currentUser: .getSample(), userChats: Chat.samples, newlyCreatedPost: .constant(.sample))
     }
 }
 

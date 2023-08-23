@@ -11,7 +11,7 @@ import SwiftUI
 struct PostOptionView: View {
     
     // MARK: View Variables
-    @State var post = Post.sample
+    @Binding var post: Post
     var activateNavigation = false
     @State var showingPostDetail = false
     var currentUser = User.getSample()
@@ -37,6 +37,7 @@ struct PostOptionView: View {
     @AppStorage("postingAnonymously") var postingAnonymously = false
     @State var rolodexUser = Operation()
     @State var isUserInRolodex = false
+    @Binding var newlyCreatedPost: Post
     
     // MARK: View Body
     var body: some View {
@@ -65,7 +66,7 @@ struct PostOptionView: View {
                     Spacer()
                     
                     if !blockRecursion {
-                        PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: $deletePost, savePost: $savePost, isPostSaved: $isPostSaved, rolodexUser: $rolodexUser, isUserInRolodex: $isUserInRolodex)
+                        PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: $deletePost, savePost: $savePost, isPostSaved: $isPostSaved, rolodexUser: $rolodexUser, isUserInRolodex: $isUserInRolodex, newlyCreatedPost: $newlyCreatedPost)
                             .onAppear {
                                 postsCollection.document(post.UUID).collection("saved").document(currentUser.UUID).getDocument() { snapshot, error in
                                     if error != nil {
@@ -86,7 +87,7 @@ struct PostOptionView: View {
                     .offset(y: -8)
             }
             
-            NavigationLink(destination: PostDetailView(post: $post, currentUser: currentUser, locationManager: locationManager, commentingAnonymously: commentingAnonymously()), isActive: $showingPostDetail) { EmptyView() }
+            NavigationLink(destination: PostDetailView(post: $post, currentUser: currentUser, locationManager: locationManager, commentingAnonymously: commentingAnonymously(), newlyCreatedPost: $newlyCreatedPost), isActive: $showingPostDetail) { EmptyView() }
             
             switch deletePost.status {
             case .inProgress:
@@ -161,7 +162,7 @@ struct PostOptionView: View {
                                     .padding(.horizontal)
                                 
                                 if let repost = post.repost.first {
-                                    NavigationLink(destination: PostDetailView(post: $post.repost.first!, currentUser: currentUser, locationManager: locationManager, commentingAnonymously: commentingAnonymously(true))) {
+                                    NavigationLink(destination: PostDetailView(post: $post.repost.first!, currentUser: currentUser, locationManager: locationManager, commentingAnonymously: commentingAnonymously(true), newlyCreatedPost: $newlyCreatedPost)) {
                                         HStack {
                                             ZStack {
                                                 Image(systemName: "circle.fill")
@@ -323,7 +324,7 @@ struct PostOptionView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             ScrollView {
-                PostOptionView(activateNavigation: true, blockRecursion: true)
+                PostOptionView(post: .constant(.sample), activateNavigation: true, blockRecursion: true, newlyCreatedPost: .constant(.sample))
                     .padding()
             }
         }
@@ -343,6 +344,7 @@ struct PostMenuButton: View {
     @Binding var rolodexUser: Operation
     @Binding var isUserInRolodex: Bool
     @State var showingRepostView = false
+    @Binding var newlyCreatedPost: Post
     
     var body: some View {
         Menu {
@@ -352,7 +354,7 @@ struct PostMenuButton: View {
                 Label("Repost...", systemImage: "arrowshape.turn.up.forward")
             }
             
-            let viewCopy = PostOptionView(post: post, currentUser: currentUser, locationManager: locationManager, blockRecursion: true, parentPost: post).frame(width: 500)
+            let viewCopy = PostOptionView(post: $post, currentUser: currentUser, locationManager: locationManager, blockRecursion: true, parentPost: post, newlyCreatedPost: .constant(.sample)).frame(width: 500)
             let viewImage = Image(uiImage: ImageRenderer(content: viewCopy).uiImage!)
             
             ShareLink(item: viewImage, preview: SharePreview(post.text, image: viewImage)) {
@@ -469,7 +471,7 @@ struct PostMenuButton: View {
         }
         .offset(y: -5)
         .sheet(isPresented: $showingRepostView) {
-            ManagePostsView(currentUser: currentUser, locationManager: locationManager, repost: post)
+            ManagePostsView(currentUser: currentUser, locationManager: locationManager, repost: post, newlyCreatedPost: $newlyCreatedPost)
         }
     }
 }

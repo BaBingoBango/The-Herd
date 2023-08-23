@@ -19,6 +19,7 @@ struct DraftsView: View {
     var repost: Post?
     var mentions: [ChatMember] = []
     @State var deleteDraft = Operation()
+    @Binding var newlyCreatedPost: Post
     
     // MARK: View Body
     var body: some View {
@@ -67,7 +68,7 @@ struct DraftsView: View {
                                 .padding(.horizontal)
                             }
                             .sheet(isPresented: $showingNewPostView) {
-                                NewPostView(draftID: eachDraft.UUID, enteredText: eachDraft.text, enteredMentions: mentions, currentUser: currentUser, locationManager: locationManager, repost: eachDraft.repost.first)
+                                NewPostView(draftID: eachDraft.UUID, enteredText: eachDraft.text, enteredMentions: mentions, currentUser: currentUser, locationManager: locationManager, repost: eachDraft.repost.first, newlyCreatedPost: $newlyCreatedPost)
                                     .dismissalButton()
                             }
                             .disabled(deleteDraft.status == .inProgress)
@@ -117,7 +118,7 @@ struct DraftsView: View {
 // MARK: View Preview
 struct DraftsView_Previews: PreviewProvider {
     static var previews: some View {
-        DraftsView(locationManager: LocationManager())
+        DraftsView(locationManager: LocationManager(), newlyCreatedPost: .constant(.sample))
     }
 }
 

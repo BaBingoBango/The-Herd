@@ -21,6 +21,7 @@ struct AddressBookView: View {
     var locationManager = LocationManager()
     @State var showingProfileView = false
     @State var showingInfoView = false
+    @Binding var newlyCreatedPost: Post
     
     // MARK: View Body
     var body: some View {
@@ -156,7 +157,7 @@ struct AddressBookView: View {
                         }
                     }
                     .sheet(isPresented: $showingProfileView) {
-                        ProfileView(currentUser: currentUser, locationManager: locationManager)
+                        ProfileView(currentUser: currentUser, locationManager: locationManager, newlyCreatedPost: $newlyCreatedPost)
                     }
                 }
             }
@@ -191,7 +192,7 @@ struct AddressBookView: View {
 // MARK: View Preview
 struct AddressBookView_Previews: PreviewProvider {
     static var previews: some View {
-        AddressBookView(currentUser: .getSample(), mentions: .constant([]), excludedUserIDs: [])
+        AddressBookView(currentUser: .getSample(), mentions: .constant([]), excludedUserIDs: [], newlyCreatedPost: .constant(.sample))
     }
 }
 

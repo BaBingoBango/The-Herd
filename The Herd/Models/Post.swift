@@ -10,22 +10,63 @@ import SwiftUI
 import FirebaseFirestore
 import CoreLocation
 
-struct Post: Transportable {
-    var UUID = Foundation.UUID.getTripleID()
-    var authorUUID: String
-    var authorEmoji: String
-    var authorColor: Color
-    var anonymousIdentifierTable: [String : Int] = [:]
-    var text: String
-    var votes: [String : Vote] // user ID : user vote
-    var commentLevel = 0
-    var comments: [Post]
-    var timePosted: Date
-    var latitude: Double
-    var longitude: Double
-    var mentions: [ChatMember]
-    var associatedUserIDs: [String] = []
-    var repost: [Post] = []
+class Post: Transportable, Equatable, ObservableObject, Identifiable {
+    
+    @Published var UUID = Foundation.UUID.getTripleID(); var id: String { UUID }
+    @Published var authorUUID: String
+    @Published var authorEmoji: String
+    @Published var authorColor: Color
+    @Published var anonymousIdentifierTable: [String : Int] = [:]
+    @Published var text: String
+    @Published var votes: [String : Vote] // user ID : user vote
+    @Published var commentLevel: Int = 0
+    @Published var comments: [Post]
+    @Published var timePosted: Date
+    @Published var latitude: Double
+    @Published var longitude: Double
+    @Published var mentions: [ChatMember]
+    @Published var associatedUserIDs: [String] = []
+    @Published var repost: [Post] = []
+    
+    required init(UUID: String = Foundation.UUID.getTripleID(), authorUUID: String, authorEmoji: String, authorColor: Color, anonymousIdentifierTable: [String : Int] = [:], text: String, votes: [String : Vote], commentLevel: Int = 0, comments: [Post], timePosted: Date, latitude: Double, longitude: Double, mentions: [ChatMember], associatedUserIDs: [String] = [], repost: [Post] = []) {
+        self.UUID = UUID
+        self.authorUUID = authorUUID
+        self.authorEmoji = authorEmoji
+        self.authorColor = authorColor
+        self.anonymousIdentifierTable = anonymousIdentifierTable
+        self.text = text
+        self.votes = votes
+        self.commentLevel = commentLevel
+        self.comments = comments
+        self.timePosted = timePosted
+        self.latitude = latitude
+        self.longitude = longitude
+        self.mentions = mentions
+        self.associatedUserIDs = associatedUserIDs
+        self.repost = repost
+    }
+    
+    static func == (lhs: Post, rhs: Post) -> Bool {
+        return lhs.UUID == rhs.UUID
+    }
+    
+    func replaceFields(_ post: Post) {
+        self.UUID = post.UUID
+        self.authorUUID = post.authorUUID
+        self.authorEmoji = post.authorEmoji
+        self.authorColor = post.authorColor
+        self.anonymousIdentifierTable = post.anonymousIdentifierTable
+        self.text = post.text
+        self.votes = post.votes
+        self.commentLevel = post.commentLevel
+        self.comments = post.comments
+        self.timePosted = post.timePosted
+        self.latitude = post.latitude
+        self.longitude = post.longitude
+        self.mentions = post.mentions
+        self.associatedUserIDs = post.associatedUserIDs
+        self.repost = post.repost
+    }
     
     func getAnonymousNumber(_ userID: String) -> String? {
         if let number = anonymousIdentifierTable[userID] {
@@ -76,7 +117,7 @@ struct Post: Transportable {
                                   documentID: UUID,
                                   operation: operation,
                                   onError: { error in onError?(error) },
-                                  onSuccess: {
+                          onSuccess: { [self] in
             
             // Then, upload the location!
             GeoFirestore(collectionRef: postsCollection).setLocation(geopoint: .init(latitude: latitude, longitude: longitude), forDocumentWithID: UUID) { error in
@@ -222,8 +263,8 @@ struct Post: Transportable {
         ]
     }
     
-    static func dedictify(_ dictionary: [String : Any]) -> Post {
-        return Post(UUID: dictionary["UUID"] as! String,
+    static func dedictify(_ dictionary: [String : Any]) -> Self {
+        return Self(UUID: dictionary["UUID"] as! String,
                     authorUUID: dictionary["authorUUID"] as! String,
                     authorEmoji: dictionary["authorEmoji"] as! String,
                     authorColor: {
@@ -244,7 +285,8 @@ struct Post: Transportable {
         )
     }
     
-    static var sample = Post(authorUUID: Foundation.UUID.getTripleID(),
+    static var sample = Post(UUID: "SAMPLE-POST",
+                             authorUUID: Foundation.UUID.getTripleID(),
                              authorEmoji: Emoji.allEmojis.randomElement()!,
                              authorColor: User.iconColors.randomElement()!,
                              text: Taylor.lyrics.randomElement()!,
@@ -297,4 +339,12 @@ struct Post: Transportable {
                              latitude: 42.50807,
                              longitude: 83.40217,
                              mentions: [])
+}
+
+class PostListViewModel: ObservableObject {
+    @Published var posts: [Post] = []
+    
+    func updatePost(at index: Int, with newPost: Post) {
+        posts[index].replaceFields(newPost)
+    }
 }

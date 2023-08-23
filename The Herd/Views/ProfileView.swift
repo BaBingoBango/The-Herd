@@ -18,9 +18,10 @@ struct ProfileView: View {
     var locationManager = LocationManager()
     @State var loadActivity = Operation()
     @State var karmaScore = 0
-    @State var savedPosts: [Post] = []
-    @State var userPosts: [Post] = []
+    @StateObject var savedPosts = PostListViewModel()
+    @StateObject var userPosts = PostListViewModel()
     @State var selectedActivityView = 1
+    @Binding var newlyCreatedPost: Post
     
     // MARK: View Body
     var body: some View {
@@ -45,7 +46,7 @@ struct ProfileView: View {
                                     .fontWeight(.bold)
                                     .foregroundColor(.green)
                                 
-                                Label(loadActivity.status == .success ? String(userPosts.count) : "---", systemImage: "bubble.left.fill")
+                                Label(loadActivity.status == .success ? String(userPosts.posts.count) : "---", systemImage: "bubble.left.fill")
                                     .dynamicFont(.title3, fontDesign: .rounded, padding: 0)
                                     .fontWeight(.bold)
                                     .foregroundColor(.blue)
@@ -97,19 +98,19 @@ struct ProfileView: View {
                         
                         switch selectedActivityView {
                         case 1:
-                            if userPosts.isEmpty {
+                            if userPosts.posts.isEmpty {
                                 EmptyCollectionView(iconName: "ellipsis.bubble.fill", heading: "No Posts", text: "")
                             }
-                            ForEach(userPosts, id: \.UUID) { eachPost in
-                                PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost)
+                            ForEach(Array(userPosts.posts.enumerated()), id: \.offset) { index, eachPost in
+                                PostOptionView(post: $userPosts.posts[index], activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost, newlyCreatedPost: $newlyCreatedPost)
                             }
                             
                         case 2:
-                            if savedPosts.isEmpty {
+                            if savedPosts.posts.isEmpty {
                                 EmptyCollectionView(iconName: "bookmark.slash.fill", heading: "No Saved Posts", text: "")
                             }
-                            ForEach(savedPosts, id: \.UUID) { eachPost in
-                                PostOptionView(post: eachPost, activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost)
+                            ForEach(Array(savedPosts.posts.enumerated()), id: \.offset) { index, eachPost in
+                                PostOptionView(post: $userPosts.posts[index], activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost, newlyCreatedPost: $newlyCreatedPost)
                             }
                             
                         case 3:
@@ -172,7 +173,7 @@ struct ProfileView: View {
                             
                         } else {
                             for eachDocument in snapshots!.documents {
-                                savedPosts.append(Post.dedictify(eachDocument.data()))
+                                savedPosts.posts.append(Post.dedictify(eachDocument.data()))
                             }
                             
                             // Query for the user's posts!
@@ -182,7 +183,7 @@ struct ProfileView: View {
                                     
                                 } else {
                                     for eachDocument in snapshots!.documents {
-                                        userPosts.append(Post.dedictify(eachDocument.data()))
+                                        userPosts.posts.append(Post.dedictify(eachDocument.data()))
                                     }
                                     
                                     postsCollection.whereFilter(.orFilter([
@@ -216,7 +217,7 @@ struct ProfileView: View {
 // MARK: View Preview
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileView()
+        ProfileView(newlyCreatedPost: .constant(.sample))
     }
 }
 

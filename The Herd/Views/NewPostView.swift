@@ -25,6 +25,7 @@ struct NewPostView: View {
     @ObservedObject var currentUser: User = .getSample()
     var locationManager: LocationManager
     var repost: Post?
+    @Binding var newlyCreatedPost: Post
     
     var withinCharacterLimits: Bool {
         return enteredText.count >= 1 && enteredText.count <= 250
@@ -112,7 +113,7 @@ struct NewPostView: View {
                                 .modifier(RectangleWrapper(fixedHeight: 35, color: .gray, opacity: 0.15, cornerRadius: 15, enforceLayoutPriority: true))
                         }
                         .sheet(isPresented: $showingRolodex) {
-                            AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $enteredMentions, excludedUserIDs: enteredMentions.map({ $0.userID }))
+                            AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $enteredMentions, excludedUserIDs: enteredMentions.map({ $0.userID }), newlyCreatedPost: $newlyCreatedPost)
                         }
                         
                         ForEach(enteredMentions, id: \.UUID) { eachMention in
@@ -224,7 +225,6 @@ struct NewPostView: View {
                                    repost: repost != nil ? [repost!] : [])
                 
                 // Transport the new post!
-                // FIXME: none of the transports in this view are working when its source is DraftsView!
                 newPost.upload(operation: $uploadPost,
                                onError: { error in uploadPost.setError(message: error.localizedDescription) },
                                onSuccess: {
@@ -242,6 +242,7 @@ struct NewPostView: View {
                         
                     } else {
                         // If not, just dismiss!
+                        newlyCreatedPost = newPost
                         presentationMode.wrappedValue.dismiss()
                     }
                 })
@@ -322,7 +323,7 @@ struct NewPostView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             VStack {
-                NewPostView(locationManager: LocationManager())
+                NewPostView(locationManager: LocationManager(), newlyCreatedPost: .constant(.sample))
             }
         }
     }

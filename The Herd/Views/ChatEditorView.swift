@@ -24,6 +24,7 @@ struct ChatEditorView: View {
     @State var showingRolodex = false
     @State var mentions: [ChatMember] = []
     @State var toggleHiding = Operation()
+    @Binding var newlyCreatedPost: Post
     
     // MARK: View Body
     var body: some View {
@@ -68,7 +69,7 @@ struct ChatEditorView: View {
                         Text("Add Member...")
                     }
                     .sheet(isPresented: $showingRolodex) {
-                        AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $mentions, pickerAction: "Add", excludedUserIDs: chat.memberIDs)
+                        AddressBookView(currentUser: currentUser, pickerMode: true, mentions: $mentions, pickerAction: "Add", excludedUserIDs: chat.memberIDs, newlyCreatedPost: $newlyCreatedPost)
                             .onAppear {
                                 print(chat.memberIDs)
                             }
@@ -158,7 +159,7 @@ struct ChatEditorView: View {
 // MARK: View Preview
 struct ChatEditorView_Previews: PreviewProvider {
     static var previews: some View {
-        ChatEditorView(currentUser: .getSample(), chat: .samples.randomElement()!)
+        ChatEditorView(currentUser: .getSample(), chat: .samples.randomElement()!, newlyCreatedPost: .constant(.sample))
     }
 }
 

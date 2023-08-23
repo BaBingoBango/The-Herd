@@ -16,6 +16,7 @@ struct ChatDetailView: View {
     var navigationTitle = "Chat"
     @State var enteredMessage: String? = nil
     @State var showingEditor = false
+    @Binding var newlyCreatedPost: Post
     
     // MARK: View Body
     var body: some View {
@@ -107,7 +108,7 @@ struct ChatDetailView: View {
                         .foregroundColor(.accentColor)
                 }
                 .sheet(isPresented: $showingEditor) {
-                    ChatEditorView(currentUser: currentUser, chat: chat)
+                    ChatEditorView(currentUser: currentUser, chat: chat, newlyCreatedPost: $newlyCreatedPost)
                 }
             }
         })
@@ -131,7 +132,7 @@ struct ChatDetailView: View {
 struct ChatDetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            ChatDetailView(currentUser: .getSample(), chat: Chat.samples.randomElement()!)
+            ChatDetailView(currentUser: .getSample(), chat: Chat.samples.randomElement()!, newlyCreatedPost: .constant(.sample))
         }
     }
 }

@@ -11,6 +11,7 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class User: Transportable, Equatable, ObservableObject {
+    
     @Published var UUID = Foundation.UUID.getTripleID()
     @Published var emoji: String
     @Published var color: Color
