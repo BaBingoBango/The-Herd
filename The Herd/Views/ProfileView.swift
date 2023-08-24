@@ -133,10 +133,11 @@ struct ProfileView: View {
             .navigationTitle("Profile")
             .toolbar(content: {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: SettingsView(currentUser: currentUser)) {
+                    NavigationLink(destination: SettingsView(currentUser: currentUser, selectedKeyboardOption: currentUser.useRainbowKeyboard)) {
                         Image(systemName: "gear")
                             .fontWeight(.bold)
                     }
+                    .id(UUID())
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {

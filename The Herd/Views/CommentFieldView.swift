@@ -134,7 +134,7 @@ struct CommentFieldView: View {
                         TextEditor(text: $enteredComment)
                             .dynamicFont(.title2, fontDesign: currentUser.fontPreference.toFontDesign(), padding: 5)
                             .fontWeight(.bold)
-                            .foregroundColor(Color.calculateRatioColor(count: enteredComment.count, maximum: 250))
+                            .foregroundColor(currentUser.useRainbowKeyboard ? Color.calculateRatioColor(count: enteredComment.count, maximum: 250) : .primary)
                             .multilineTextAlignment(.leading)
                             .opacity(enteredComment.isEmpty ? 0.5 : 1)
                             .focused($focusedField, equals: "editor")

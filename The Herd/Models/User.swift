@@ -21,9 +21,10 @@ class User: Transportable, Equatable, ObservableObject {
     @Published var addresses: [String : Address]
     @Published var hiddenChatIDs: [String]
     @Published var fontPreference: FontPreference
+    @Published var useRainbowKeyboard: Bool
     @Published var blockedUserIDs: [String]
     
-    required init(UUID: String = Foundation.UUID.getTripleID(), emoji: String, color: Color, joinDate: Date, locationMode: LocationMode, savedLocations: [String : SavedLocation], addresses: [String : Address], hiddenChatIDs: [String], fontPreference: FontPreference, blockedUserIDs: [String]) {
+    required init(UUID: String = Foundation.UUID.getTripleID(), emoji: String, color: Color, joinDate: Date, locationMode: LocationMode, savedLocations: [String : SavedLocation], addresses: [String : Address], hiddenChatIDs: [String], fontPreference: FontPreference, useRainbowKeyboard: Bool, blockedUserIDs: [String]) {
         
         self.UUID = UUID
         self.emoji = emoji
@@ -34,6 +35,7 @@ class User: Transportable, Equatable, ObservableObject {
         self.addresses = addresses
         self.hiddenChatIDs = hiddenChatIDs
         self.fontPreference = fontPreference
+        self.useRainbowKeyboard = useRainbowKeyboard
         self.blockedUserIDs = blockedUserIDs
     }
     
@@ -51,6 +53,7 @@ class User: Transportable, Equatable, ObservableObject {
         self.addresses = user.addresses
         self.hiddenChatIDs = user.hiddenChatIDs
         self.fontPreference = user.fontPreference
+        self.useRainbowKeyboard = user.useRainbowKeyboard
         self.blockedUserIDs = user.blockedUserIDs
     }
     
@@ -70,6 +73,7 @@ class User: Transportable, Equatable, ObservableObject {
             "addresses" : addresses.mapValues({ $0.dictify() }),
             "hiddenChatIDs" : hiddenChatIDs,
             "fontPreference" : fontPreference.toString(),
+            "useRainbowKeyboard" : useRainbowKeyboard,
             "blockedUserIDs" : blockedUserIDs
         ]
     }
@@ -87,6 +91,7 @@ class User: Transportable, Equatable, ObservableObject {
                     addresses: (dictionary["addresses"] as! [String : Any]).mapValues({ Address.dedictify($0 as! [String : Any]) }),
                     hiddenChatIDs: dictionary["hiddenChatIDs"] as! [String],
                     fontPreference: FontPreference.fromString(dictionary["fontPreference"] as! String),
+                    useRainbowKeyboard: dictionary["useRainbowKeyboard"] as! Bool,
                     blockedUserIDs: dictionary["blockedUserIDs"] as! [String]
         )
     }
@@ -113,6 +118,7 @@ class User: Transportable, Equatable, ObservableObject {
                                           addresses: [:],
                                           hiddenChatIDs: [],
                                           fontPreference: .regular,
+                                          useRainbowKeyboard: true,
                                           blockedUserIDs: [])
                 
                 newUserProfile.transportToServer(path: usersCollection,
@@ -154,6 +160,7 @@ class User: Transportable, Equatable, ObservableObject {
                      addresses: [:],
                      hiddenChatIDs: [],
                      fontPreference: .serif,
+                     useRainbowKeyboard: true,
                      blockedUserIDs: [])
     }
     

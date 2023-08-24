@@ -15,6 +15,8 @@ struct SettingsView: View {
     @ObservedObject var currentUser: User
     @State var showingSignOutConfirmation = false
     @State var signOut = Operation()
+    @State var selectedKeyboardOption: Bool
+    @State var changeKeyboardOption = Operation()
     
     // MARK: View Body
     var body: some View {
@@ -26,6 +28,17 @@ struct SettingsView: View {
                 
                 NavigationLink(destination: EmptyView()) {
                     ProfileOptionView(text: "App Icon", color: .cyan, iconName: "photo.artframe")
+                }
+                
+                HStack {
+                    ProfileOptionView(text: "Rainbow Keyboard", color: .cyan, iconName: "keyboard.fill", hideSpacer: changeKeyboardOption.status != .inProgress)
+                    
+                    if changeKeyboardOption.status != .inProgress {
+                        Toggle("", isOn: $selectedKeyboardOption)
+                            .layoutPriority(-1)
+                    } else {
+                        ProgressView()
+                    }
                 }
             }
             .headerProminence(.increased)
@@ -102,6 +115,28 @@ struct SettingsView: View {
             }
             .headerProminence(.increased)
         }
+        .onAppear {
+            // MARK: View Launch Code
+            // Set up a real-time listener for the user's profile!
+            usersCollection.document(currentUser.UUID).addSnapshotListener({ snapshot, error in
+                if let snapshot = snapshot {
+                    if let snapshotData = snapshot.data() {
+                        currentUser.replaceFields(User.dedictify(snapshotData))
+                        selectedKeyboardOption = currentUser.useRainbowKeyboard
+                        changeKeyboardOption.status = .success
+                    }
+                }
+            })
+        }
+        .onChange(of: selectedKeyboardOption) { _ in
+            changeKeyboardOption.status = .inProgress
+            
+            usersCollection.document(currentUser.UUID).updateData([
+                "useRainbowKeyboard" : selectedKeyboardOption
+            ]) { error in
+                if let error = error { changeKeyboardOption.setError(message: error.localizedDescription) }
+            }
+        }
         .alert(isPresented: $showingSignOutConfirmation) {
             Alert(title: Text("Sign Out?"),
                   message: Text("You'll need to sign back in again to access your data, but nothing will be deleted."),
@@ -130,7 +165,7 @@ struct SettingsView: View {
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            SettingsView(currentUser: .getSample())
+            SettingsView(currentUser: .getSample(), selectedKeyboardOption: false)
         }
     }
 }
@@ -142,6 +177,7 @@ struct ProfileOptionView: View {
     var color: Color
     var iconName: String
     var percentComplete: String?
+    var hideSpacer = false
     
     var body: some View {
         HStack {
@@ -162,7 +198,9 @@ struct ProfileOptionView: View {
             Text(text)
                 .foregroundColor(.primary)
             
-            Spacer()
+            if !hideSpacer {
+                Spacer()
+            }
             
             if percentComplete != nil {
                 Text(percentComplete!)

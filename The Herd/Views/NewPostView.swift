@@ -140,7 +140,7 @@ struct NewPostView: View {
                     TextEditor(text: $enteredText)
                         .dynamicFont(.title2, fontDesign: currentUser.fontPreference.toFontDesign(), padding: 0)
                         .fontWeight(.bold)
-                        .foregroundColor(Color.calculateRatioColor(count: enteredText.count, maximum: 250))
+                        .foregroundColor(currentUser.useRainbowKeyboard ? Color.calculateRatioColor(count: enteredText.count, maximum: 250) : .primary)
                         .opacity(1)
                         .focused($focusedField, equals: "editor")
                         .overlay(
