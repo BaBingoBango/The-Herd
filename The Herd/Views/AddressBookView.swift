@@ -74,7 +74,12 @@ struct AddressBookView: View {
                                 .fontWeight(.bold)
                                 .foregroundColor(.primary)
                             
-                            if !eachAddress.comment.isEmpty {
+                            if currentUser.blockedUserIDs.contains(eachAddress.userUUID) {
+                                Text("Blocked")
+                                    .dynamicFont(.body, minimumScaleFactor: 0.9, padding: 0)
+                                    .foregroundColor(.red)
+                                
+                            } else if !eachAddress.comment.isEmpty {
                                 Text(eachAddress.comment)
                                     .dynamicFont(.body, minimumScaleFactor: 0.9, padding: 0)
                                     .foregroundColor(.secondary)

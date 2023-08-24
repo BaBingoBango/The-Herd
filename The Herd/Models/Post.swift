@@ -343,8 +343,22 @@ class Post: Transportable, Equatable, ObservableObject, Identifiable {
 
 class PostListViewModel: ObservableObject {
     @Published var posts: [Post] = []
+    private var listeners: [ListenerRegistration] = []
     
     func updatePost(at index: Int, with newPost: Post) {
         posts[index].replaceFields(newPost)
+    }
+    
+    func observePost(at index: Int) {
+        let post = posts[index]
+        let listener = postsCollection.document(post.UUID).addSnapshotListener { snapshot, error in
+            if let snapshot = snapshot, let snapshotData = snapshot.data() {
+                print("updating post...")
+                DispatchQueue.main.async {
+                    self.posts[index].replaceFields(Post.dedictify(snapshotData))
+                }
+            }
+        }
+        listeners.append(listener)
     }
 }

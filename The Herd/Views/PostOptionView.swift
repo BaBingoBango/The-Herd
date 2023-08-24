@@ -38,6 +38,9 @@ struct PostOptionView: View {
     @State var rolodexUser = Operation()
     @State var isUserInRolodex = false
     @Binding var newlyCreatedPost: Post
+    @State private var refreshView = false
+    @State var blockUser = Operation()
+    @State var isUserBlocked = false
     
     // MARK: View Body
     var body: some View {
@@ -66,7 +69,7 @@ struct PostOptionView: View {
                     Spacer()
                     
                     if !blockRecursion {
-                        PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: $deletePost, savePost: $savePost, isPostSaved: $isPostSaved, rolodexUser: $rolodexUser, isUserInRolodex: $isUserInRolodex, newlyCreatedPost: $newlyCreatedPost)
+                        PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: $deletePost, savePost: $savePost, isPostSaved: $isPostSaved, rolodexUser: $rolodexUser, isUserInRolodex: $isUserInRolodex, newlyCreatedPost: $newlyCreatedPost, blockUser: $blockUser, isUserBlocked: $isUserBlocked)
                             .onAppear {
                                 postsCollection.document(post.UUID).collection("saved").document(currentUser.UUID).getDocument() { snapshot, error in
                                     if error != nil {
@@ -78,6 +81,7 @@ struct PostOptionView: View {
                                     }
                                 }
                                 isUserInRolodex = currentUser.addresses[post.authorUUID] != nil
+                                isUserBlocked = currentUser.blockedUserIDs.contains(post.authorUUID)
                             }
                     }
                 }
@@ -88,6 +92,7 @@ struct PostOptionView: View {
             }
             
             NavigationLink(destination: PostDetailView(post: $post, currentUser: currentUser, locationManager: locationManager, commentingAnonymously: commentingAnonymously(), newlyCreatedPost: $newlyCreatedPost), isActive: $showingPostDetail) { EmptyView() }
+                .id(UUID())
             
             switch deletePost.status {
             case .inProgress:
@@ -190,6 +195,7 @@ struct PostOptionView: View {
                                         .modifier(RectangleWrapper(color: repost.getAnonymousNumber(repost.authorUUID) != nil ? .gray : repost.authorColor, opacity: 0.1, enforceLayoutPriority: true))
                                         .padding([.horizontal, .bottom])
                                     }
+                                    .id(UUID())
                                 }
                             }
                         }
@@ -308,11 +314,14 @@ struct PostOptionView: View {
             "comments" : newCommentsArray.map({ $0.dictify() })
         ]) { error in
             if error == nil {
-                post.votes = newVotesList
-                if post.commentLevel == 0 {
+                DispatchQueue.main.async {
                     post.votes = newVotesList
-                } else {
-                    post.votes[currentUser.UUID] = newVote
+                    if post.commentLevel == 0 {
+                        post.votes = newVotesList
+                    } else {
+                        post.votes[currentUser.UUID] = newVote
+                    }
+                    self.refreshView.toggle()
                 }
             }
         }
@@ -345,6 +354,8 @@ struct PostMenuButton: View {
     @Binding var isUserInRolodex: Bool
     @State var showingRepostView = false
     @Binding var newlyCreatedPost: Post
+    @Binding var blockUser: Operation
+    @Binding var isUserBlocked: Bool
     
     var body: some View {
         Menu {
@@ -458,6 +469,41 @@ struct PostMenuButton: View {
                     Alert(title: Text("Couldn't Delete Post"),
                           message: Text(deletePost.errorMessage),
                           dismissButton: .default(Text("Close")))
+                }
+            } else {
+                Button(role: .destructive, action: {
+                    blockUser.status = .inProgress
+                    
+                    if !isUserBlocked {
+                        var newBlocks = currentUser.blockedUserIDs
+                        newBlocks.append(post.authorUUID)
+                        usersCollection.document(currentUser.UUID).updateData([
+                            "blockedUserIDs" : newBlocks
+                        ]) { error in
+                            if let error = error {
+                                blockUser.setError(message: error.localizedDescription)
+                            } else {
+                                isUserBlocked = true
+                                blockUser.status = .success
+                            }
+                        }
+                        
+                    } else {
+                        var newBlocks = currentUser.blockedUserIDs
+                        newBlocks.removeAll(where: { $0 == post.authorUUID })
+                        usersCollection.document(currentUser.UUID).updateData([
+                            "blockedUserIDs" : newBlocks
+                        ]) { error in
+                            if let error = error {
+                                blockUser.setError(message: error.localizedDescription)
+                            } else {
+                                isUserBlocked = false
+                                blockUser.status = .success
+                            }
+                        }
+                    }
+                }) {
+                    Label(!isUserBlocked ? "Block User" : "Unblock User", systemImage: !isUserBlocked ? "hand.raised.fill" : "hand.thumbsup.fill")
                 }
             }
             

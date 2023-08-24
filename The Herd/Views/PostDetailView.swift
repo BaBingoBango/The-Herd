@@ -55,7 +55,7 @@ struct PostDetailView: View {
                     }
                     
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: .constant(Operation()), savePost: .constant(Operation()), isPostSaved: .constant(Operation()), rolodexUser: .constant(Operation()), isUserInRolodex: .constant(<#T##value: Bool##Bool#>), newlyCreatedPost: <#T##Binding<Post>#>)
+//                        PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: .constant(Operation()), savePost: .constant(Operation()), isPostSaved: .constant(Operation()), rolodexUser: .constant(Operation()), isUserInRolodex: .constant(<#T##value: Bool##Bool#>), newlyCreatedPost: <#T##Binding<Post>#>)
                     }
                     
                     ToolbarItemGroup(placement: .bottomBar) {
@@ -115,12 +115,13 @@ struct PostDetailView_Previews: PreviewProvider {
 struct CommentsView: View {
     
     var currentUser = User.getSample()
-    var comments: [Post]
+    @State var comments: [Post]
     @Binding var post: Post
     var barColor: Color = .clear
     var parentPost: Post?
     var commentingAnonymously: Bool
     @Binding var newlyCreatedPost: Post
+    @State var refreshView = false
     
     var body: some View {
         ForEach(Array(comments.enumerated()), id: \.offset) { eachIndex, eachComment in
@@ -171,6 +172,21 @@ struct CommentsView: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            // Set up a real-time listener for this post's comments!
+            postsCollection.document(post.UUID).addSnapshotListener({ snapshot, error in
+                if let snapshot = snapshot {
+                    if let snapshotData = snapshot.data() {
+                        print("updating post...")
+                        print("post comments: \(post.comments.count)")
+                        post.replaceFields(Post.dedictify(snapshotData))
+                        // FIXME: comment updates not working for 2nd level comments!
+                        print("post comments: \(post.comments.count)")
+                    }
+                    refreshView.toggle()
+                }
+            })
         }
     }
 }

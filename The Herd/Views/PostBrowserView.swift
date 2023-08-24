@@ -18,16 +18,17 @@ struct PostBrowserView: View {
     @ObservedObject var currentUser: User = .getSample()
     @StateObject var locationManager = LocationManager()
     @State var showingProfileView = false
-    @StateObject var posts = PostListViewModel()
+    @ObservedObject var posts = PostListViewModel()
     @State var postUpdate = Operation()
     @State var showingNewPostView = false
     @State var showingScanView = false
     @State var showingRolodex = false
     @State var areMorePosts = false
-    var batchSize = 100
+    var batchSize = 5
     @State var scannedSnapshots: [DocumentSnapshot] = []
     @State var startAfterPoint: DocumentSnapshot? = nil
     @State var newlyCreatedPost: Post = .sample
+    @State private var refreshView = false
     
     // MARK: View Body
     var body: some View {
@@ -168,16 +169,21 @@ struct PostBrowserView: View {
                                 if currentUserExists {
                                     ForEach(Array(posts.posts.enumerated()), id: \.offset) { index, eachPost in
                                         PostOptionView(post: $posts.posts[index], activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost, newlyCreatedPost: $newlyCreatedPost)
-//                                            .onAppear {
-//                                                // Set up a real-time listener for this post!
-//                                                postsCollection.document(posts.posts[index].UUID).addSnapshotListener({ snapshot, error in
-//                                                    if let snapshot = snapshot {
-//                                                        if let snapshotData = snapshot.data() {
-////                                                            posts.posts[index] = Post.dedictify(snapshotData)
-//                                                            posts.posts[posts.posts.firstIndex(where: { $0.UUID == eachPost.UUID })!].replaceFields(Post.dedictify(snapshotData)) }
-//                                                    }
-//                                                })
-//                                            }
+                                            .onAppear {
+                                                // Set up a real-time listener for this post!
+                                                postsCollection.document(posts.posts[index].UUID).addSnapshotListener({ snapshot, error in
+                                                    if let snapshot = snapshot {
+                                                        if let snapshotData = snapshot.data(), let arrayIndex = posts.posts.firstIndex(where: { $0.UUID == eachPost.UUID }) {
+                                                            print("updating post...")
+//                                                            posts.posts[index] = Post.dedictify(snapshotData)
+                                                            print("post comments: \(posts.posts[arrayIndex].comments.count)")
+                                                            posts.posts[arrayIndex].replaceFields(Post.dedictify(snapshotData))
+                                                            print("post comments: \(posts.posts[arrayIndex].comments.count)")
+                                                        }
+                                                        refreshView.toggle()
+                                                    }
+                                                })
+                                            }
                                     }
                                     
                                     if postUpdate.status != .inProgress && areMorePosts {
