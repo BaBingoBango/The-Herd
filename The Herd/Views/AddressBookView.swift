@@ -38,6 +38,21 @@ struct AddressBookView: View {
                 .filter({ !excludedUserIDs.contains($0.userUUID) })
                 .filter({ $0.userUUID != currentUser.UUID })
                 
+                if !currentUser.blockedUserIDs.isEmpty {
+                    HStack {
+                        Text("\(currentUser.blockedUserIDs.count) Blocked User\(currentUser.blockedUserIDs.count == 1 ? "" : "s")")
+                            .dynamicFont(.body, padding: 0)
+                            .fontWeight(.bold)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .fontWeight(.bold)
+                    }
+                    .padding()
+                    .modifier(RectangleWrapper(color: .red, opacity: 0.15, cornerRadius: 15))
+                }
+                
                 if filteredAddresses.isEmpty {
                     Image(systemName: "text.book.closed.fill")
                         .font(.system(size: 40))
@@ -74,12 +89,7 @@ struct AddressBookView: View {
                                 .fontWeight(.bold)
                                 .foregroundColor(.primary)
                             
-                            if currentUser.blockedUserIDs.contains(eachAddress.userUUID) {
-                                Text("Blocked")
-                                    .dynamicFont(.body, minimumScaleFactor: 0.9, padding: 0)
-                                    .foregroundColor(.red)
-                                
-                            } else if !eachAddress.comment.isEmpty {
+                            if !eachAddress.comment.isEmpty {
                                 Text(eachAddress.comment)
                                     .dynamicFont(.body, minimumScaleFactor: 0.9, padding: 0)
                                     .foregroundColor(.secondary)

@@ -477,8 +477,11 @@ struct PostMenuButton: View {
                     if !isUserBlocked {
                         var newBlocks = currentUser.blockedUserIDs
                         newBlocks.append(post.authorUUID)
+                        var newBlockDetails = currentUser.blockDetails
+                        newBlockDetails[post.authorUUID] = .init(userID: post.authorUUID, emoji: post.authorEmoji, color: post.authorColor)
                         usersCollection.document(currentUser.UUID).updateData([
-                            "blockedUserIDs" : newBlocks
+                            "blockedUserIDs" : newBlocks,
+                            "blockDetails" : newBlockDetails
                         ]) { error in
                             if let error = error {
                                 blockUser.setError(message: error.localizedDescription)
@@ -491,8 +494,11 @@ struct PostMenuButton: View {
                     } else {
                         var newBlocks = currentUser.blockedUserIDs
                         newBlocks.removeAll(where: { $0 == post.authorUUID })
+                        var newBlockDetails = currentUser.blockDetails
+                        newBlockDetails.removeValue(forKey: post.authorUUID)
                         usersCollection.document(currentUser.UUID).updateData([
-                            "blockedUserIDs" : newBlocks
+                            "blockedUserIDs" : newBlocks,
+                            "blockDetails" : newBlockDetails
                         ]) { error in
                             if let error = error {
                                 blockUser.setError(message: error.localizedDescription)

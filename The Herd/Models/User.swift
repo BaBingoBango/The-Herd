@@ -23,8 +23,9 @@ class User: Transportable, Equatable, ObservableObject {
     @Published var fontPreference: FontPreference
     @Published var useRainbowKeyboard: Bool
     @Published var blockedUserIDs: [String]
+    @Published var blockDetails: [String : ChatMember]
     
-    required init(UUID: String = Foundation.UUID.getTripleID(), emoji: String, color: Color, joinDate: Date, locationMode: LocationMode, savedLocations: [String : SavedLocation], addresses: [String : Address], hiddenChatIDs: [String], fontPreference: FontPreference, useRainbowKeyboard: Bool, blockedUserIDs: [String]) {
+    required init(UUID: String = Foundation.UUID.getTripleID(), emoji: String, color: Color, joinDate: Date, locationMode: LocationMode, savedLocations: [String : SavedLocation], addresses: [String : Address], hiddenChatIDs: [String], fontPreference: FontPreference, useRainbowKeyboard: Bool, blockedUserIDs: [String], blockDetails: [String : ChatMember]) {
         
         self.UUID = UUID
         self.emoji = emoji
@@ -37,6 +38,7 @@ class User: Transportable, Equatable, ObservableObject {
         self.fontPreference = fontPreference
         self.useRainbowKeyboard = useRainbowKeyboard
         self.blockedUserIDs = blockedUserIDs
+        self.blockDetails = blockDetails
     }
     
     static func == (lhs: User, rhs: User) -> Bool {
@@ -55,6 +57,7 @@ class User: Transportable, Equatable, ObservableObject {
         self.fontPreference = user.fontPreference
         self.useRainbowKeyboard = user.useRainbowKeyboard
         self.blockedUserIDs = user.blockedUserIDs
+        self.blockDetails = user.blockDetails
     }
     
     func dictify() -> [String : Any] {
@@ -74,7 +77,8 @@ class User: Transportable, Equatable, ObservableObject {
             "hiddenChatIDs" : hiddenChatIDs,
             "fontPreference" : fontPreference.toString(),
             "useRainbowKeyboard" : useRainbowKeyboard,
-            "blockedUserIDs" : blockedUserIDs
+            "blockedUserIDs" : blockedUserIDs,
+            "blockDetails" : blockDetails.mapValues({ $0.dictify() })
         ]
     }
     
@@ -92,7 +96,8 @@ class User: Transportable, Equatable, ObservableObject {
                     hiddenChatIDs: dictionary["hiddenChatIDs"] as! [String],
                     fontPreference: FontPreference.fromString(dictionary["fontPreference"] as! String),
                     useRainbowKeyboard: dictionary["useRainbowKeyboard"] as! Bool,
-                    blockedUserIDs: dictionary["blockedUserIDs"] as! [String]
+                    blockedUserIDs: dictionary["blockedUserIDs"] as! [String],
+                    blockDetails: (dictionary["blockDetails"] as! [String : Any]).mapValues({ ChatMember.dedictify($0 as! [String : Any]) })
         )
     }
     
@@ -119,7 +124,8 @@ class User: Transportable, Equatable, ObservableObject {
                                           hiddenChatIDs: [],
                                           fontPreference: .regular,
                                           useRainbowKeyboard: true,
-                                          blockedUserIDs: [])
+                                          blockedUserIDs: [],
+                                          blockDetails: [:])
                 
                 newUserProfile.transportToServer(path: usersCollection,
                                                  documentID: userID,
@@ -161,7 +167,8 @@ class User: Transportable, Equatable, ObservableObject {
                      hiddenChatIDs: [],
                      fontPreference: .serif,
                      useRainbowKeyboard: true,
-                     blockedUserIDs: [])
+                     blockedUserIDs: ["SAMPLE-BLOCK-ID"],
+                     blockDetails: ["SAMPLE-BLOCK-ID" : .init(userID: "SAMPLE-BLOCK-ID", emoji: "😁", color: .blue)])
     }
     
     static var iconColors: [Color] = [
