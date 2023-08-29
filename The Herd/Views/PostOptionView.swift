@@ -478,10 +478,10 @@ struct PostMenuButton: View {
                         var newBlocks = currentUser.blockedUserIDs
                         newBlocks.append(post.authorUUID)
                         var newBlockDetails = currentUser.blockDetails
-                        newBlockDetails[post.authorUUID] = .init(userID: post.authorUUID, emoji: post.authorEmoji, color: post.authorColor)
+                        newBlockDetails[post.authorUUID] = .init(userID: post.authorUUID, emoji: post.authorEmoji, color: post.authorColor, associatedDate: Date())
                         usersCollection.document(currentUser.UUID).updateData([
                             "blockedUserIDs" : newBlocks,
-                            "blockDetails" : newBlockDetails
+                            "blockDetails" : newBlockDetails.mapValues({ $0.dictify() })
                         ]) { error in
                             if let error = error {
                                 blockUser.setError(message: error.localizedDescription)
@@ -498,7 +498,7 @@ struct PostMenuButton: View {
                         newBlockDetails.removeValue(forKey: post.authorUUID)
                         usersCollection.document(currentUser.UUID).updateData([
                             "blockedUserIDs" : newBlocks,
-                            "blockDetails" : newBlockDetails
+                            "blockDetails" : newBlockDetails.mapValues({ $0.dictify() })
                         ]) { error in
                             if let error = error {
                                 blockUser.setError(message: error.localizedDescription)
@@ -511,6 +511,7 @@ struct PostMenuButton: View {
                 }) {
                     Label(!isUserBlocked ? "Block User" : "Unblock User", systemImage: !isUserBlocked ? "hand.raised.fill" : "hand.thumbsup.fill")
                 }
+                .disabled(blockUser.status == .inProgress)
             }
             
         } label: {

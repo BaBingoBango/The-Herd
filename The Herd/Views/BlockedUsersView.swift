@@ -12,39 +12,97 @@ struct BlockedUsersView: View {
     
     // MARK: View Variables
     @ObservedObject var currentUser: User
+    @State var unblockUser = Operation()
     
     // MARK: View Body
     var body: some View {
-        ForEach(currentUser.blockedUserIDs, id: \.self) { eachBlockedID in
-            let eachBlockedUserInfo = currentUser.blockDetails[eachBlockedID]
-            
-            HStack {
-                ZStack {
-                    Circle()
-                        .foregroundColor(eachBlockedUserInfo?.color ?? .gray)
-                        .frame(height: 50)
-                    
-                    Text(eachAddress.userEmoji)
-                        .font(.system(size: 27.5))
-                }
-                .padding(.leading, 10)
+        List {
+            ForEach(currentUser.blockedUserIDs.sorted(by: {
+                currentUser.blockDetails[$0]?.associatedDate ?? Date() > currentUser.blockDetails[$1]?.associatedDate ?? Date()
+            }), id: \.self) { eachBlockedID in
+                let eachBlockedUserInfo = currentUser.blockDetails[eachBlockedID]
                 
-                VStack(alignment: .leading) {
-                    Text(eachAddress.nickname)
-                        .dynamicFont(.title3, fontDesign: .rounded, padding: 0)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
-                    
-                    if !eachAddress.comment.isEmpty {
-                        Text(eachAddress.comment)
-                            .dynamicFont(.body, minimumScaleFactor: 0.9, padding: 0)
-                            .foregroundColor(.secondary)
+                if let blockedInfo = eachBlockedUserInfo {
+                    HStack {
+                        ZStack {
+                            Circle()
+                                .foregroundColor(blockedInfo.color)
+                                .frame(height: 40)
+                            
+                            Text(blockedInfo.emoji)
+                                .font(.system(size: 22.5))
+                        }
+                        .padding(.leading, 10)
+                        
+                        VStack(alignment: .leading) {
+                            Text("Blocked On")
+                                .dynamicFont(.callout, fontDesign: .rounded, padding: 0)
+                                .fontWeight(.bold)
+                                .foregroundColor(.gray)
+                            
+                            Text("\(blockedInfo.associatedDate.formatted(date: .numeric, time: .shortened))")
+                                .dynamicFont(.title3, fontDesign: .rounded, padding: 0)
+                                .fontWeight(.bold)
+                                .foregroundColor(.primary)
+                        }
+                        
+                        Spacer()
+                        
+                        Menu {
+                            Button(role: .destructive, action: {
+                                unblockUser.status = .inProgress
+                                
+                                var newBlocks = currentUser.blockedUserIDs
+                                newBlocks.removeAll(where: { $0 == blockedInfo.userID })
+                                var newBlockDetails = currentUser.blockDetails
+                                newBlockDetails.removeValue(forKey: blockedInfo.userID)
+                                usersCollection.document(currentUser.UUID).updateData([
+                                    "blockedUserIDs" : newBlocks,
+                                    "blockDetails" : newBlockDetails.mapValues({ $0.dictify() })
+                                ]) { error in
+                                    if let error = error {
+                                        unblockUser.setError(message: error.localizedDescription)
+                                    } else {
+                                        unblockUser.status = .success
+                                    }
+                                }
+                            }) {
+                                Label("Unblock User", systemImage: "hand.thumbsup.fill")
+                                    .foregroundColor(.red)
+                            }
+                            
+                        } label: {
+                            ZStack {
+                                Circle()
+                                    .foregroundColor(.red)
+                                    .opacity(0.15)
+                                    .frame(height: 35)
+                                
+                                Image(systemName: "hand.thumbsup.fill")
+                                    .foregroundColor(.red)
+                                    .font(.system(size: 18))
+                            }
+                        }
                     }
                 }
-                
-                Spacer()
             }
         }
+        .listStyle(PlainListStyle())
+        .onAppear {
+            // MARK: View Launch Code
+            // Set up a real-time listener for the user's profile!
+            usersCollection.document(currentUser.UUID).addSnapshotListener({ snapshot, error in
+                if let snapshot = snapshot {
+                    if let snapshotData = snapshot.data() {
+                        currentUser.replaceFields(User.dedictify(snapshotData))
+                    }
+                }
+            })
+        }
+        
+        // MARK: Navigation Settings
+        .navigationTitle("Blocked Users")
+        .navigationBarTitleDisplayMode(.inline)
     }
     
     // MARK: View Functions
@@ -54,7 +112,9 @@ struct BlockedUsersView: View {
 // MARK: View Preview
 struct BlockedUsersView_Previews: PreviewProvider {
     static var previews: some View {
-        BlockedUsersView(currentUser: .getSample())
+        NavigationView {
+            BlockedUsersView(currentUser: .getSample())
+        }
     }
 }
 

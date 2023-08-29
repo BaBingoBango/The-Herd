@@ -118,7 +118,7 @@ struct NewPostView: View {
                         
                         ForEach(enteredMentions, id: \.UUID) { eachMention in
                             Button(action: {
-                                // TODO: erase mention
+                                enteredMentions.removeAll(where: { $0.UUID == eachMention.UUID })
                             }) {
                                 Text("@ \(eachMention.emoji)")
                                     .dynamicFont(.title2, fontDesign: .rounded, padding: 10)

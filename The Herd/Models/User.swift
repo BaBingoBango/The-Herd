@@ -22,6 +22,11 @@ class User: Transportable, Equatable, ObservableObject {
     @Published var hiddenChatIDs: [String]
     @Published var fontPreference: FontPreference
     @Published var useRainbowKeyboard: Bool
+    /// Blocking in this app works by user ID, not by triple-linked identity.
+    ///
+    /// When a user blocks someone, a copy of their triple-link is placed into the `blockDetails` dictionary. This allows the user to recall the details of the user they blocked.
+    ///
+    /// Users can block/unlock from a post view, and can unblocked only from the `BlockedUsersView`.
     @Published var blockedUserIDs: [String]
     @Published var blockDetails: [String : ChatMember]
     
@@ -167,8 +172,10 @@ class User: Transportable, Equatable, ObservableObject {
                      hiddenChatIDs: [],
                      fontPreference: .serif,
                      useRainbowKeyboard: true,
-                     blockedUserIDs: ["SAMPLE-BLOCK-ID"],
-                     blockDetails: ["SAMPLE-BLOCK-ID" : .init(userID: "SAMPLE-BLOCK-ID", emoji: "😁", color: .blue)])
+                     blockedUserIDs: ["SAMPLE-BLOCK-ID-1", "SAMPLE-BLOCK-ID-2", "SAMPLE-BLOCK-ID-3"],
+                     blockDetails: ["SAMPLE-BLOCK-ID-1" : .init(userID: "SAMPLE-BLOCK-ID-1", emoji: "😁", color: .blue),
+                                    "SAMPLE-BLOCK-ID-2" : .init(userID: "SAMPLE-BLOCK-ID-2", emoji: "🔧", color: .orange),
+                                    "SAMPLE-BLOCK-ID-3" : .init(userID: "SAMPLE-BLOCK-ID-3", emoji: "🔀", color: .pink)])
     }
     
     static var iconColors: [Color] = [

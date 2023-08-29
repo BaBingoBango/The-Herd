@@ -38,22 +38,7 @@ struct AddressBookView: View {
                 .filter({ !excludedUserIDs.contains($0.userUUID) })
                 .filter({ $0.userUUID != currentUser.UUID })
                 
-                if !currentUser.blockedUserIDs.isEmpty {
-                    HStack {
-                        Text("\(currentUser.blockedUserIDs.count) Blocked User\(currentUser.blockedUserIDs.count == 1 ? "" : "s")")
-                            .dynamicFont(.body, padding: 0)
-                            .fontWeight(.bold)
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                            .fontWeight(.bold)
-                    }
-                    .padding()
-                    .modifier(RectangleWrapper(color: .red, opacity: 0.15, cornerRadius: 15))
-                }
-                
-                if filteredAddresses.isEmpty {
+                if filteredAddresses.isEmpty && currentUser.blockedUserIDs.isEmpty {
                     Image(systemName: "text.book.closed.fill")
                         .font(.system(size: 40))
                         .foregroundColor(.secondary)
@@ -148,6 +133,24 @@ struct AddressBookView: View {
                     }
                     .padding()
                     .modifier(RectangleWrapper(color: .gray, opacity: 0.25))
+                }
+                
+                if !currentUser.blockedUserIDs.isEmpty && !pickerMode {
+                    NavigationLink(destination: BlockedUsersView(currentUser: currentUser)) {
+                        HStack {
+                            Text("\(currentUser.blockedUserIDs.count) Blocked User\(currentUser.blockedUserIDs.count == 1 ? "" : "s")")
+                                .dynamicFont(.body, padding: 0)
+                                .fontWeight(.bold)
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .fontWeight(.bold)
+                        }
+                        .padding()
+                        .modifier(RectangleWrapper(color: .red, opacity: 0.15, cornerRadius: 15))
+                    }
                 }
             }
             .padding([.leading, .bottom, .trailing])

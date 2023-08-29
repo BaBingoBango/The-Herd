@@ -7,12 +7,17 @@
 
 import Foundation
 import SwiftUI
+import FirebaseFirestore
 
 struct ChatMember: Transportable, Equatable {
     var UUID = Foundation.UUID.getTripleID()
     var userID: String
     var emoji: String
     var color: Color
+    /// This is used for blocked users as the block date.
+    ///
+    /// In other contexts, this variable is meaningless.
+    var associatedDate = Date()
     
     func dictify() -> [String : Any] {
         return [
@@ -24,7 +29,8 @@ struct ChatMember: Transportable, Equatable {
                 Double(UIColor(color).cgColor.components![1]),
                 Double(UIColor(color).cgColor.components![2]),
                 Double(UIColor(color).cgColor.components![3])
-            ]
+            ],
+            "associatedDate" : Timestamp(date: associatedDate)
         ]
     }
     
@@ -35,7 +41,8 @@ struct ChatMember: Transportable, Equatable {
                           color: {
             let colorComponents = dictionary["color"] as! [Double]
             return Color(cgColor: .init(red: colorComponents[0], green: colorComponents[1], blue: colorComponents[2], alpha: colorComponents[3]))
-        }())
+        }(),
+                          associatedDate: Date.decodeDate(dictionary["associatedDate"]!))
     }
     
     static func == (lhs: ChatMember, rhs: ChatMember) -> Bool {
@@ -43,11 +50,11 @@ struct ChatMember: Transportable, Equatable {
     }
     
     static var samples: [ChatMember] = [
-        .init(userID: "001", emoji: "😔", color: .blue),
-        .init(userID: "002", emoji: "😅", color: .orange),
-        .init(userID: "003", emoji: "📨", color: .red),
-        .init(userID: "004", emoji: "🎀", color: .purple),
-        .init(userID: "005", emoji: "🇸🇭", color: .yellow)
+        .init(userID: "001", emoji: "😔", color: .blue, associatedDate: Date()),
+        .init(userID: "002", emoji: "😅", color: .orange, associatedDate: Date()),
+        .init(userID: "003", emoji: "📨", color: .red, associatedDate: Date()),
+        .init(userID: "004", emoji: "🎀", color: .purple, associatedDate: Date()),
+        .init(userID: "005", emoji: "🇸🇭", color: .yellow, associatedDate: Date())
     ]
     
     static var sampleIDs = ["001", "002", "003", "004", "005"]
