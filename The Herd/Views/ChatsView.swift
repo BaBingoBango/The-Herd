@@ -67,6 +67,9 @@ struct ChatsView: View {
                                            emoji: eachChat.getEmoji(nonUserIDs.first!),
                                            text: eachChat.messages.last?.text ?? "No Messages Yet!")
                         }
+                        .isHidden(eachChat.memberIDs.count == 2 &&
+                                  currentUser.blockedUserIDs.contains(eachChat.memberIDs.filter({ $0 != currentUser.UUID }).first!) &&
+                                  eachChat.dateCreated > currentUser.blockDetails[eachChat.memberIDs.filter({ $0 != currentUser.UUID }).first!]?.associatedDate ?? Date(), remove: true)
                     }
                     
                     if !currentUser.hiddenChatIDs.isEmpty && !hiddenChatsMode {

@@ -61,6 +61,9 @@ struct ChatDetailView: View {
                             }
                         }
                         .id(eachMessage.UUID)
+                        .isHidden(currentUser.blockedUserIDs.contains(eachMessage.sender.userID) &&
+                                  eachMessage.timeSent > currentUser.blockDetails[eachMessage.sender.userID]?.associatedDate ?? Date(),
+                                  remove: true)
                     }
                     .onAppear {
                         scrollReader.scrollTo(chat.messages.last?.UUID, anchor: .bottom)

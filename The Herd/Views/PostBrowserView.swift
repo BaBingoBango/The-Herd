@@ -184,6 +184,7 @@ struct PostBrowserView: View {
                                                     }
                                                 })
                                             }
+                                            .isHidden(currentUser.blockedUserIDs.contains(posts.posts[index].authorUUID), remove: true)
                                     }
                                     
                                     if postUpdate.status != .inProgress && areMorePosts {

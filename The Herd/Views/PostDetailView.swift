@@ -163,6 +163,14 @@ struct CommentsView: View {
                             .frame(width: 4)
                             .cornerRadius(10)
                             .foregroundColor(parentPost!.getAnonymousNumber(eachComment.authorUUID) != nil ? .gray : eachComment.authorColor)
+                            .isHidden({
+                                for eachSecondLevelComment in eachComment.comments {
+                                    if currentUser.blockedUserIDs.contains(eachSecondLevelComment.authorUUID) {
+                                        return true
+                                    }
+                                }
+                                return false
+                            }(), remove: true)
                         
                         VStack {
                             CommentsView(currentUser: currentUser, comments: eachComment.comments, post: $post, barColor: eachComment.authorColor, parentPost: post, commentingAnonymously: commentingAnonymously, newlyCreatedPost: $newlyCreatedPost)
@@ -172,6 +180,7 @@ struct CommentsView: View {
                     }
                 }
             }
+            .isHidden(currentUser.blockedUserIDs.contains(eachComment.authorUUID), remove: true)
         }
         .onAppear {
             // Set up a real-time listener for this post's comments!

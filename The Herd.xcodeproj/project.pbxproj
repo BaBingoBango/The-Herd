@@ -84,6 +84,7 @@
 		AAE0D3F42A603D870093E9BB /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE0D3F32A603D870093E9BB /* SearchBarView.swift */; };
 		AAE323B82A7B222F00020A52 /* AddressBookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE323B72A7B222F00020A52 /* AddressBookView.swift */; };
 		AAE323BA2A7B26F600020A52 /* AddressEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE323B92A7B26F600020A52 /* AddressEditorView.swift */; };
+		AAEBAA492AA1254100DEFA56 /* HidingServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAEBAA482AA1254100DEFA56 /* HidingServices.swift */; };
 		AAF038E52A3670A000FCF14A /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF038E42A3670A000FCF14A /* SignInView.swift */; };
 		AAF038EA2A36798000FCF14A /* PhoneSignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF038E92A36798000FCF14A /* PhoneSignInView.swift */; };
 		AAF038ED2A3679F200FCF14A /* iPhoneNumberField in Frameworks */ = {isa = PBXBuildFile; productRef = AAF038EC2A3679F200FCF14A /* iPhoneNumberField */; };
@@ -174,6 +175,7 @@
 		AAE0D3F32A603D870093E9BB /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarView.swift; sourceTree = "<group>"; };
 		AAE323B72A7B222F00020A52 /* AddressBookView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressBookView.swift; sourceTree = "<group>"; };
 		AAE323B92A7B26F600020A52 /* AddressEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressEditorView.swift; sourceTree = "<group>"; };
+		AAEBAA482AA1254100DEFA56 /* HidingServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HidingServices.swift; sourceTree = "<group>"; };
 		AAF038E32A3665A800FCF14A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AAF038E42A3670A000FCF14A /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		AAF038E72A36781B00FCF14A /* The Herd.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "The Herd.entitlements"; sourceTree = "<group>"; };
@@ -357,6 +359,7 @@
 				AAE0D3F32A603D870093E9BB /* SearchBarView.swift */,
 				AA53EE172A91C5C900D7041B /* EmptyCollectionView.swift */,
 				AA53EE242A938F0600D7041B /* Chunker.swift */,
+				AAEBAA482AA1254100DEFA56 /* HidingServices.swift */,
 			);
 			path = "Helper Files";
 			sourceTree = "<group>";
@@ -587,6 +590,7 @@
 				AA2DC28B2A81D42C00C1031E /* ChatDetailView.swift in Sources */,
 				AA2DC2852A807D4F00C1031E /* Chat.swift in Sources */,
 				AAF038EA2A36798000FCF14A /* PhoneSignInView.swift in Sources */,
+				AAEBAA492AA1254100DEFA56 /* HidingServices.swift in Sources */,
 				AA53EE182A91C5C900D7041B /* EmptyCollectionView.swift in Sources */,
 				AAE0D3F22A603C970093E9BB /* EmojiPickerView.swift in Sources */,
 				AA3BE5412A3D0A690040C7BD /* LocationManager.swift in Sources */,
