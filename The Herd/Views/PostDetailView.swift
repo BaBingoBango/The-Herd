@@ -23,6 +23,7 @@ struct PostDetailView: View {
     @State var savePost = Operation()
     @State var isPostSaved = false
     @Binding var newlyCreatedPost: Post
+    @State var refreshView = false
     
     // MARK: View Body
     var body: some View {
@@ -31,9 +32,9 @@ struct PostDetailView: View {
                 VStack(alignment: .leading) {
                     // FIXME: the comment count dosen't update when new comments are added bc this is static and not a state pass-in to POV
                     // FIX? make an optional state version? probs not...acc maybe with an on change?
-                    PostOptionView(post: $post, currentUser: currentUser, showTopBar: false, cornerRadius: 0, parentPost: post, newlyCreatedPost: $newlyCreatedPost)
+                    PostOptionView(post: $post, currentUser: currentUser, locationManager: locationManager, showTopBar: false, cornerRadius: 0, parentPost: post, newlyCreatedPost: $newlyCreatedPost)
                     
-                    CommentsView(currentUser: currentUser, comments: post.comments, post: $post, parentPost: post, commentingAnonymously: commentingAnonymously, newlyCreatedPost: $newlyCreatedPost)
+                    CommentsView(currentUser: currentUser, comments: $post.comments, post: $post, parentPost: post, commentingAnonymously: commentingAnonymously, newlyCreatedPost: $newlyCreatedPost, locationManager: locationManager)
                         .padding(.horizontal)
                 }
                 
@@ -55,7 +56,7 @@ struct PostDetailView: View {
                     }
                     
                     ToolbarItem(placement: .navigationBarTrailing) {
-//                        PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: .constant(Operation()), savePost: .constant(Operation()), isPostSaved: .constant(Operation()), rolodexUser: .constant(Operation()), isUserInRolodex: .constant(<#T##value: Bool##Bool#>), newlyCreatedPost: <#T##Binding<Post>#>)
+                        // TODO: add menu button
                     }
                     
                     ToolbarItemGroup(placement: .bottomBar) {
@@ -96,6 +97,17 @@ struct PostDetailView: View {
                 .toolbar(.visible, for: .bottomBar)
             }
         }
+        .onAppear {
+            // Set up a real-time listener for this post's comments!
+            postsCollection.document(post.UUID).addSnapshotListener({ snapshot, error in
+                if let snapshot = snapshot {
+                    if let snapshotData = snapshot.data() {
+                        post.replaceFields(Post.dedictify(snapshotData))
+                    }
+                    refreshView.toggle()
+                }
+            })
+        }
     }
     
     // MARK: View Functions
@@ -115,13 +127,13 @@ struct PostDetailView_Previews: PreviewProvider {
 struct CommentsView: View {
     
     var currentUser = User.getSample()
-    @State var comments: [Post]
+    @Binding var comments: [Post]
     @Binding var post: Post
     var barColor: Color = .clear
     var parentPost: Post?
     var commentingAnonymously: Bool
     @Binding var newlyCreatedPost: Post
-    @State var refreshView = false
+    var locationManager = LocationManager()
     
     var body: some View {
         ForEach(Array(comments.enumerated()), id: \.offset) { eachIndex, eachComment in
@@ -155,7 +167,9 @@ struct CommentsView: View {
                     Spacer()
                 }
                 
-                PostOptionView(post: $post.comments[eachIndex], currentUser: currentUser, showTopBar: false, showText: false, seperateControls: false, cornerRadius: 0, bottomBarFont: .body, parentPost: parentPost ?? post, newlyCreatedPost: $newlyCreatedPost)
+                if eachIndex < post.comments.count {
+                    PostOptionView(post: $post.comments[eachIndex], currentUser: currentUser, locationManager: locationManager, showTopBar: false, showText: false, seperateControls: false, cornerRadius: 0, bottomBarFont: .body, parentPost: parentPost ?? post, newlyCreatedPost: $newlyCreatedPost)
+                }
                 
                 if !eachComment.comments.isEmpty {
                     HStack {
@@ -163,6 +177,7 @@ struct CommentsView: View {
                             .frame(width: 4)
                             .cornerRadius(10)
                             .foregroundColor(parentPost!.getAnonymousNumber(eachComment.authorUUID) != nil ? .gray : eachComment.authorColor)
+                            .padding(.trailing, 7.5)
                             .isHidden({
                                 for eachSecondLevelComment in eachComment.comments {
                                     if currentUser.blockedUserIDs.contains(eachSecondLevelComment.authorUUID) {
@@ -173,29 +188,48 @@ struct CommentsView: View {
                             }(), remove: true)
                         
                         VStack {
-                            CommentsView(currentUser: currentUser, comments: eachComment.comments, post: $post, barColor: eachComment.authorColor, parentPost: post, commentingAnonymously: commentingAnonymously, newlyCreatedPost: $newlyCreatedPost)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .padding(.leading, 1)
+                            ForEach(Array(eachComment.comments.enumerated()), id: \.offset) { eachSecondIndex, eachSecondComment in
+                                VStack(alignment: .leading, spacing: 0) {
+                                    HStack {
+                                        ZStack {
+                                            Image(systemName: "circle.fill")
+                                                .font(.system(size: 37.5))
+                                                .foregroundColor(parentPost!.getAnonymousNumber(eachSecondComment.authorUUID) != nil ? .gray : eachSecondComment.authorColor)
+                                            
+                                            Text(parentPost!.getAnonymousNumber(eachSecondComment.authorUUID) ?? eachSecondComment.authorEmoji)
+                                                .font(.system(size: 22.5))
+                                                .fontDesign(.monospaced)
+                                                .fontWeight(.bold)
+                                                .foregroundColor(.white)
+                                        }
+                                        
+                                        Text(eachSecondComment.distanceFromNow)
+                                            .font(.system(size: 17.5))
+                                            .fontWeight(.heavy)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    
+                                    HStack {
+                                        Text(eachSecondComment.text)
+                                            .dynamicFont(.title3, fontDesign: currentUser.fontPreference.toFontDesign(), lineLimit: 15, padding: 0)
+                                            .fontWeight(.medium)
+                                            .padding(.leading, 7.5)
+                                            .padding(.bottom)
+                                        
+                                        Spacer()
+                                    }
+                                    
+                                    if eachSecondIndex < post.comments.count {
+                                        PostOptionView(post: $post.comments[eachSecondIndex], currentUser: currentUser, locationManager: locationManager, showTopBar: false, showText: false, seperateControls: false, cornerRadius: 0, bottomBarFont: .body, parentPost: parentPost ?? post, newlyCreatedPost: $newlyCreatedPost)
+                                    }
+                                }
+                                .isHidden(currentUser.blockedUserIDs.contains(eachComment.authorUUID), remove: true)
+                            }
                         }
                     }
                 }
             }
             .isHidden(currentUser.blockedUserIDs.contains(eachComment.authorUUID), remove: true)
-        }
-        .onAppear {
-            // Set up a real-time listener for this post's comments!
-            postsCollection.document(post.UUID).addSnapshotListener({ snapshot, error in
-                if let snapshot = snapshot {
-                    if let snapshotData = snapshot.data() {
-                        print("updating post...")
-                        print("post comments: \(post.comments.count)")
-                        post.replaceFields(Post.dedictify(snapshotData))
-                        // FIXME: comment updates not working for 2nd level comments!
-                        print("post comments: \(post.comments.count)")
-                    }
-                    refreshView.toggle()
-                }
-            })
         }
     }
 }

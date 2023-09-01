@@ -69,7 +69,7 @@ struct PostOptionView: View {
                     Spacer()
                     
                     if !blockRecursion {
-                        PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: $deletePost, savePost: $savePost, isPostSaved: $isPostSaved, rolodexUser: $rolodexUser, isUserInRolodex: $isUserInRolodex, newlyCreatedPost: $newlyCreatedPost, blockUser: $blockUser, isUserBlocked: $isUserBlocked)
+                        PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: $deletePost, savePost: $savePost, isPostSaved: $isPostSaved, rolodexUser: $rolodexUser, isUserInRolodex: $isUserInRolodex, newlyCreatedPost: $newlyCreatedPost, blockUser: $blockUser, isUserBlocked: $isUserBlocked, parentPost: parentPost!)
                             .onAppear {
                                 postsCollection.document(post.UUID).collection("saved").document(currentUser.UUID).getDocument() { snapshot, error in
                                     if error != nil {
@@ -261,6 +261,11 @@ struct PostOptionView: View {
                                     .fontWeight(.semibold)
                                     .foregroundColor(voteValue == -1 ? .red : .secondary)
                             }
+                            
+                            if !blockRecursion && post.commentLevel != 0 {
+                                PostMenuButton(post: $post, currentUser: currentUser, locationManager: locationManager, deletePost: $deletePost, savePost: $savePost, isPostSaved: $isPostSaved, rolodexUser: $rolodexUser, isUserInRolodex: $isUserInRolodex, newlyCreatedPost: $newlyCreatedPost, blockUser: $blockUser, isUserBlocked: $isUserBlocked, parentPost: parentPost!)
+                                    .padding([.leading, .top], 10)
+                            }
                         }
                         .padding(.horizontal, seperateControls ? 15 : 5)
                     }
@@ -356,20 +361,25 @@ struct PostMenuButton: View {
     @Binding var newlyCreatedPost: Post
     @Binding var blockUser: Operation
     @Binding var isUserBlocked: Bool
+    var parentPost: Post
     
     var body: some View {
         Menu {
-            Button(action: {
-                showingRepostView = true
-            }) {
-                Label("Repost...", systemImage: "arrowshape.turn.up.forward")
+            if post.commentLevel == 0 {
+                Button(action: {
+                    showingRepostView = true
+                }) {
+                    Label("Repost...", systemImage: "arrowshape.turn.up.forward")
+                }
             }
             
             let viewCopy = PostOptionView(post: $post, currentUser: currentUser, locationManager: locationManager, blockRecursion: true, parentPost: post, newlyCreatedPost: .constant(.sample)).frame(width: 500)
             let viewImage = Image(uiImage: ImageRenderer(content: viewCopy).uiImage!)
             
-            ShareLink(item: viewImage, preview: SharePreview(post.text, image: viewImage)) {
-                Label("Share...", systemImage: "square.and.arrow.up")
+            if post.commentLevel == 0 {
+                ShareLink(item: viewImage, preview: SharePreview(post.text, image: viewImage)) {
+                    Label("Share...", systemImage: "square.and.arrow.up")
+                }
             }
             
             if currentUser.UUID != post.authorUUID && post.getAnonymousNumber(post.authorUUID) == nil {
@@ -419,54 +429,77 @@ struct PostMenuButton: View {
 //                      dismissButton: .default(Text("Close")))
 //            }
             
-            Button(action: {
-                savePost.status = .inProgress
-                
-                if !isPostSaved {
-                    let newSaveRecord = SavedPostRecord(userUUID: currentUser.UUID, postUUID: post.UUID, dateSaved: Date())
-                    newSaveRecord.transportToServer(path: postsCollection.document(post.UUID).collection("saved"),
-                                                    documentID: currentUser.UUID,
-                                                    operation: nil,
-                                                    onError: { error in savePost.setError(message: error.localizedDescription) },
-                                                    onSuccess: { isPostSaved = true; savePost.status = .success })
-                } else {
-                    postsCollection.document(post.UUID).collection("saved").document(currentUser.UUID).delete() { error in
-                        if let error = error {
-                            savePost.setError(message: error.localizedDescription)
-                        } else {
-                            isPostSaved = false
-                            savePost.status = .success
+            if post.commentLevel == 0 {
+                Button(action: {
+                    savePost.status = .inProgress
+                    
+                    if !isPostSaved {
+                        let newSaveRecord = SavedPostRecord(userUUID: currentUser.UUID, postUUID: post.UUID, dateSaved: Date())
+                        newSaveRecord.transportToServer(path: postsCollection.document(post.UUID).collection("saved"),
+                                                        documentID: currentUser.UUID,
+                                                        operation: nil,
+                                                        onError: { error in savePost.setError(message: error.localizedDescription) },
+                                                        onSuccess: { isPostSaved = true; savePost.status = .success })
+                    } else {
+                        postsCollection.document(post.UUID).collection("saved").document(currentUser.UUID).delete() { error in
+                            if let error = error {
+                                savePost.setError(message: error.localizedDescription)
+                            } else {
+                                isPostSaved = false
+                                savePost.status = .success
+                            }
                         }
                     }
+                    
+                }) {
+                    Label(!isPostSaved ? "Save Post" : "Unsave Post", systemImage: !isPostSaved ? "bookmark" : "bookmark.slash.fill")
                 }
-                
-            }) {
-                Label(!isPostSaved ? "Save Post" : "Unsave Post", systemImage: !isPostSaved ? "bookmark" : "bookmark.slash.fill")
-            }
-            .alert(isPresented: $savePost.isShowingErrorMessage) {
-                Alert(title: Text("Couldn't Save Post"),
-                      message: Text(savePost.errorMessage),
-                      dismissButton: .default(Text("Close")))
+                .alert(isPresented: $savePost.isShowingErrorMessage) {
+                    Alert(title: Text("Couldn't Save Post"),
+                          message: Text(savePost.errorMessage),
+                          dismissButton: .default(Text("Close")))
+                }
             }
             
             Divider()
             
             if currentUser.UUID == post.authorUUID {
-                Button(role: .destructive, action: {
-                    deletePost.status = .inProgress
-                    
-                    postsCollection.document(post.UUID).delete() { error in
-                        if let error = error {
-                            deletePost.setError(message: error.localizedDescription)
-                        } else {
-                            deletePost.status = .success
+                Group {
+                    if post.commentLevel == 0 {
+                        Button(role: .destructive, action: {
+                            deletePost.status = .inProgress
+                            
+                            postsCollection.document(post.UUID).delete() { error in
+                                if let error = error {
+                                    deletePost.setError(message: error.localizedDescription)
+                                } else {
+                                    deletePost.status = .success
+                                }
+                            }
+                        }) {
+                            Label("Delete Post", systemImage: "trash")
+                        }
+                        
+                    } else {
+                        Button(role: .destructive, action: {
+                            deletePost.status = .inProgress
+                            
+                            postsCollection.document(parentPost.UUID).updateData([
+                                "comments" : parentPost.deleteCommentOutOfPlace(post.UUID).comments.map({ $0.dictify() })
+                            ]) { error in
+                                if let error = error {
+                                    deletePost.setError(message: error.localizedDescription)
+                                } else {
+                                    deletePost.status = .success
+                                }
+                            }
+                        }) {
+                            Label("Delete Comment", systemImage: "trash")
                         }
                     }
-                }) {
-                    Label("Delete Post", systemImage: "trash")
                 }
                 .alert(isPresented: $deletePost.isShowingErrorMessage) {
-                    Alert(title: Text("Couldn't Delete Post"),
+                    Alert(title: Text(post.commentLevel == 0 ? "Couldn't Delete Post" : "Couldn't Delete Comment"),
                           message: Text(deletePost.errorMessage),
                           dismissButton: .default(Text("Close")))
                 }

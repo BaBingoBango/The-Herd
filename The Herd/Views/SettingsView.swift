@@ -12,6 +12,7 @@ import FirebaseAuth
 struct SettingsView: View {
     
     // MARK: View Variables
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @ObservedObject var currentUser: User
     @State var showingSignOutConfirmation = false
     @State var signOut = Operation()
@@ -155,6 +156,16 @@ struct SettingsView: View {
         // MARK: Navigation Settings
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(content: {
+            ToolbarItem(placement: .confirmationAction) {
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Text("Done")
+                        .fontWeight(.bold)
+                }
+            }
+        })
     }
     
     // MARK: View Functions

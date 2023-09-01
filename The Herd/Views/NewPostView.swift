@@ -192,7 +192,7 @@ struct NewPostView: View {
                     Text("🔒")
                         .font(.system(size: 37.5))
                     
-                    Text("Another important fact about posts? idk tbh")
+                    Text("Only you'll be able to delete your post, but anyone can save it.")
                         .font(.callout)
                         .fontWeight(.medium)
                         .multilineTextAlignment(.leading)
@@ -200,7 +200,7 @@ struct NewPostView: View {
                     Spacer()
                 }
                 .padding()
-                .modifier(RectangleWrapper(color: .yellow, opacity: 0.25))
+                .modifier(RectangleWrapper(color: .red, opacity: 0.25))
             }
             .padding(.horizontal)
         }

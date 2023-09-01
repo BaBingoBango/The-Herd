@@ -20,8 +20,10 @@ struct ProfileView: View {
     @State var karmaScore = 0
     @StateObject var savedPosts = PostListViewModel()
     @StateObject var userPosts = PostListViewModel()
+    @StateObject var userComments = PostListViewModel()
     @State var selectedActivityView = 1
     @Binding var newlyCreatedPost: Post
+    @State var showingSettings = false
     
     // MARK: View Body
     var body: some View {
@@ -79,19 +81,10 @@ struct ProfileView: View {
                         EmptyCollectionView(iconName: "person.crop.circle.fill", heading: "Couldn't Load Profile", text: loadActivity.errorMessage)
                         
                     case .success:
-//                        HStack {
-//                            Text("Activity")
-//                                .dynamicFont(.title, padding: 0)
-//                                .fontWeight(.bold)
-//                            Spacer()
-//                        }
-//                        .padding(.top, 5)
-                        
                         Picker(selection: $selectedActivityView, label: Text("")) {
                             Text("Your Posts").tag(1)
-                            Text("Saved Posts").tag(2)
-//                            Text("Comments").tag(3)
-//                            Text("Votes").tag(4)
+                            Text("Your Comments").tag(2)
+                            Text("Saved Posts").tag(3)
                         }
                         .pickerStyle(SegmentedPickerStyle())
                         .padding(.bottom, 5)
@@ -99,22 +92,57 @@ struct ProfileView: View {
                         switch selectedActivityView {
                         case 1:
                             if userPosts.posts.isEmpty {
-                                EmptyCollectionView(iconName: "ellipsis.bubble.fill", heading: "No Posts", text: "")
+                                EmptyCollectionView(iconName: "ellipsis.bubble.fill", heading: "No Posts", text: "...yet!")
                             }
                             ForEach(Array(userPosts.posts.enumerated()), id: \.offset) { index, eachPost in
                                 PostOptionView(post: $userPosts.posts[index], activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost, newlyCreatedPost: $newlyCreatedPost)
+                                    .id(UUID())
                             }
                             
                         case 2:
+                            if userComments.posts.isEmpty {
+                                EmptyCollectionView(iconName: "ellipsis.bubble.fill", heading: "No Comments", text: "...yet!")
+                            }
+                            ForEach(Array(userComments.posts.enumerated()), id: \.offset) { index, eachPost in
+                                HStack {
+                                    ZStack {
+                                        Image(systemName: "circle.fill")
+                                            .font(.system(size: 30))
+                                            .foregroundColor(repost.getAnonymousNumber(repost.authorUUID) != nil ? .gray : repost.authorColor)
+
+                                        Text(repost.getAnonymousNumber(repost.authorUUID) ?? repost.authorEmoji)
+                                            .font(.system(size: 12.5))
+                                            .fontDesign(.monospaced)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.white)
+                                    }
+                                    
+                                    VStack(alignment: .leading) {
+                                        Text("Reposting")
+                                            .dynamicFont(.callout, padding: 0)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.secondary)
+                                        
+                                        Text(repost.text)
+                                            .dynamicFont(.headline, lineLimit: 15, padding: 0)
+                                            .multilineTextAlignment(.leading)
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(.primary)
+                                    }
+                                }
+                                .padding(10)
+                                .modifier(RectangleWrapper(color: repost.getAnonymousNumber(repost.authorUUID) != nil ? .gray : repost.authorColor, opacity: 0.1, enforceLayoutPriority: true))
+                                .id(UUID())
+                            }
+                            
+                        case 3:
                             if savedPosts.posts.isEmpty {
                                 EmptyCollectionView(iconName: "bookmark.slash.fill", heading: "No Saved Posts", text: "")
                             }
                             ForEach(Array(savedPosts.posts.enumerated()), id: \.offset) { index, eachPost in
                                 PostOptionView(post: $userPosts.posts[index], activateNavigation: true, currentUser: currentUser, locationManager: locationManager, parentPost: eachPost, newlyCreatedPost: $newlyCreatedPost)
+                                    .id(UUID())
                             }
-                            
-                        case 3:
-                            Text("nothing yet...")
                             
                         default:
                             Text("nothing yet...")
@@ -133,11 +161,17 @@ struct ProfileView: View {
             .navigationTitle("Profile")
             .toolbar(content: {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink(destination: SettingsView(currentUser: currentUser, selectedKeyboardOption: currentUser.useRainbowKeyboard)) {
+                    Button(action: {
+                        showingSettings = true
+                    }) {
                         Image(systemName: "gear")
                             .fontWeight(.bold)
                     }
-                    .id(UUID())
+                    .sheet(isPresented: $showingSettings) {
+                        NavigationView {
+                            SettingsView(currentUser: currentUser, selectedKeyboardOption: currentUser.useRainbowKeyboard)
+                        }
+                    }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
@@ -199,7 +233,19 @@ struct ProfileView: View {
                                                 let post = Post.dedictify(eachDocument.data())
                                                 karmaScore += post.getUserKarma(currentUser.UUID)
                                             }
-                                            loadActivity.status = .success
+                                            
+                                            postsCollection.whereField("associatedUserIDs", arrayContains: currentUser.UUID).order(by: "timePosted", descending: true).getDocuments() { snapshots, error in
+                                                if let error = error {
+                                                    loadActivity.setError(message: error.localizedDescription)
+                                                    
+                                                } else {
+                                                    for eachDocument in snapshots!.documents {
+                                                        userComments.posts.append(Post.dedictify(eachDocument.data()))
+                                                        // TODO: NEXT: go throught this in the view and list all the comments instead of the parent posts, but still navlink to the parent posts
+                                                    }
+                                                    loadActivity.status = .success
+                                                }
+                                            }
                                         }
                                     }
                                 }

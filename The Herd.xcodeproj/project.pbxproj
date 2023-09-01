@@ -145,7 +145,6 @@
 		AA1343F52A258CA500E92BB2 /* Taylor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Taylor.swift; sourceTree = "<group>"; };
 		AA17636E2A32EA2F00365439 /* ColorServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorServices.swift; sourceTree = "<group>"; };
 		AA1763702A33A23D00365439 /* Emoji.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emoji.swift; sourceTree = "<group>"; };
-		AA2367672A9E77FA00DE227D /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		AA29042D2A7B024100B41541 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
 		AA2DC2822A807D0700C1031E /* ChatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsView.swift; sourceTree = "<group>"; };
 		AA2DC2842A807D4F00C1031E /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
@@ -261,7 +260,6 @@
 			isa = PBXGroup;
 			children = (
 				AAF038E32A3665A800FCF14A /* README.md */,
-				AA2367672A9E77FA00DE227D /* TODO.md */,
 				AA13439C2A2559D600E92BB2 /* The Herd */,
 				AA1343B22A2559D700E92BB2 /* The HerdTests */,
 				AA1343BC2A2559D700E92BB2 /* The HerdUITests */,

@@ -208,6 +208,31 @@ class Post: Transportable, Equatable, ObservableObject, Identifiable {
         return false
     }
     
+    func deleteCommentOutOfPlace(_ withID: String) -> Post {
+        Post(UUID: UUID,
+             authorUUID: authorUUID,
+             authorEmoji: authorEmoji,
+             authorColor: authorColor,
+             anonymousIdentifierTable: anonymousIdentifierTable,
+             text: text,
+             votes: votes,
+             commentLevel: commentLevel,
+             comments: {
+            
+            let newCommentsList = comments
+            for eachComment in comments {
+                eachComment.comments = eachComment.comments.filter({ $0.UUID != withID })
+            }
+            return newCommentsList.filter({ $0.UUID != withID })
+        }(),
+             timePosted: timePosted,
+             latitude: latitude,
+             longitude: longitude,
+             mentions: mentions, associatedUserIDs: associatedUserIDs,
+             repost: repost
+        )
+    }
+    
     static func uploadSampleData(successes: Int = 0) {
         if successes >= 2000 {
             return
